@@ -1,0 +1,158 @@
+
+* Vim
+Vim Tutorials Notes
+** Introduction
+In linux andy prf 1st prg is vim best text editor (default in very linux)
+
+- Free
+- NO GUI
+- eassy,fast
+
+* Modes :
+- Normal mode (Esc)
+ - File Cmd
+ - Edit Cmd
+ - Navigation Cmd
+- Insert mode (i)
+- Visual mode (v)
+
+* Normal Mode : 
+consist of commands  which can be classified into 
+File Cmd
+Navigation Cmd
+Edit/Manupulation Cmd
+
+** File Commands:
+| :w  | save               |
+| :w! | save overwrite     |
+| :q  | quit               |
+| :wq | save and quit      |
+| :q! | quit with out save |
+** Navigation Commands :
+| h   | left                                           |
+| j   | down                                           |
+| k   | up                                             |
+| l   | down                                           |
+|     |                                                |
+| H   | move cursor to top                             |
+| M   | move cursor to middle                          |
+| L   | move cursor to bottom                          |
+| gg  | begin of file                                  |
+| G   | EOF                                            |
+|     |                                                |
+| e   | end of word                                    |
+| w   | next word                                      |
+| b   | previous word                                  |
+|     |                                                |
+| ^/$ | begin/end of line                              |
+| I/A | move begin/end of line & change to insert mode |
+|     |                                                |
+| C-e | scrol down                                     |
+| C-y | scroll up                                      |
+| C-f | pgup                                           |
+| C-b | pgdown                                         |
+| s   |                                                |
+| p   |                                                |
+| t   |                                                |
+
+** Edit cmd:
+| d          | cut/del                               |
+| dd         | del line                              |
+| y          | copy                                  |
+| yy         | copy line                             |
+| p/P        | paste below/above line                |
+| /"text"    | search for text                       |
+| c          | chagne(replace)                       |
+|            |                                       |
+| o/O        | insert \n at above/below current line |
+| earlier 2m | set the chagnes in text 2 min earlier | 
+  
+** Visual Mode:
+	
+
+* Commbinational Commands:
+
+| Edit   cmd     | Cond            cmd            | Nava    cmd |
+
+|------+---------+----------------+---------------+------+------|
+| d    | cut/del | a              | all           | w    | word |
+| y    | copy    | i              | in            |      |      |
+| p    | paste   | t              | till          |      |      |
+| c    | change  | f              | find forwords |      |      |
+|      | F       | find backwords |               |      |      |
+|      |         |                |               |      |      |
+|      |         |                |               |      |      |
+* Keystrocks:
+CMD		{ Number } { Text/Vis Cmd } { Cond cmd } { Navig cmd }
+
+| text (btw "" )    | CMD  | After         | Explaination                       |
+|-------------------+------+---------------+------------------------------------|
+|                   | 3j   |               | Mode cursor 3 lines below          |
+|                   | 10w  |               | Mode cursor 10 words forward       |
+|                   | 3dw  |               | Del 3 words forward                |
+|                   | 3dj  |               | Del 3 lines from cursor            |
+|                   |      |               |                                    |
+| " grind_node "    | diw  | "  "          | del inside word but not whitspace  |
+| " grind_node "    | caw  | ""            | cut all word include whitespace    |
+| " grind_node "    | cw   | "grid_"       | cursor is on node so del next word |
+|                   |      |               |                                    |
+| (abc,xyz,mnt)     | yi)  | (abc,xyz,mnt) | copy "abc,xyz,mnt"                 |
+| (abc,xyz,mnt)     | di)  | ()            | del in ()                          |
+| (abc,xyz,mnt)     | da)  | ""            | del all ""                         |
+| (abc,xyz,mnt)     | dt,  | (,xyz,mnt)    | del untill(before) ","             |
+| (abc,xyz,mnt)     | df,  | (xyz,mnt)     | del including ","                  |
+| abc               | ysw" | "abc"         |                                    |
+| "i am inside app" | va"  |               | visual the sentance                |
+|                   |      |               |                                    |
+
+*  Macrows
+** syntax :
+	q"register name"
+	CMD's
+	q
+
+** paly macro:
+	@"register name"
+** Vimrc : 
+	Vimrc is a file where all the vim setting are done manually adding packages
+	If pakages are more in order to manage the packages there are Package manager
+	vindle
+	vim-plugin
+	pathogen
+
+site for packages : 
+	vim awasome
+	
+* Basic Packages :
+	nerd tree : 	file view
+	ctrlp:		fuzzy file finder
+	fugitive 	git tool
+	suytastic	syntax charcker/
+	auto-pair
+	super tab
+* Tmux
+	Terminal Multiplexing
+	View adn control multi consoles
+	Preconfigure Environment
+	Paralle 
+#+BEGIN_SRC sh
+tmux new-session -s "session name"
+#+END_SRC 
+* Vimrc
+#+BEGIN_SRC sh
+  call plug#begin()
+          Plug 'scrooloose/nerdtree'
+          Plug 'scrooloose/syntastic'
+          Plug 'tpope/vim-surround'
+          Plug 'altercation/vim-colors-solarized'
+          Plug 'flazz/vim-colorschemes'
+          Plug 'ervandew/supertab'
+  call plug#end()
+  colorscheme molokai
+  "set nu
+  "autocmd vimenter * NERDTree   " auto open Nerdtree
+  let g:NERDTreeDirArrowExpandable = '▸'
+  let g:NERDTreeDirArrowCollapsible = '▾'
+
+  map <C-N> : NERDTreeToggle<CR>
+#+END_SRC

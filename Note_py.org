@@ -1,0 +1,770 @@
+* Python Introudction
+** History:
+Created by Guido Rossum in 1980 is very easy to learn
+Python is 
+interpreted logic ,
+object-oriented, 
+high-level programming language 
+** Who uses python
+youtubbe,dropbox,raspberry netfilx,nsa,nasa,bittorrent
+** Features :
+Simple and Easy to learn
+Open Source
+High Level Language
+Portable: windows,linux,ios
+Support differetn Programming Paradigm (procedure-oriented / object-oriented)
+Extensible
+* TODO Installation
+* TODO Pip Installation
+#+BEGIN_SRC python
+  # pip package manger for 
+  # pip2 is use for py2
+  # pip3 is use for py3
+  # install package by pip
+  # remove package by pip
+#+END_SRC
+
+* TODO Virtural Environment
+Consider math with is global module install in python 
+
+Consider you are using math 2.0  module in one project and 
+later on  new features are added in math 3.0 which need in new projects
+
+If install new package math3.0 then it will mess up old project using math 2.0
+
+What Virtural Environment does it will make a
+It will allow us to install all our dependencies in local folder(own hub) not effect gobal module
+#+BEGIN_SRC python
+# installing virtualen
+sudo pip install virtualev
+
+# creating a virtual environment
+virtualev projectName
+
+# activate the virtual environement
+cd projectName/source bin/activate
+
+# installing package beautifuls
+pip install beautifulsoup
+
+# unactivate 
+deactivate  
+#+END_SRC
+  
+* Operators in python:
+1) Arthimetic operator
+  **  power : **
+  %  remainder: %
+  //  quoficient  :   //
+  /    division : 
+  -     substration 
+  +    addition :
+2) Assignment  operator :
+   = , is
+3) Comparison  operator:
+ >
+ <
+ ==
+ !=
+4) Logical  operator
+   and
+   or
+   not 
+5) Bitwise  operator
+   | or |
+   &    and
+   ^    xor
+   >>  leftshift :
+   eg: 3>>2 =0
+   >>  right shift
+   eg: 3<<2= 12
+6) Identity  operator
+   is
+   is not
+7) Membership  operator
+ in 
+ Not in
+
+* Data types
+Data types :
+- Immutalbe
+  - Number :
+    - Integers
+    - Float
+    - Complex
+      
+  - Strings:
+    define: in quotations 
+    Operations: 
+    Concatenation,Repetition, Slicing, Indexing
+    
+     Specific Method:
+    find(), repalce, split, count(), upper(), max, min, isalpha()
+    
+- Tuples
+  Syntax : 
+
+- Mutalbe
+ - List
+ - Dictonary 
+ - Set
+* Flow Control
+*** if elif else 
+*** Loop
+**** while
+**** for
+*** Flow control :
+**** continue
+**** break
+* Function
+Predefine
+Use define
+*** Syntax
+#+BEGIN_SRC python
+  def func_name (arg1,arg2,.......):
+      statements
+      return[expression]
+#+END_SRC 
+*** 
+** Print
+** Keyboard Input:
+python3 has build-in function =input()= to read input data from standard input
+
+python2 has  =raw_input= is deprecated
+Why ?
+ raw_input is used to receive only  string input, and reading digit is not possible to remove this raw_input is deprecated 
+** Functions
+*** Default argument
+if arg are not given the default arg that are present a function  is used 
+*** Variable Length arguments:
+You may need to proecess a function for more arg than you specified while defining the function 
+
+These arg are called variable-length-arguments and are not named inthe function definition,unlike required and default arguments
+#+BEGIN_SRC python
+  def fun_name([formal_arg], *var_args_tuples):
+                  statements
+                  statements
+
+                  return
+#+END_SRC
+
+
+
+Note : asterisk (*) is placed before var name that hold value of all non-keyword variable arg. This tuple remains empty if no additional arg are speciied during the function called
+
+*** Lamda (Anonymous) Functions:
+create small function
+not create by std manner by using def keyword
+can take any number of arg but return 1 value
+can't contain commands or multiple expressions
+has there own local namespace contain variabels (parameter list) and gloval namespace
+ can't acess other var  
+ #+BEGIN_SRC python 
+   sum = lambda arg1, arg2:   arg1+arg2
+
+   print(sum(10,20)) 
+ #+END_SRC
+
+*** Return
+* Modules
+Grouping related code into a module make the code easier to understand and use
+Module  allows to logically organize your code
+Module in py  is objects  with arbitrarily named attributes that you can bind and reference
+Simply a module is a file consistign of py code
+Module can define functions,classes and varibale
+Module can also include runnable code
+*** OS Module method:
+ all the method are linux based cmd
+
+os.chflags(path,flags)
+os.chmod(path,mode)
+os.chown
+os.chroot
+os.symlink
+os.closed
+
+os.mkdir
+os.remdir
+os.chdir
+os.listdir
+os.getcwd
+os.remove
+os.rename
+os.read
+os.write
+**** read,write, rename, remove,
+**** change dir, make dir , del dir
+**** os.open
+os.open (file, flags, mode)
+os.read,os.close
+* Package 
+Package is hierarihical file directory structure that defines a single python application environment that consist of modules and sub packages ,sub sub packages ....
+
+each dir or folder  consist of one or more modules, each modules has one or more functions,classes
+
+*** Create a package
+To build a package : 
+For developers or coders if we create different modules we have to import each and every modules
+In order to customize we create a package
+
+In folders we have 2-3 module and each module we have 2-3 functions
+
+write a file called =__init__.py= which iniciallize a package 
+In this =__init__.py= we have to specifity which function, classes  are to be only used for developers are iniciallized to a package.
+
+#+BEGIN_EXAMPLE
+$ cd mypackage/
+~/ mypackage$ ls
+sum.py             # contain addtion 
+mult.py             # contain mulitplication
+fact.py               # contain factorial (n) function ,sq (squre function)
+__init__.py
+#+END_EXAMPLE
+
+To make a pacakage we have to write a =__init__.py= 
+So when we init the pacake we can use it function in module 
+#+BEGIN_SRC python
+  #! /usr/bin/python
+
+  from .fact  import factorial, sq
+  from .sum import add
+  from .mult import multiply
+
+#+END_SRC
+
+
+To use the package in other prorgam we have  use =import mypackage= (file name of package) in prg 
+* Import 
+*** Introduction
+
+You can use any py source file as module by executing an import statement in some other python sourcec file
+#+BEGIN_SRC python 
+  import module1, module2, module3,.......moduleN
+#+END_SRC
+
+when the interpreter encounters an important statment
+  It will import (include,insert) the module if the module is present in search path
+Search path is a list of dir that the interpreter searches before importing module
+
+*** Import your own obj and functions
+
+save the you own obj & function in same dir 
+
+and add  " import file_name"  in other  py prg
+
+https://docs.python.org/3/reference/import.html
+*** from Import 
+when  =import module1= the it will import all the objects , functions,variables to the namespace but if you import entire module then it will unnecessarly overloadd namespace
+
+But if you want to import only a specific part from module we use =from module_name import=
+#+BEGIN_SRC python
+  from mod_name import name1,name2, name3.....nameN
+#+END_SRC
+
+*** Executing module as script
+In a file sys the module is stored by a file name =module name= (string) 
+If inside the module the global variable(=__name__= ) has  =module name= is avalable as the value then code will be executed 
+
+#+BEGIN_SRC python
+  # given module is executable is it has following statement
+  if __name__ == "__main__"":
+             main()
+#+END_SRC 
+ If execute then module it will execute if  global variable =__name__= has =__main__=
+*** Loading Module 
+ When you import a module, the python interpreter searches for module in following sequences:
+- Current dir
+- If =module= isn't found,python searchs each dir in shell variavel =PYTHONPATH=
+-If =module= isn't found, python checks default path (installation dir)
+linux : /usr/local/lib/python
+-module search path is stored in system module(=sys=) as =sys.path varialbe=
+ - =sys.path= variable contains the current dir,PYTHONPATH, and the isntallation dependent default.
+*** Reload() a module
+When module is improted into a script  (The code is excuted  once sequenc order top-level priority)
+- To re-execute the top-level code, we use =relaod()=  function
+- =relaod()= function imports previously imported module again
+#+BEGIN_SRC python
+  import imp
+  imp.relaod(module1)
+#+END_SRC
+* Namespace & Scope
+*** Namespace
+ Namespace is like a dictionary (which stores key and value) stores variable and there corresponding objects(values)
+In python as two namespace
+**** Local namespace:
+             each function, block has it own namespace where it own variables,function,methods, objects
+
+**** Global namespace :
+             variables(obj ) which can be acessed to all the functions and other variables
+
+**** Local Vs GlobalIf 
+local variable and global variable as same name local variable is given priority.
+
+If a variable is defined inside a function,block it is local varialbe
+If a variable is defined outside a function it is global variable
+Note : To use the global variable in local namespace we have to 1st use globle statement 
+*** Scope 
+two scope 
+Local :   defined inside a block,function 
+Global: out side the function
+
+| local( )  | return all names  that are accessed locally from that function              |
+| global( ) | return all names that  are accessed globally and locally from that function |
+* Exceptions Handling
+*** What is Exception
+Exceptions are runtime error 
+
+Exception is an event that disrupt the normal flow of a program during its execution
+
+When a python script enconters a situation that it can't cope  with , it rise an exception
+
+Exception is a python object that represents an error 
+
+When a python script raises an exception,it must either handle the exception immediately; otherwise it would terminate  the program
+
+*** How to handle Exception ?
+If you have some suspicious code that may rise an exception, you can defend your program by placing the suspicious code in a =try:= block
+
+In  =try:= block include a except: statements to handle the problem.
+
+#+BEGIN_SRC python
+    try:
+    #    your operations here
+        statements
+        statements
+        .................
+    except:
+    # If there is any exception statements execute block
+        statements
+        statements
+    else:
+     # If there is no exception statements execute block
+        statements
+        statements
+#+END_SRC
+
+*** Try- except-else statement
+-Try-except statement  catches all the exception that occur.
+-Using this kind of try-except statement is not considered a good prog practice
+-It catches all exceptions but does not make prog'er identify the root cause of problem that may occur
+
+*** Try -except with multiple expressions
+#+BEGIN_SRC python
+  try:
+      # You do your operations here
+      statements
+      statements
+      statements
+  except ( Exception1, Exception2,.......Exception3  ):
+      # if code has any exceptions from given list (Exception1,........N) execute this block
+      statements
+      statements
+  else:
+      # if there is no exception execute this block
+      statements
+      statements
+#+END_SRC
+
+Example:
+#+BEGIN_SRC python
+  try:
+      x = int(input ("enter number"))
+      y = int(int("enter another number"))
+      z = x/y
+      print(z)
+  except ( Value Error, ZeroDivisionError, Keyboard Intereupt):
+      print ("Error occured")
+#+END_SRC
+
+*** Finally
+finally vs except 
+finally block is execute in any case if exception occure or not it will execute the block
+Note : If you use finally you can't use except and else in try block 
+#+BEGIN_SRC python
+  try:
+  #    your operations here
+      statements
+      statements
+      .................
+  finally:
+  # Execute this block 
+      statements
+      statements
+#+END_SRC
+
+Example :
+#+BEGIN_SRC python
+  try:
+      fh = open("testfile", "w")
+      try:
+          fh.write("This is my test")
+      finally:
+          print("Going to close the file")
+          fh.close()
+  except IOError:
+      print ("Error: can't fint file or read data")
+#+END_SRC
+
+*** Argument of Exception
+- An exception can have an argument, which is value  that give additional information about the problem
+- The content of an argument vary by exception
+- You can capture an exception's argument by supplying a variable in except clause
+- To handle a single exception, you can have a variable follow the name of the exception in the except statement
+- To trap mulitple exception, you can have a variable follow the tuple of the exception
+
+#+BEGIN_SRC python
+  try:
+      # You do your operations here
+      statments
+      statments
+  except EXCEPTION_TYPE as ARGUMENT:
+      # you can print value of ARGUMENT here
+#+END_SRC
+
+Here EXCEPTION_TYPE and ARGUMENT varies from code
+
+#+BEGIN_SRC python
+  def square(var):
+      try:
+          print(int(var)**2)
+          return
+      except ValueError as Argument:
+          print("The argument does not contain numbers \n")
+
+  square("10")
+  square("abc")
+#+END_SRC
+
+*** Raising an Exception
+You can raise exception in serveral ways by using the raise statement.
+#+BEGIN_SRC python
+  raise [ExceptionType  [, args [, traceback] ]  ]
+#+END_SRC
+
+Exception Type : type of exception
+Args : value for exception arg. optional arg
+Trackback: trackes back to object that has exception
+
+In General:
+-Exception can be a string, a class, an object
+-Most of exception that python core raises are classes with arg that is isntance of the class
+
+ #+BEGIN_SRC python
+    try:
+        marks = int(input ("input marks"))
+        if marks<0 or marks >100 :
+            raise Exception(marks)
+        print("marks within value range ",e)
+    except Exception as e:
+        print("error Invalid marks input",e)
+ #+END_SRC
+
+*** Standard Exception
+Exception
+Stopiteration
+SystemExit
+StandardError
+ArithmeticError
+OverflowError
+FloatingPointError
+ZeroDivisionError
+AssertionError
+AttributeError
+ImportError
+
+*** User Defined Exception
+Python allows to create user-defined exceptions by derving classes from the standard built-in-exceptions.
+**** syntax 
+#+BEGIN_SRC python
+  class NetworkError(RuntimeError):
+      def __init__ (selft,arg):
+          self.arg = arg
+#+END_SRC
+
+Here a class is sub classed from Runtime Error
+It is useful when you need to display more specific information when an exception is caught.
+
+**** Raise Exception
+#+BEGIN_SRC python
+  try:
+      raise NetworkError("Bad hostname")
+  except NetworkError,e:
+      print e.args
+#+END_SRC
+*** Assertion Error
+
+Assertion is used to test the prog or to  check that can turn on or off  when you are done with your testing of program
+
+An assertion is similar to a raise-if statement 
+
+Assertion is carried by assert statment (conditon)
+
+Assertion at starting of a function to check for valid input, and 
+
+After a function call to check for valid output.
+**** syntax
+#+BEGIN_SRC python
+  assert expression(condition)[,  Arguments ]
+#+END_SRC
+If the expression is false, python raises an assertionError exception.
+
+Example:
+#+BEGIN_SRC python
+  def kelvin2Farhrenheit ( temp ):
+      try:
+          assert(temp>=0),temp
+          return (temp-273)*1.8+32
+      except Assertion Error :
+          print("Temperatur is less the Absolute Zero", temp)
+
+
+  print(kelvin2Farhrenheit(273),"deg far")
+  print(int(kelvin2Farhrenheit(505.78)),"deg far")
+  print(kelvin2Farhrenheit(-5),"deg far")
+#+END_SRC
+* File Management
+*** Open/ Closing a File
+Open/Closing a file is done by file-oriented API(Application Program Interface)
+
+Can represent standard input/output stream, in-memory buffers, sockets,pipes, etc.
+
+File object are two categories :
+-binary file
+-text files
+
+**** open/close file :
+***** Syntax
+#+BEGIN_SRC python
+  # To OPEN a file
+    file_obj = open(file_name, [access_mode],[buffering])
+
+  # To CLOSE a file
+  file_obj.close()
+#+END_SRC
+
+open cmds
+
+***** buffering mode:
+
+Buffer is tempory memory allocat to communicate between process and prog or device
+|         0 | No buffering take place (slow)                          |
+|         1 | Line buffer will be performed                           |
+|        >1 | buffer will be performed with the indicated buffer size |
+| Neg value | operating sys will set the size of buffer (default)     |
+|           |                                                         |
+
+***** access mode 
+r,rb,rb+,w,wb,w+,a,ab,a+,ab+  
+read ,binary,write (create or rewrite ),append(editing )
+
+***** closing file
+
+closing file is imp if not it will corrupt the file
+
+**** TODO File  Object attributes:
+
+| ATTRIBUTES  | Description                   |
+|-------------+-------------------------------|
+| file.colsed | return true if file is closed |
+| file.mode   | return access mode            |
+| file.name   | return name of file           |
+
+
+
+
+jabber
+
+
+
+In python3.  =with= is used 
+
+with is
+if file is not used with is used to close the file
+ used if a error occure in file which an execptions and
+
+file=city_file  (no space )
+*** flush parameter
+Flush is introduced in py3.**
+   print as a flush arg true/ flase  , flase : data is not flush
+When py write on file the external devies screen is slow so data is writen in buffer and content is display in background. cpu will not be idel and sys is faster
+
+
+ if flush == true flush is cleaned  implices data is writen immediately 
+
+ to able to control when the writen immedialty  or not will able prg'es to write code effectively
+
+
+strip("del") 
+
+ 
+
+Modes :
+not specified : r
++ both 
+*** Read and write binary files
+
+process bin data img
+or store variabels and load in laters
+
+big indian and little indian writing 
+
+when computer manufacre has to make a decision how to store data
+big  store most signifited bit is store
+and vice verse by littel
+ibm uses big
+intel uses little
+
+ we have to store the variable 
+
+*** pickle 
+to write binary file 
+when store py3 
+5 types of 
+pi
+
+*** String Encoding Function 
+There two functions
+decode (encoding="UTF-8",errors='strict')
+encode (encoding="UTF-8",errors= 'strict')
+ 
+To use this function we have to import base64 module in prg
+for converting 
+* Python in Command line argument
+
+$ python3 add.py 10 20
+
+Here 10,20 are arg are send to add.py 
+
+sys.argv store all arg like add.py,'10','20'
+
+Random Function:
+choice
+randrange([start],stop,[step])
+random()
+seed([x]) :     integer
+
+* OOP [Objective Oriented Programming]
+
+*** Introductions
+
+Class:  A user-defined prototpye that defines a set of attributes that characterise any obj of a class
+
+Object : A unique instance of a data structure that's defined by its class .
+
+Class varialbe: A variable that is shared by all instances of a class
+Data member: holds data associated with a class and its objects
+Instance Variable: defined inside a method and belongs to current instance of class.
+
+Instance: An individual object of a certain class
+Method: A special kind of function that is defined in a class definition.
+Function overlaoding: assignment of more than one behavior to a particular function.
+
+Inheritance : The transfer of the characterisics of a class to other classes that are derivied from it.
+
+Operation overlaoding: The assignment of more than one function to a particualr operator.
+
+*** Creating Class
+=class= keyword is used to create a new class 
+The sysntax =class= follwed by =Name of class(ClassName)= and =:=
+The syntax is given below
+**** syntax
+#+BEGIN_SRC python
+  class ClassName:
+      """ Class documentation string optional """
+      class_suite            # contain definition of data attributes, functions, methods
+#+END_SRC
+Class has a documentation string, which is used to accessed via =ClassName.__doc__=
+=class_suite= conisist of all the compoent statements like class members, data attributes, and functions.
+=__init__( )= method is class acts as constructor
+
+*** Creating Object 
+To create a instance of class, call the class using the class name and pass in whatever arguments in =__init__= method accepts
+#+BEGIN_SRC python
+  obj_name = ClassName(arg1, arg2....)
+#+END_SRC
+
+*** Example:
+
+#+BEGIN_SRC python
+  class Employee:
+      empCount = 0
+
+      def __init__(self, name, salary):
+          self.name = name
+          self.salary = salary
+          Employee.empcount += 2
+
+      def displayCount():
+          print("Total number of Employees %d" %Employee.empCount)
+
+      def displayEmployee(self):
+          print("Name : ", self.name, ", Salary : ", self.salary)
+
+  emp1 = Employee("Zara", 2000)
+  emp2 = Employee("Manni", 5000)
+  emp1.displayEmployee()
+  emp1.displayEmployee()
+  print("Total Employee %d" % Employee.emCount)
+  Employee.dispalyCount()
+#+END_SRC
+
+- Here =Employee= class is defined
+- __init__ is constructor in py and desine to accept two arg =name, salary= and every constructor should have arg =slef=
+- =class variable= is also defined =empCount= 
+- =class varialbe= is variable that are shared my all objects
+- =class method= are also defined like =displayCount=, =dispalyEmployee=
+
+- =emp1,emp2= object are created by Employee class
+
+*** Accessing Attributes
+Class contain data members, class varialbes, methods so class has different attributes
+This attributes are available to its objects
+
+But access to attributes are indepentend or individual
+
+To access the obj attributes  we use =dot= operator with object.
+#+BEGIN_SRC python
+  emp1.displayEmployee()
+  emp1.displayEmployee()
+  print("Total Employee %d" % Employee.emCount)
+  Employee.dispalyCount()
+#+END_SRC
+* Python interviews
+** begininners
+write code on whiteboard or paper
+basic control flow: for, while, ifelse
+discuss how to use python 
+web scrapping
+own py projects
+solve common interview problems : buzz, fibonacius,python interview questions
+data types: string,list.tubles, dict,set,
+list comprehension:
+dict
+for key,val in my_dic.iteritems
+
+set
+know how to use generators: functions  
+** TODO yield
+xrange
+
+basics of oop 
+* GENERAL interview
+github
+database
+command-line (terminal)
+unit testing (continous intergration / delivery )
+
+Continous intergration  :
+ Jenkins
+Travis CI
+Learning muliple programming langagure
+python,c ,java,c++,c#,r,js,php,go,swift
+
+
+quote
+
+ones you understand a programming (code)  the languages are just syntax
+
+and you can pickup syntax lot faster than concepts
+
+Learning how to solve problems(concept) will take years to learn

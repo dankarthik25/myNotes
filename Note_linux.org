@@ -1,0 +1,289 @@
+* Ubuntu
+** Installation
+*** Setting Fastest Repository Mirro
+Software & Updates > Ubuntu Software > Download from > other > Best
+                   > Canonical Partner : select
+*** Install Drives :
+Software & Updates > Addtional Drives (Properity :NVIDIA binary)
+
+*** Restricted Pacakges
+*** Install GNOME tweaks tool
+sudo apt install gnome-tweek-tool
+*** gnome shell
+#+BEGIN_SRC 
+sudo apt install chrome-gnome-shell
+#+END_SRC
+
+*** Firewall (ufw)
+*** TLP for impove batter reduce over heating 
+*** Cleaner Bleach Bit
+
+** youtube-dl
+*** Download audio from YouTube
+`-i`			- ignore errors
+`-c` 			- continue
+`-t`			- use video title as file name
+`--extract-audio` 	- extract audio track
+`--audio-format mp3` 	- convert to mp3
+--no-overwrites
+`--audio-quality 0` 	- the best audio quality
+`--yes-playlist` 		- affirm that url points to a playlist
+`YT_URL` 			- video url from youtube
+# Download single entry
+youtube-dl -i --extract-audio --audio-format mp3 --audio-quality 0 YT_URL
+
+# Download playlist
+youtube-dl -ict --yes-playlist --extract-audio --audio-format mp3 --audio-quality 0 YT_URL
+
+# Download playlist, --download-archive downloaded.txt add successfully downloaded files into downloaded.txt
+youtube-dl --download-archive downloaded.txt --no-overwrites -ict --yes-playlist --extract-audio --audio-format mp3 --audio-quality 0 --socket-timeout 5 YT_URL
+
+# Retry until success, no -i option
+while ! youtube-dl --download-archive downloaded.txt --no-overwrites -ct --yes-playlist --extract-audio --audio-format mp3 --audio-quality 0 --socket-timeout 5 <YT_PlayList_URL>; do echo DISCONNECTED; sleep 5; done
+```
+*** Download video from YouTube
+https://askubuntu.com/questions/486297/how-to-select-video-quality-from-youtube-dl
+
+* Jupyter: 
+
+run code interctively > 
+ipython is use to update to Jupter
+
+** creaat new notebook
+cd ../Jupter-Demo
+jupter notebook
+
+
+! at start of cell/file as bash and we can run bash file
+eg: 
+!pip list
+ls 
+
+building cmd : magic
+% cmd agr will come for save line
+
+eg : %lsmagic
+
+%%  then entire cell is consitor for arguments
+
+matpllotlib inline cmd
+
+%% HTML >> entire cell consider as html
+
+insert html, image 
+#+BEGIN_SRC html
+%% HTML
+<iframe width = "560" height ="315" src = "https://www.youtube.com/...."
+#+END_SRC
+ 
+Expote: ipyn,html,py,
+Share :
+
+To view other's jupeter notebook you can view in github ipython,  
+* Anacoda:
+py distribution,
+free and open 
+for data science, meachine larning
+** install
+download from anaconda site  new version
+
+**  install anaconda in local dir
+#+BEGIN_SRC sh
+bash ~/Download/Anaconda3.xx-Linux-x86_64.sh
+ /home/dan/anaconda
+#+END_SRC
+* Download Subtitle or CC for an video
+For http://www.lilsubs.com/#
+** TODO New to create own macro's  for removing time part
+if strating char is num/empty : del line
+else down 
+
+   
+* Shortcut Terminal :
+ | command           | exp                                      |
+ |-------------------+------------------------------------------|
+ | pwd               | path                                     |
+ | ls                | list of file in folder                   |
+ | cd                | change directory                         |
+ | cd ..             | parent directory                         |
+ | touch             | create file                              |
+ | gedit sample.txt  | create or open(sample.txt)/edit in gedit |
+ | mv "file-path" ./ | Move file at path(file-path)             |
+ |                   | ./    : To current dir                   |
+* installation
+* git
+For creating a version control of local repository
+
+We need to Create a version contol file (=.git=) it create by =git init=
+There are Three Stages
+
+** short tutorial
+#+BEGIN_SRC sh
+  git init                                  # Inicialize or Create a version control 
+  git status                                # View the Stagging Area
+  git add <file>                            # Add files to stagging Area
+  git rim --cached <file>                   # Remove files in Stagging Area
+  touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
+  git commit -m "fist commit"               # Save-Commit  to Local Repo
+  git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
+  git push origin master                    # Upload Local Repo to Remote Repo
+  git pull                                  # Update Local Repo
+  git clone https://github.com/...          # clone to current dir                    # Clone
+  git diff                                  # diff : View changes in fiels
+  ## Create and VC a branch :
+  mkdir test                                # create local repository "test"
+  cd test                                   # move to test folder
+  git init                                  # create a new instance
+  git branch <branch-name>                  #
+  git push orign <branch-name>              # git Upload branch
+  # Switch one branch to other
+  git checkout <branch-name>
+    # Merge
+    # rebase
+
+#+END_SRC
+** Version Control System
+We can save multiple version is a single repository this  is centralised version where it set is stored in server or local host. 
+
+- Distributed vcs
+Each programmer will have there  local repository 
+eg: git 
+
+ 
+- architecture
+- fork and clone
+collaborations
+branch, merge and rebase
+commands 
+
+** Installation and Configuration Cmd
+#+BEGIN_SRC  sh
+# installation
+
+## setup
+
+# version
+git --version
+# >> git version 2.3.2
+
+# Configuration 
+git config --global user.name "Dankarthik25"
+git config -global user.email "dankarthik25@gmail.com"
+
+# help
+git help config
+git config --help
+
+#+END_SRC
+
+** Version contol of program or local-repositore
+*** Overview Creating a local Repository  
+Consider 'Working-Dir' is need to Version Control 
+
+- Git has three main states that your files can reside in: Working-Dir, Stagging Area, Commited: 
+  - =Working-Dir=      File but have not have =Version Control= (committed)
+    - Tell git  this dir need to (VC) it is done by =git init= which create =.git= file in dir 
+    - Add Files         to Stagging area =git add file-name=
+    - Remove Files from Stagging Area =git reset=
+    - Ignore Files      to Stagging ara  =write (list of file that are to ignored) in  .gitignore= 
+  - =Stagging Area=    Marked a modified file  which are to be commit.
+    - Note :            All files in Working-Dir should be either add/ignore then only it can be commited
+    - Commit File      =git commit=
+  - =Committed=      Current files are commented/safed in local Repository =.git directory=.
+    - The files are in VC are Know are Local Repository
+  - =Remote Repository= 
+    - To make a Remote Repository
+      - Connet Local Repository to Remote Repository( =url=)
+        - =git remote add origin url=
+      - Push Local Repositoru to Remote Repository =git push= 
+       - =git push origin master=
+      - Pull Remote Repository to Local Repository =git pull=
+*** How to Commit files ? 
+**** initialize  the file or local-repository  (git init):()
+Create a version control folder or =initialize= or track (changes or versions) we have to initialize the folder 
+#+BEGIN_SRC sh
+# go the directory (Local-Repositore) that has to be version control 
+git init
+#+END_SRC
+
+This will create a =.git= file in the current directory  which consist of all the change that are to be done
+**** Adding files to git (git add file)
+files which are uncommited are changed to =staged= 
+#+BEGIN_SRC sh
+git add <file>             # add files to git
+git add -A                     # add all file
+git status                     # show <file> or all file are change to commited area
+#+END_SRC
+***** Example:
+#+BEGIN_SRC sh
+git add .gitignore
+git add .emacs
+git add .vimrc
+#+END_SRC
+ =.gitignore=  which was in untracked () is changed to staging area or committed
+**** Removing files from git (git reset file)
+#+BEGIN_SRC sh
+git reset <file>                     # remove  files from stating area( committed)
+git reset                                  # remove all files
+#+END_SRC
+**** .gitignore
+hidden file =.gitignore=  contain the list of the all the file and folder that ignore by git for version control
+#+BEGIN_SRC sh
+touch .gitignore
+ls -a >> .gitigonre	# and remove the files need to be VC
+#+END_SRC
+***** Example
+in file add the file or folders that are to ignored by git
+#+BEGIN_SRC sh
+# file that are to ignore
+.DS_Store
+.project
+*.pyc
+#+END_SRC
+**** Commit files (git commit)
+Note : All files are need to to add/ignored then only we can commit files
+#+BEGIN_SRC sh
+  git add -A
+  git commit -m "Initial Commit"                        # file are commited 
+  git status                                                                  # show nothing to commit , working directoru clean    
+#+END_SRC
+*** Connect Local Repository to Remote Repository
+  #+BEGIN_SRC sh
+git remote add origin url    # eg: git remote add origin https://github.com/dankarthik25/pythonUdemyTutorial  
+  #+END_SRC
+*** Push Local Repository to Remote Repository (git push)
+#+BEGIN_SRC sh
+git push origin master
+# git push origin master -f     # Force if cmd not works
+#+END_SRC
+*** TODO Pull Remote Repository to Local Repository
+#+BEGIN_SRC sh
+git pull
+#+END_SRC
+*** Creating a Branch (git branch <branch-name>)
+#+BEGIN_SRC sh
+git branch UncleDaveEmacs
+git checkout UncleDaveEmacs        # If you move to different branch then you Current Dir will change to files that contain Branch Files
+# Do the changes in Working Dir 
+git status                         # check status  and add,ignore that are need to be done
+git commit -m 'Emacs Configuration of Uncle Dave '
+git push -u origin UncleDavesEmacs
+#+END_SRC
+
+
+*** log
+List of comments mode on your branch
+#+BEGIN_SRC sh 
+git log 
+#+END_SRC
+*** Clonning a repository
+#+BEGIN_SRC sh
+git clone <url> <path- which dir>
+git clone ../remote_repo.git .
+git clone <url> .                        # . means current direcory
+#+END_SRC
+* Github
+
+version control 
+sharing code 
+

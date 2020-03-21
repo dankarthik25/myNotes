@@ -1,0 +1,149 @@
+* Introduction to Jenkins
+* Installation of Jenkins
+three types of instation
+ - java
+ - executable (windows,linux,macOS)
+ - tomcat
+ 
+* First Job
+JOB is created by <Create New Jobs> or new items(left side of jenkinns)
+- Types of Jobs in Jenkins
+  - Freestyle Project
+  - Pipeline
+  - multi-configuration project
+  - Folder
+  - GitHub Organization
+  - multibranch Pipline
+We generall choices Freestyle Project
+
+- Inside Freestyle we have
+  - General
+  - Source Code management
+  - Build Triggers
+    - Build periodically    (schedule cron jobs * * * * *)build every 1 mintns
+  - Build Environment 
+  - Build
+    -  Execute shell        (command: ) 
+  - Post-build Actions 
+#+BEGIN_SRC sh
+cd dir
+javac HelloWorld.java
+java Hello
+
+#+END_SRC
+In Freestyle/Build/Execute/ give ERROR : can't write (permission denied)
+
+#+BEGIN_SRC sh BUG 
+# permission denied
+# Solution 1 : change mod of dir eg: chmod 777 -R JavaSample
+# Solution 2 : change jenkins setting : Granting jenkins sudo premissions
+sudo vi /etc/sudoers
+# Insert below lines
+# #   Jenkins Permission Grant
+# # jenkins ALL=(ALL) NOPASSWD: ALL
+
+
+#+END_SRC
+** Grant Permission
+#+BEGIN_SRC sh
+sudo vi /etc/sudoers
+
+# Grant Permission
+jenkins ALL=(ALL) NOPASSWD: ALL
+
+#+END_SRC
+* How to Trigger a remote build + Job chaining
+Build Trigger:
+Token : 1234
+
+Job chaining
+- 1st Job : Build or complie HelloWorld.java
+- 2nd Job : Run Hello
+  - build trigger :Build after other projects are build
+- 3rd Job : Hello World Sucess message
+ 
+new item > Description : Build and 
+* Git and GitHub Integration with Jenkins
+new items >> Freestyle Project >> Source Code management
+ >> git rep (insert link)
+ >> Build Triggers 
+(Poll SCm(When ever change in git repository the jenkins is trigger)at   )
+ >> Build Environment 
+(Delete Workspace enable )['.' Jenkins Workspace : /var/lib/jenkins/Workspace/JavaHelloWorld ]is deleted before build is stared  less error
+ >> Build shell 
+#+BEGIN_SRC sh
+javac HelloWorld.java
+java HelloWorld
+#+END_SRC
+
+ ) 
+* Build maven project
+#+BEGIN_SRC sh
+# Go to maven wrokspace
+cd /Workspace/Devops/maven/
+
+# create a maven project
+mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+
+my-app/
+
+#Test mvn is working or no:  clean test
+mvn clean test
+#+END_SRC
+
+create empty repo(my-app) in git 
+send maven code to git 
+
+#+BEGIN_SRC sh
+cd /Workspace/Devops/maven/myapp
+git init
+git add .
+git commit -m "1st maven Jenkins project"
+git remote add origin "giturl"
+git push -u origin master
+#+END_SRC
+
+Create newitem 
+>> General : 
+            GitHub project : github link
+>> Source Code management : 
+            git : clone_link
+>> Build Trigger :
+                 Github trigger for Gitscm polling: enable
+>> Build :
+          Invoke top-level ven targets :
+             Goal: clean, test
+
+Save and run     
+
+** Clean and Test Goals Using Jenkins
+*** move maven-code to github
+- move Code to Github
+  - create new repo(my-app) in github
+  - git init in my-app dir
+  - git push code 
+#+BEGIN_SRC sh
+cd /Workspace/Devops/maven/my-app
+git init
+git add .
+git commit -m "Moving Maven Project to Github"
+git remote add origin https://github.com/dankarthik25/my-app.git
+git push -u origin master
+#+END_SRC
+* How to create users in Jenkins
+During  jenkins creating we only have 1 user that is admin user 
+General in team we have different users and different roles like(team lead, dev, testors, operations)
+
+- Create users
+ - Jenkins>>mange Jenkins >>manage user >> Create User
+
+admin has acess to view all job or projects
+
+* Jenkins plugins 
+Jenkins>> mange Jenins >> Plugins manger >>available 
+
+isntall Role based authoririezed 
+
+* Role-Based Authorization Strategy + Manage
+Manage Jenkins > Manage Global Security screen >> Role Based Strategy enable.
+Manage Jenkins > Manage and Assign Role.

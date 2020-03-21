@@ -1,10 +1,18 @@
 * ORG-MODE
 For more info visit https://orgmode.org/org.html
 ** Introduction
-Origally meant for orgranize  create todo list, schedule, doc,latex,ppt,
+Origally meant for orgranize  create todo list, schedule, do** TODO Data Abstractingc,latex,ppt,
 People use emacs only because of org mode
 
-Most important is we can Emacs Configuration file by Org-mode 
+Most important is we can Emacs Configuration file by Org-moDifference in Reference variable and pointer variable
+References are generally implemented using pointers. A reference is same object, just with a different name and reference must refer to an object. Since references can’t be NULL, they are safer to use.
+
+A pointer can be re-assigned while reference cannot, and must be assigned at initialization only.
+Pointer can be assigned NULL directly, whereas reference cannot.
+Pointers can iterate over an array, we can use ++ to go to the next item that a pointer is pointing to.
+A pointer is a variable that holds a memory address. A reference has the same memory address as the item it references.
+A pointer to a class/struct uses ‘->'(arrow operator) to access it’s members whereas a reference uses a ‘.'(dot operator)
+A pointer needs to be dereferenced with * to access the memory location it points to, whereas a reference can be used directly.de 
 
 We can export to html,pdf,latex,ppt....etc
 
@@ -38,10 +46,10 @@ To create call all function in  Init file we use a function called org-babel
 
 
 Press tab in heading  
-** Expanding and Collapse org mode tree
+** TODO Expanding and Collapse org mode tree
    <Tab>    
    S-<Tab>         To expand adn collapse all 
-** Word Processing
+** TODO Word Processing
 For *bold* , /italics/ , _underscore_ , =code=, ~verbatin~ , +adsfad+,
 ** Export the file to other formates
 
@@ -60,7 +68,7 @@ Short cut      " C-c ;"
  -sublist
  -sublist2 
 ** Header (M + RET)                                                   :Ecams:
-**  TO CREATE A SUB BULLITE (M+ RET M+ ->)
+** TO CREATE A SUB BULLITE (M+ RET M+ ->)
 ** TO MOVE THE BULLITES PRESS ( M + UP)
 ** TO CHANGE SUB BULLIES TO BULLITES  (M + -> OR M + <-)
 ** TODO items
@@ -142,12 +150,14 @@ On executing org-toggle-inline-images the image appears in the buffer, 300px wid
 Babble is a subtool used to insert code (c,c++,py,shell,lisp,elisp...etc)
 Eg:
 shortcut : " <s TAB  "
-
 #+BEGIN_SRC sh :export 
 echo "Hello world" # C-c C-c to run the code in the brackests
 #+END_SRC
 
 Note : org-bable package is required to run the code in org-mod
+*** To run the code in Block (C-c C-c)
+m nn
+move the cursor to the +begin line and press C-c C-c 
 *** Quote (<q)
 short cut : " 
 <q TAB "
@@ -158,7 +168,7 @@ Do me the favor, do me the biggest favor, matter of fact do yourself the biggest
 *** Example (<e)
 #+BEGIN_EXAMPLE
 ASFDASDFDSAFSFDSDFASDF
-ASDADFSFADSasdfasdf
+ASDADFSFAD Sasdfasdf
 #+END_EXAMPLE
 
 short cut:  "  <e  TAB  "

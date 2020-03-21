@@ -1,23 +1,75 @@
-* Ubuntu
-** Installation
-*** Setting Fastest Repository Mirro
+
+
+* Ubuntu Installation
+** Setting Fastest Repository Mirro
 Software & Updates > Ubuntu Software > Download from > other > Best
                    > Canonical Partner : select
-*** Install Drives :
+** Install Drives :
 Software & Updates > Addtional Drives (Properity :NVIDIA binary)
 
-*** Restricted Pacakges
-*** Install GNOME tweaks tool
+** Ubuntu restricted pack
+sudo apt install ubuntu-restricted-extras 
+sudo apt install libavcodec-extra
+sudo apt install libdvd-pkg
+** Chrome, Ubuntu-restricted 
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt install chrome-gnome-shell
+sudo apt install ubuntu-restricted-extras
+
+** atp-get does not remove  config file
+https://askubuntu.com/questions/147277/sudo-apt-get-remove-does-not-remove-config-files
+
+#+BEGIN_SRC sh
+sudo apt-get remove <prg>
+sudo apt-get purge <program>
+#sudo apt-get remove --autoremove avidemux2.6-qt
+#+END_SRC
+* Look
+** Install GNOME tweaks tool
 sudo apt install gnome-tweek-tool
-*** gnome shell
+** gnome shell
 #+BEGIN_SRC 
 sudo apt install chrome-gnome-shell
 #+END_SRC
+** Cleaner Bleach Bit
+** Gnome-tools,tweak
+sudo apt-get install gnome-tool
+sudo apt-get install gnome-tweak-tool
+# https://www.ubuntupit.com/19-best-gnome-shell-extensions-ubuntu-gnome-desktop/
+** Template
+touch ~/Templates/Empty\ Document
+** Using Flatpak 
+(universal packaging system for Fedora)
+sudo apt install flatpak
+sudo apt install xdg-desktop-portal
+# defalut install in ubuntu
+* Applications
+** Enable Firewall and Install Antivirus
+sudo ufw enable
+sudo apt dist-upgrade
+sudo apt install gufw
+** Linux PDF Editor 
+should be reviewed
+** Best Terminam Emulator :  
+URXVT(can config: peral OR Tilda uses Tilda)...etc
+TILDA, My St(suckless terminal ) ranger model : 
 
-*** Firewall (ufw)
-*** TLP for impove batter reduce over heating 
-*** Cleaner Bleach Bit
-
+** archive applications 
+sudo apt-get install unrar zip unzip p7zip-full p7zip-rar rar
+** Wine 
+sudo apt-get install wine winetricks
+** System Restore Point
+sudo add-apt-repository -y ppa:teejee2008/ppa
+sudo apt-get update
+sudo apt-get install timeshift
+** Install Java (most of prg require java )
+sudo apt-get install openjdk-8-jdk
+** battery percentage
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+touch weightloss
+sudo apt get upgrade
+sudo apt-get upgrade
 ** youtube-dl
 *** Download audio from YouTube
 `-i`			- ignore errors
@@ -44,6 +96,123 @@ while ! youtube-dl --download-archive downloaded.txt --no-overwrites -ct --yes-p
 *** Download video from YouTube
 https://askubuntu.com/questions/486297/how-to-select-video-quality-from-youtube-dl
 
+*** Download Playlist and change name
+#+BEGIN_SRC sh
+   cd Documents/
+   youtube-dl -i -f mp4 --yes-playlist 'https://www.youtube.com/playlist?list=PLRAV69dS1uWTSu9cVg8jjXW8jndOYYJPP'
+   'https://www.youtube.com/playlist?list='
+
+   ls -ltcr >> list # c : ctime: last modification of file status
+                    # t : sort by modification time
+                    # r : revierse the sort  
+   # run Py rename function
+
+#+END_SRC
+*** Download Subtitle or CC for an video
+For http://www.lilsubs.com/#
+**** TODO New to create own macro's  for removing time part
+if strating char is num/empty : del line
+else down
+
+* How to increase speed
+** Preload
+# https://www.ubuntupit.com/how-to-speed-up-ubuntu-linux-must-follow-tips/
+
+sudo apt-get install preload
+** reduce overheating
+sudo add-apt-repository ppa:linrunner/tlp
+sudo apt-get update
+sudo apt-get install tlp tlp-rdw
+sudo tlp start
+** COMMENT For laptop mode 
+To reduce power consumption  by slowing down hard disk speed and kernel control
+*** DONOT INSTALL laptop mode tools, tlp does the same
+sudo add-apt-repository ppa:ubuntuhandbook1/apps
+sudo apt-get update
+sudo apt-get install laptop-mode-tools
+gksu lmt-config-gui
+laptop-mode-tools --help
+
+** Use apt-fast isnted of apt-get
+sudo apt-add-repository ppa: apt-fast/stable
+sudo apt-add-repository ppa:apt-fast/stable
+sudo apt-get update
+sudo apt-get install apt-fast
+sudo apt-get remove apt-fast
+
+**  Choise a light weighted desktop Environment 
+***  Awesome : Awesome is less power hog desktop environment, which gives you a lot of control over the system. To install this environment, just run the following command in Terminal.
+
+ Destro Tube  https://www.youtube.com/channel/UCVls1GmFKf6WlTraIb_IaJg
+
+*** Qtile Windows: 
+
+
+** Enable Addtional Drives
+** Clean up Ubuntu
+sudo apt-get clean
+sudo apt-get autoremove
+* Programmer
+** git
+sudo apt install git-all
+nano ~/.gitconfig
+** Emacs
+cd emacs
+./autogen.sh
+./configure
+make -j4
+sudo make install
+emacs
+
+** Neovim
+sudo apt-get -f install neovim
+* Atom
+script
+file icon
+pigments
+pigments-map
+
+
+disable : 
+autocomplete-symi
+a....
+
+
+install:
+       fautocomplete-python: 
+shortcut : C+ S + p: cmd promt
+
+# Traversy media
+https://www.youtube.com/watch?v=aiXNKHKWlmY
+
+emmet : faster html,class, id, 
+atomlive server : 
+Todo : reergymerej
+
+eg:
+//TODO: Run my Function
+
+
+atom-beautify : python,php .....
+
+
+ask stack :
+
+# DevTips
+
+https://www.youtube.com/watch?v=UYPgPyxwF28
+Gitware :
+command palellet
+
+multi line cursor
+fuzzy file finder : command search
+
+
+App style sheet :  Atom menu > open my stylesheet
+
+terminal 
+
+# How
 * Jupyter: 
 
 run code interctively > 
@@ -92,17 +261,15 @@ download from anaconda site  new version
 bash ~/Download/Anaconda3.xx-Linux-x86_64.sh
  /home/dan/anaconda
 #+END_SRC
-* Download Subtitle or CC for an video
-For http://www.lilsubs.com/#
-** TODO New to create own macro's  for removing time part
-if strating char is num/empty : del line
-else down 
 
    
 * Shortcut Terminal :
+http://i.gzn.jp/img/2007/08/03/linux_command_cheat_sheet/linux.png
+
+
  | command           | exp                                      |
  |-------------------+------------------------------------------|
- | pwd               | path                                     |
+ | pwd               | print working directory                  |
  | ls                | list of file in folder                   |
  | cd                | change directory                         |
  | cd ..             | parent directory                         |
@@ -110,6 +277,8 @@ else down
  | gedit sample.txt  | create or open(sample.txt)/edit in gedit |
  | mv "file-path" ./ | Move file at path(file-path)             |
  |                   | ./    : To current dir                   |
+ | mkdir 'dir1'      | create a dir of name 'dir1'              |
+ | cd                |                                          |
 * installation
 * git
 For creating a version control of local repository
@@ -135,10 +304,23 @@ There are Three Stages
   cd test                                   # move to test folder
   git init                                  # create a new instance
   git branch <branch-name>                  #
+  git branch --list                # list of branch 
   git push orign <branch-name>              # git Upload branch
+  # git delete a branch in local repository 
+  git branch -D devop
+  # delete branch at remote repositort
+  git push origin --delete <branch name>
+
   # Switch one branch to other
   git checkout <branch-name>
     # Merge
+  # to go to destination (master)
+  git chekout master
+
+
+  # merge brach to existing git
+ git merge <branch-name>
+ 
     # rebase
 
 #+END_SRC
@@ -282,8 +464,73 @@ git clone <url> <path- which dir>
 git clone ../remote_repo.git .
 git clone <url> .                        # . means current direcory
 #+END_SRC
+** Git Pull vs fetch
+fetch : it's hold the data  and it is merged  in repo
+
+pull : = git fetch + git merge
 * Github
 
 version control 
 sharing code 
 
+
+
+* pip
+#+BEGIN_SRC sh
+  sudo sh Anaconda3-5.3.1-Linux-x86_64.sh 
+  jupyter notebook
+  python3 -m pip install --upgrade pip
+  python3 -m pip install jupyter
+  python3 -m pip sudo install jupyter
+  sudo python3 -m pip install jupyter
+  jupyter notebook
+  sudo apt-get clean
+  sudo apt-get pip
+  sudo apt-get update
+  sudo apt-get upgrade
+  sudo apt autoremove
+  sudo apt-get upgrade
+  sudo apt-ger install python-pip
+  sudo apt-get install python-pip
+  sudo apt-get install python3-pip
+  pip --version
+# 
+
+#+END_SRC
+
+
+* Udemy-dl Setting
+#+BEGIN_SRC sh
+cd /home/jayradhe/Workspace/udemy-dl
+conda crearte --name udemy-dl
+source activate udemy-dl
+conda env create -f requirement.yaml
+###################################################################################################################33
+# Python Django tkinter     - Complete bundle advance
+#############################333
+python udemy-dl.py -u damodarsharandas@gmail.com -p dan25kar https://www.udemy.com/course/python-django-tkinter-complete-bundle-advance/learn/lecture/16463998?components=buy_button%2Cdiscount_expiration%2Cgift_this_course%2Cintroduction_asset%2Cpurchase%2Cdeal_badge%2Credeem_coupon#overview -q 720 -o "/home/jayradhe/karthik/VideoTutorials/udemy/" --skip-sub
+###################################################################################################################33
+# Ansible -Begineering
+#############################333
+python udemy-dl.py -u damodarsharandas@gmail.com -p dan25kar https://www.udemy.com/course/learn-ansible/learn/lecture/7040832?start=0#overview  -q 720 -o "/home/jayradhe/karthik/VideoTutorials/udemy/" --skip-sub
+
+###################################################################################################################33
+# Ansible -Advan
+
+#############################333
+ python udemy-dl.py -u damodarsharandas@gmail.com -p dan25kar https://www.udemy.com/course/learn-ansible-advanced/learn/lecture/7687716?start=0#overview  -q 720 -o "/home/jayradhe/karthik/VideoTutorials/udemy/" --skip-sub
+
+
+
+
+############################################33
+#  THE Web Developer Bootcamp
+##############################################
+python udemy-dl.py -u steja999@gmail.com -p Spring@20 https://www.udemy.com/course/the-web-developer-bootcamp/learn/lecture/3861448#overview -q 720 -o "/home/jayradhe/karthik/VideoTutorials/udemy/" --skip-sub
+
+##########################################################333
+#    Complete React Zero to mastery
+###############################################################
+python udemy-dl.py -u steja999@gmail.com -p Spring@20 https://www.udemy.com/course/complete-react-developer-zero-to-mastery/learn/lecture/14754858#overview -q 720 -o "/home/jayradhe/karthik/VideoTutorials/udemy/" --skip-sub
+
+#+END_SRC

@@ -1,0 +1,25 @@
+* OpenGl by Ben Cook
+** modern OpenGl Techniques
+Skiping old tech(immediate mode....etc)
+** Create Windows and handle input(mouse or keyboard)
+
+** Vertex, Fragment and Geometry Shaders
+** Draw 3D
+** Use GLm(OpenGl maths library)  
+** Translate, rotate and scale models using glm lib
+** Use of interpolation
+textures and lighting effets
+** Use Indexed Draws
+** Different types of Projection
+Orthographic, or peception mode
+
+** Camera Control and movements 
+** Textues mapping 
+** Phong Light model
+ common light model
+** Phong Light model by 3 different sources  
+ Directional(Sun), Point(Ligh bolt), and Spot Light(flash, torch) 
+** Import Pre-made models (Blender,3D X max )
+** Shadow mapping (multi light  source mapping too ) 
+** Implement a Skybox (Large World : Sky, clouds, mountains) 
+** Theory behind all of this

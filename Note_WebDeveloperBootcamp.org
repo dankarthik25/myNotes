@@ -1,0 +1,363 @@
+* Introduction to this Course
+** Course Content
+ 2: Introduction to Front End Development
+ 3: Introduction to HTML
+ 4: Intermediate HTML
+ 5: Introduction to CSS
+ 6: Intermediate CSS
+ 7: Bootstrap (3)
+ 8: Bootstrap 4!
+ 9: Bootstrap 4: Flexbox and Layout
+ 10: Introduction to JavaScript
+ 11: Javascript Basics: Control Flow
+ 12: Javascript Basics: Functions
+ 13: Javascript Basics: Arrays
+ 14: Javascript Basics: Objects
+ 15: DOM Manipulation
+ 16: Advanced DOM Manipulation
+ 17: Color Game Project
+ 18: Intro to jQuery
+ 19: Advanced jQuery
+ 20: Todo List Projects
+ 21: OPTIONAL Project: Patatap Clone
+ 22: Backend Basics
+ 23: The Command Line
+ 24: Node JS
+ 25: Server Side Frameworks
+ 26: Intermediate Express
+ 27: Working With API's
+ 28: YelpCamp: Basics
+ 29: Databases
+ 30: YelpCamp: Data Persistence
+ 31: RESTful Routing
+ 32: Data Associations
+ 33: YelpCamp: Comments
+ 34: Authentication
+ 35: YelpCamp: Adding Authentication
+ 36: YelpCamp: Cleaning Up
+ 37: YelpCamp: Update and Destroy
+ 38: YelpCamp: UI Improvements
+ 39: Git and Github
+ 40: Deploying
+ 41: JavaScript: The Tricky Stuff
+** How Internet Work
+https://www.youtube.com/watch?v=ewrBalT_eBM
+A Packet's Tale. How Does the Internet Work?
+
+Or 
+Every computer or servers has unique (ip address)
+
+
+
+- What are website ?
+ - Like youtube they don't exist on internet but on servers which has unique ip address
+- How to access the video ?
+ - acess video by using ip address
+- How Ip address assigned  ?
+  - ISP (Internet Service Provider)
+  - Tire 1 (like International Road)
+  - Tire 2 (State
+  - Tire 3 ( Local internet provider) which provied ip address to house 
+- Is IP address fixed  ? 
+ -  No ip address can change system to system but each device has unique mac address
+- What is mac address ?
+  - mac address( mixed address of device don't change like address )
+- What is DNS(Domain Name System) ?
+ - Like youtube stores it video in servers which has ip address but ip address can change, we need to remember ip address of youtube or google....etc
+ - DNS has table of name and it's ip address 
+ - DNS resolves name to ip address
+- Nedd to by DNS name ?
+ -  
+
+** Front End Vs Back End 
+Front End : html,css,js
+Back End  : many obtions like db(mysql,oracel,postsql,mongodb..etc),php,word press, NodeJs, Django, go .....etc
+** ASDFF
+HTmL : HyperText markup Language 
+1st used by miltary to send the data
+
+html : structure of web page or (bone) or nouns
+css  : style of webpage or (skin) adjective
+js   : logic(interactive) or verb
+
+* Introduction to Front End Development
+* HTmL
+Use codepen of practice 
+** Depricated
+bold <b> is depretated now we use <strong> 
+italic<em> depretatd now we use <em> : meaning is empasis
+ 
+
+** mozilla Developer Network (mDN) :
+Excellent Learning Resource of learning 
+
+#+BEGIN_SRC html
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title></title>
+    </head>
+    <body>
+
+    <body>
+  <html>
+
+#+END_SRC
+ 3:Introduction to HTML
+#+BEGIN_SRC html
+<!-- Comments-->
+
+#+END_SRC
+
+mDN Element Reference :  cheate sheet for element referecen :
+
+h1, h2,h3,h4,h5,h6 : heading 
+ 4: Intermediate HTML
+** List  order and un-oreder list
+#+BEGIN_SRC html
+<ol>
+  <li>Red</li>
+  <li>Orange</li>
+  <li>Yellow</li>
+</ol>
+<ul>
+  <li>Red</li>
+  <li>Orange</li>
+  <li>Yellow</li>      
+</ul>
+
+#+END_SRC
+** Div and Span :
+Div: Division Element : generic container or group contant together
+Span : generic container but
+Div : is block level container
+Span : is inline level container
+** Table and Form
+Table   as tag od <table> </table>
+For table row : <tr> </tr>
+For table division or column : <td> </td> 
+** Form
+Objectives
+- 
+* Css
+ 5: Introduction to CSS
+http://www.csszengarden.com/
+https://colours.neilorangepeel.com/
+** Colour 
+*** Built In Colors
+#+BEGIN_SRC css
+h1 {
+  color: red;
+}
+
+h2 {
+  color: cornflowerBlue;
+}
+
+h3 {
+  color: darkOrchid;
+
+#+END_SRC
+
+ 6: Intermediate CSS
+*** Hexadecimal
+#+BEGIN_SRC css
+h1 {
+  color: #000000;
+}
+
+h2 {
+  color: #4B0082;
+}
+
+h3 {
+  color: #FF1493;
+}
+
+#+END_SRC
+*** RGB 
+#+BEGIN_SRC css
+h1 {
+  color: rgb(0,255,0);
+}
+
+h2 {
+  color: rgb(100, 0, 100);
+}
+
+h3 {
+  color: rgb(11, 99, 150);
+}
+
+#+END_SRC
+*** RGBA
+#+BEGIN_SRC css
+h1 {
+  color: rgba(11, 99, 150, 1);
+}
+
+h2 {
+  color: rgba(11, 99, 150, .6);
+}
+
+h3 {
+  color: rgba(11, 99, 150, .2);
+}
+
+#+END_SRC
+** Background
+*** Background Color
+#+BEGIN_SRC css
+body {
+  background: #95a5a6;
+}
+
+div{
+  background: #3498db;
+}
+
+p {
+  color: #ecf0f1;
+}
+
+#+END_SRC
+*** Background Image
+#+BEGIN_SRC css
+body {
+  background: url(http://3dprint.com/wp
+   -content/uploads/2014/11/-
+   Rainbow_Ocean__by_Thelma1.jpg);
+  background-repate:no-repeat;
+  background-size:cover;
+}
+
+div{
+  background: rgba(0,0,0,.7);
+}
+
+p {
+  color: #ecf0f1;
+}
+
+#+END_SRC
+** Boader
+#+BEGIN_SRC css
+h1 {
+  color:rgba(0,200,100,0.8);
+  border-width: 5px;
+  border-style:solid;
+  border-color : purple; 
+ or 
+
+ border: 5px solid purple;
+
+}
+#+END_SRC
+** Selector( Class and Id) 
+
+The 30 CSS Selector you must memorize 
+https://code.tutsplus.com/tutorials/the-30-css-selectors-you-must-memorize--net-16048
+
+#+BEGIN_SRC html
+<div>
+  <p class="highlight">You say yes</p>
+  <p id = "special">I say no</p> <!-- Id is only one time used in html -->
+</div>
+
+<div >
+  <p>You say goodbye</p>
+  <p class="highlight">I say hello</p>
+</div>
+
+#+END_SRC
+
+#+BEGIN_SRC css
+#special{
+  background:yellow;
+}
+.highlight{
+  background :red;
+  text-decoration: line-through;
+}
+#+END_SRC
+
+** Inheritance
+#+BEGIN_SRC css
+h1 h2 h3{color :red;}
+h3{color:orange;}
+
+#+END_SRC
+Specificity of Selector visit : mdn specificity
+** Font
+For font https://fonts.google.com/
+Google font are free other may be price
+#+BEGIN_SRC css
+/*font-family*/
+h1 {
+	font-family: Georgia;
+	font-size: 5.0em;
+	text-align: right;
+	text-decoration: underline;
+}
+
+p {
+	font-family: Arial;
+	font-weight: normal;
+	line-height: 1.5;
+}
+body {
+	font-size: 10px;
+}
+span {
+	font-size: 2.0em;
+}
+
+
+#+END_SRC
+** Box model
+In a doc, each element is represented as a rectangular box.
+In CSS, each of these rectangular box model.
+Each box has four edges: margin edge, border edge, padding edge, and content edge
+* Bootstrap
+ 7: Bootstrap (3)
+ 8: Bootstrap 4!
+ 9: Bootstrap 4: Flexbox and Layout
+* Javascript
+ 10: Introduction to JavaScript
+ 11: Javascript Basics: Control Flow
+ 12: Javascript Basics: Functions
+ 13: Javascript Basics: Arrays
+ 14: Javascript Basics: Objects
+ 15: DOM Manipulation
+ 16: Advanced DOM Manipulation
+ 17: Color Game Project
+** JQuery
+18: Intro to jQuery
+ 19: Advanced jQuery
+ 20: Todo List Projects
+ 21: OPTIONAL Project: Patatap Clone
+* Backend 
+ 22: Backend Basics
+ 23: The Command Line
+** Node Js
+ 24: Node JS
+ 25: Server Side Frameworks
+ 26: Intermediate Express
+ 27: Working With API's
+ 28: YelpCamp: Basics
+** 29: Databases(mongoDB)
+  30: YelpCamp: Data Persistence
+SEmantic UI
+ 31: RESTful Routing
+ 32: Data Associations
+ 33: YelpCamp: Comments
+ 34: Authentication
+ 35: YelpCamp: Adding Authentication
+ 36: YelpCamp: Cleaning Up
+ 37: YelpCamp: Update and Destroy
+ 38: YelpCamp: UI Improvements
+** 39: Git and Github
+ 40: Deploying
+ 41: JavaScript: The Tricky Stuff
+
+ 

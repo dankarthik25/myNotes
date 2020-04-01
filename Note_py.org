@@ -1296,8 +1296,6 @@ Why ?
 name = input("Give Input to python ")
 print("Given input is : "+ name)
 #+END_SRC
-
-
 * Date & Time
 ** Tick
 *** defination
@@ -1448,8 +1446,6 @@ has there own local namespace contain variabels (parameter list) and gloval name
 
 lamda
 filter
-
-
 * Namespace & Scope
 *** Scope
 
@@ -2446,10 +2442,10 @@ Raw string as r'expression'
 |----------------+------------------------------------------|
 | ANCHORS       |                                          |
 |----------------+------------------------------------------|
+|  ^             | matches start of string                  |
+| $              | matches end of string                    |
 | \b             | Word Boundary btw word and non-word      |
 | \B             | Not a Word Boundary                      |
-| ^              | matches start of string                  |
-| $              | matches end of string                    |
 | \t \n\r        | tab newline return                       |
 |                |                                          |
 
@@ -2463,8 +2459,13 @@ Raw string as r'expression'
 | ?       | 0 or One                          |
 | {3}     | Exact Number                      |
 | {3,4}   | Range of Number{minimum, maximum} |
-|         |                                   |
 
+| [ch]at       | search for ...cat... or .. hat... |
+| '[0-9]'      | search nubmer                     |
+| '[a-z]'      | seach lower char                  |
+| '[A-Z]'      | seach upper char                  |
+| '[a-z][A-Z]' | search all lower and upper char   |
+|              |                                   |
 * Import 
 *** Introduction
 

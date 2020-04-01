@@ -106,7 +106,7 @@ C-U C-C . – ADD TIME AND DATE
 - http://google.com
 - [[http://google.com][Google]] 
 
-
+[[http://google.com][Google]]  
 # [  [http://google.com]  [Google] "]"   end with bracked will create the abovd link
 ** To edit the link 
 C-c C-l

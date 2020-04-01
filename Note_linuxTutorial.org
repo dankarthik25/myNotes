@@ -410,7 +410,7 @@ passwd # set passwd for  dougstamper
 
   drwx-rwx-rwx
   owner-group-user
-  d: driectory
+  d: driectory 
   x(1) : user
   w(2) : write
   r(4) : read 
@@ -430,6 +430,29 @@ passwd # set passwd for  dougstamper
   chmod 755 sat         # drwx r-x r-x 
   chmod 400 aws_key.pem # -r-- --- --- 
 
+-rwx  rwx   rwx        1 root  root  1156 Mar 24 08:36 hosts
+-rw   -r--  r--        1 root  root     0 Mar 24 14:17 ansible.txt
+owner-group-user        owner  group
+################################################################333
+[root@ansible-master ansible]# chown -R ansible:ansible ansible.txt 
+
+-rwxrwxrwx  1 root    root     1156 Mar 24 08:36 hosts
+-rw-r--r--  1 ansible ansible     0 Mar 24 14:17 ansible.txt
+
+
+  ## ##########################################################
+  # change owner of file or dir : chown
+  ## ##########################################################
+  chown ec2-user:ec2-user <file/dir>
+
+  # Eg:
+  cd ~
+  mkdir devops
+  ls -latr
+  chown -R ec2-user:ec2-user devops
+  ls -latr 
+
+
   ## ##########################################################
   #         Network Cmd
   ## ########################################################## 
@@ -448,19 +471,6 @@ passwd # set passwd for  dougstamper
 
   # copy for other user to current user
   scp <file-name> username@ip: /opt
-
-
-  ## ##########################################################
-  # change owner of file or dir : chown
-  ## ##########################################################
-  chown ec2-user:ec2-user <file/dir>
-
-  # Eg:
-  cd ~
-  mkdir devops
-  ls -latr
-  chown -R ec2-user:ec2-user devops
-  ls -latr 
 
 
   ## ##########################################################
@@ -1422,7 +1432,57 @@ else
   log 'File backup failed!'
   exit 1
 fi
-#+END_SRC 
+#+END_SRC
+** TODO Regular expression 
+
+*** Cheat Sheet:
+Special seq of char that helps you match or find other stings or set of strings or set of string used specialized sysntax held in a pattern
+
+moudle re provides full support for perl-like regualr expression in python
+
+raises the expception re.error if error occurs while compiling or using regular expression
+
+Raw string as r'expression'
+
+
+| Basic Patterns | matchs                                   |
+| .(period)      | any char except '\n'                     |
+|                |                                          |
+| \d             | Digit [0-9]                              |
+| \D             | Not a Digit(0-9)                         |
+|                |                                          |
+| \w             | Word Character (letters(a-z A-Z,0-9,'_') |
+| \W             | Not word charcter                        |
+|                |                                          |
+| \s             | Whitespace (space, \n, tab )             |
+| \S             | Non-whitespcae(except space, \t, tab)    |
+|----------------+------------------------------------------|
+| ANCHORS       |                                          |
+|----------------+------------------------------------------|
+|  ^             | matches start of string                  |
+| $              | matches end of string                    |
+| \b             | Word Boundary btw word and non-word      |
+| \B             | Not a Word Boundary                      |
+| \t \n\r        | tab newline return                       |
+|                |                                          |
+
+| a,X,9          | ordinary char just match themselves exactly              |
+
+*** Quantifiers
+| symbols | Function                          |
+|---------+-----------------------------------|
+| *       | 0 or more                         |
+| +       | 1 or more                         |
+| ?       | 0 or One                          |
+| {3}     | Exact Number                      |
+| {3,4}   | Range of Number{minimum, maximum} |
+
+| [ch]at       | search for ...cat... or .. hat... |
+| '[0-9]'      | search nubmer                     |
+| '[a-z]'      | seach lower char                  |
+| '[A-Z]'      | seach upper char                  |
+| '[a-z][A-Z]' | search all lower and upper char   |
+|              |                                   |
 ** cut and Awk
 #+BEGIN_SRC sh
 #type -c 1 <file_name>
@@ -1503,6 +1563,24 @@ awk -F ':' '{print "UID: " $3 "LOGIN:" $1}' /etc/passwrd
 # PRINT LAST (FIELD or Colum) 
 awk -F ':' '{print $NF}' /etc/passwrd
 awk -F ':' '{print $(NF-1)}' /etc/passwrd
+
+#
+# Example : 
+#
+history > sqlcommands
+sed 's/^[ ]*[0-9]*[ ]//' sqlcommands > sqlcommands2 
+#
+#
+history | cut -c 8-
+history | awk '{$1="";print substr($0,2)}'
+history | sed 's/^[ ]*[0-9]\+[ ]*//'
+history | awk '{$1="";print}'
+history | awk '{$1="";print $0 }'
+
+# alias history="history | sed 's/^[ ]*[0-9]\+[ ]*//'"
+
+
+
 
 #
 #  Irregular or improper arrangement of to data
@@ -2086,16 +2164,25 @@ rm ${FILE} ${ERR_FILE} &> /dev/null
 
 
 #+END_SRC
-** SSH and SCP
-
-** TODO  Connect one linux  to other linux (withNwithout password)
-*** SSH & SCP
+** SSH (with password N with ssh-key)
+*** Connect using SSH User Account - with Password 
 #+BEGIN_SRC sh
 ssh username@ip
-scp username@ip:path
+scp file_path username@ip:dst_path
 #+END_SRC
-*** SSH-key Connection 
-we need to create master key is prescent in ~/.ssh/ file
+
+*** Connect using SSH-key (without using password)
+During connect using SSH-Key there will be one master user(server) and slave server.
+From master server we need to generate(ssh-key) and share to slave server and use ssh-key to connect slave server
+
+
+- Step to connect using SSH-Key 
+ - (Best Practice common user for all users (master and slave))
+ - Give root privilege to common-user for both master and slave
+ - Enable ssh-key based authentication( and restart sshd server)
+ - Create ssh-key in master 
+ - share(copy) ssh-key to slave
+ - check ssh without password
 #+BEGIN_SRC sh
 # 1.best practice create one common users or genereal users
 
@@ -2118,11 +2205,106 @@ vi visudo
 vi /etc/ssh/sshd_config
 #PasswordAuthentication  yes
 
+
 # 4.service sshd restart
 service sshd restart
-# Go to master
-#step 1: ssh-keygen
-#step 2: ssh-copy-id username@ip # copy ssh key  to ip address
-#step 3:
+
+# 5.Connect master to slave with password
+    # Crearte a common user is both master and slave
+    # login to common-user from master
+sudo su devops
+# 6.Create ssh-key
+ssh-keygen 
+# 7.Copy ssh-key
+scp-copy-id <user-name>@ip
+########## DONE #############
+
+# Connect master to slave using ssh without password
+ssh devops@slave_ip 
+
+# Connect slave to master 
+
+
+# show-key : cat /home/<user-name>/devops/.ssh/authorizzed_keys
+exit() # to exist 
+#NOTE: we can connect from master to slave but not from slave to master
 #+END_SRC
 
+Exercies : create 5 servers in aws (build,dev,sit,uat,prod) servers and create common user(user:devops passwd: dev@!23)
+
+Ques)make build as master and (dev,sit,uat,prod) as slave
+Ans) build server (keygen, ssh-copy-id to dev,sit,uat,prod) 
+
+From build server build war file and deploy to (dev,sit,uat,prod) script
+#+BEGIN_SRC sh
+#! /bin/bash
+username= $1
+ip= $2
+env= $3
+
+src_path= /opt/sbi.war
+dst_path= /opt
+if [$env =="dev"]
+then
+  scp $scr_path $username@$ip:$dst_path 
+fi
+
+if [$env =="sit"]
+then
+  scp $src_path $username@$ip:$dst_path
+fi
+
+if [$env =="uat"]
+then
+  scp $src_path $username@$ip:$dst_path
+fi
+
+if [$env =="prod"]
+then
+  scp $scr_path $username@$ip:$dst_path
+fi
+
+# OR CASE STATmENT
+case $env in 
+dev) scp $scr_path $username@$ip:$dst_path
+;;
+sit) scp $scr_path $username@$ip:$dst_path
+;;
+uat) scp $scr_path $username@$ip:$dst_path
+;;
+prod) scp $scr_path $username@$ip:$dst_path
+;;
+*) echo"incorrect parameter plz check and correct it"
+;;
+
+#+END_SRC
+*** Example run remote script 
+https://www.linuxtechi.com/scp-command-examples-in-linux/
+#+BEGIN_SRC sh
+ssh devops@3.15.169.84
+#Enter password
+exit
+
+scp tuesday devops@3.15.169.84 :/opt 
+# If permission is denied (make sure devops user has root privilage)
+# or sudo chmod 777 /opt/tuesday
+cat delete.sh
+
+touch sbi.war
+scp sbi.war devops@3.15.169.84:/opt
+
+
+#!/bash/bash
+
+delete(){
+rm -rf /opt/test*
+}
+delete
+# run scripts from master on slave
+ssh devops@3.15.169.84 sh /opt/delete.sh
+#+END_SRC
+
+*** AWS-EC2
+#+BEGIN_SRC sh
+scp -i key.pem /path/to/myfile.txt ec2-user@IPAddressOfEC2:/ 
+#+END_SRC

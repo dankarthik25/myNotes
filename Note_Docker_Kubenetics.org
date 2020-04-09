@@ -1,0 +1,3249 @@
+* Introduction
+ Getting Requirements
+ Image Basics
+ Docker Newtorking
+ Docker Volumes
+ Docker Compose
+ Orchestration
+ Docker Swarm
+ Kubernetes
+ Swarm Vs K8s
+
+
+** Container Basics
+*** Difference btw images vs containers
+Image : binary, lib, src  that make a application 
+Container: is an instance of image running process
+You can have many contaioners running off the same image
+Eg: Nginx web server
+
+*** How "docker container run" work
+#+BEGIN_QUOTE
+Look for the image locally in image cache does n't find anything
+Then looks for remote image repository(default: docker Hub)
+Download the latest version
+Creates new container based
+gives virtual Ip on private network inside docker engine
+80:80
+Open up port on host and forword to port 80 in container
+Starts container by using command  in image Docker file
+
+#+END_QUOTE
+
+#+BEGIN_SRC sh
+docker container run -itd --publish 80:80 nginx 
+# -d :detach (run in background)
+
+# downlaod nginx img from Docker Hub and start a new container from image
+# Open prort 80 on the host Ip 
+# Routes that traffic to the container IP,port 80
+
+#return a Id 
+# we can get the id and stauts of server by 
+docker container ls -a
+
+# Container has it own  Id or tag 
+
+docker container rm 63f 690 0de # id of each containers 
+docker rm $(docker ps -a -q) # remove  all stopped containers
+# to remove a running container
+docker rm -f 63f
+
+#+END_SRC
+ 
+*** Container Vs Vm
+|------------|
+| App A      |
+|------------|
+| Bins/Libs  |
+|------------|
+|            |
+| Guest OS   |
+|            |
+|------------|
+| Hypervisor |
+|------------|
+| Host Os    |
+|------------|
+| Server     |
+|------------|
+
+|---------------|
+| App A         |
+|---------------|
+| Bins/Libs     |
+|---------------|
+|               |
+| Docker Engine |
+|---------------|
+| Host Os       |
+|---------------|
+| Server        |
+|---------------|
+
+Container aren't mini-vm's
+They are just processes
+Limited to what resources they can access
+exit when process stop
+They does not have kernal but run in host OS kernal
+#+BEGIN_SRC sh
+docker run -d --name mydb mongo
+docker ps
+docker top mydb
+ps aux | grep 'mongo' # it may have different process it but it run in host kernal
+#+END_SRC
+
+
+* run /stop /remove containers
+
+* Docker Install
+** In windows docker run  a tiny Hyper-V  
+** Ubuntu
+*** asdf s
+Older versions of Docker were called docker, docker.io, or docker-engine. If these are installed, uninstall them:
+#+BEGIN_SRC sh
+# Uninstall old version
+sudo apt-get remove docker docker-engine docker.io containerd run
+
+# Dependency
+sudo apt-get update
+sudo apt-get -y install apt-transport-https ca-certificates curl software-properties-common
+
+# Add Doker's Official GPG Key:
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# Add Docker repo to Linux mint
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(. /etc/os-release; echo "$UBUNTU_CODENAME") stable"
+
+# Install Docker Engine and Docker Compose
+sudo apt-get update
+# Install Docker CE and Docker Compose
+sudo apt-get -y  install docker-ce docker-compose
+
+# Run docker command ans non-privillgeage
+sudo usermod -aG docker $USER
+#+END_SRC
+When you add user to user gorup : 
+For security some linux like redhat will not work docker or we need use sudo or add 
+
+cmd
+#+BEGIN_SRC sh
+docker container run #or
+docker run # older version
+
+docker version
+docker info 
+
+# docker sytanx 
+#(old) : docker <command>  (options)
+#(new) : docker <command> <sub-command> (options)
+#+END_SRC
+** Assignment : managing multiple containers
+create and run mysql, apache (httpd) nginx
+#+BEGIN_SRC sh
+docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
+docker container log mysqldb
+# search : "GENERATED ROOT PASSWORD"
+
+docker container run -d -p 8080:80 --name webserver httpd
+
+docker container run -d --nmae my_engineX -p nginx
+
+docker container ls
+
+curl localhost
+curl localhost:8080
+
+docker container stop 1e15b b9958d d282cc2a09
+
+docker image ls
+#+END_SRC
+* What's Going on inside cont1ainers
+#+BEGIN_SRC sh
+# List of process in one container
+docker container top [container-name]
+# Details of one container config
+docker container inspect [container-name]
+# performance stas for all containers
+docker container stats [container-name]
+
+#+END_SRC
+* Getting a shell inside containers
+#+BEGIN_SRC sh
+docker container run -it # start new container interactively
+docker container exec it # run additional  cmd in existing container
+# -t : Allocate a pseduo tty (simulate a real terminal like ssh does)
+# -i : interactive  (keep stdin open even if not attached) keep session open to receive terminal input
+# -d : detached (run container in background)
+# p : port configuration
+docker container run -it --name proxy nginx bash
+
+# docker container run -itd -name myubuntu ubuntu
+
+# Inside shell of database or servers :
+docker container exec --help
+docker container exec -it mysql bash
+#+END_SRC
+* Network Concept for Provate for Private and Public
+Concept of Docker Networking
+- Each container connected to private virtual network "bridge"
+- Each virtual network routs thorugh NAT firewall on host IP
+- Container does n't have same IP of host
+- All containers on virtual network can talk to each other without -p
+- make new virtual networks
+- Best Practice:is to create a new virtual network for each app:
+   - network "my_web_app" for mysq; and php/apache containers
+   - network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
+- Each container to more than one virtual network 
+- Skip virtual networks and use host IP (--net=host)
+  
+Example :
+#+BEGIN_SRC sh
+docker container run -itd -p 8080:80 --name webserver httpd
+# ether net is lisening to port 8080
+and rouths through webserver and go to httpd port 80
+#80 : is host OS port and 8080 is container prot
+
+ docker container ls -a
+# CONTAINER ID        IMAGE               COMMAND              #CREATED             STATUS              PORTS                  NAMES
+# 287e5a78867a        httpd               "httpd-foreground"   8 seconds ago       Up 3 seconds        0.0.0.0:8080->80/tcp   webserver
+
+docker container port webserver
+# 80/tcp -> 0.0.0.0:8080
+
+# Ip Address of Container and host Ip is not same
+docker container inspect --format '{{.NetworkSettings.IPAddress}}' webserver
+# 172.17.0.2 Container Ip Address
+
+ifconfig en0 
+# flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#        inet 192.168.0.105  netmask 255.255.255.0  broadcast 192.168.0.255
+# >> 192.168.0.105 Ip address of host ethernet
+
+
+
+#+END_SRC
+
+* cmd for Docker Network
+#+BEGIN_SRC sh
+docker network ls  # show network
+docker network inspect [container-name] # inspect
+docker network create --drive  [container-id] #  create a network
+docker network connect  [container-id] # attach a network to container
+dokcer network disconnect  [container-id] # detach a network from network
+
+# To see the containers attached to networks
+docker network inspect bridge
+#+END_SRC
+
+** Example 
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker network ls
+docker network inspect my_app_net 
+# create container with given network
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX -p nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+
+#+END_SRC
+
+** Example II
+#+BEGIN_SRC sh
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# 498f7bfea262        nginx               "nginx -g 'daemon of…"   15 seconds ago       Up 12 seconds       80/tcp                 my_engineX
+# 3928fe27faa0        httpd               "httpd-foreground"       About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   webserver
+docker network connect 498f7bf 3928fe27
+docker network inspect 
+docker network disconnect 498f7bf 3928fe27
+
+
+#+END_SRC
+* Docker Networks: DNS
+Docker Network DNS
+ - How DNS is key to easy inter-container comms
+ - How it works by default with custom networks
+ - How to use --link enable 
+
+The containers ip address is not same because containers are continously creatred and distroyed so we need other naming system so that they can connect regardless of ip address. The solution is using DNS naming 
+
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX --network my_app_net nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+docker container exec -it my_nginx ping new_nginx
+docker container exec -it new_nginx pring ny_nginx
+
+docker network ls # Doesn't DNS 
+#+END_SRC
+** Conclusion
+- Containers shouldn't rely on IP's for inter-communication
+- DNS for friendly names is built-in if you use custome networks
+- If You're using custome networks Then it gets way easier with docker compose in future  
+* Assignment: 
+Requirement : shell, container, CLI 
+Q) Run curl cli in different linux distro containers
+ANS) 
+ - Use two different terminal window to start bash in both centOS:7 and ubuntu:14.04, using -it
+ - Learn docker container --rm to cleanup
+ - install curl cmd in ubuntu and centos
+   - ubuntu: apt-get update && apt-get install curl
+   - centos: yum update curl
+ - Check curl --version
+Soulution
+#+BEGIN_SRC sh
+docker container run --rm it centos:7 bash # --rm remove container after exit
+#$: curl -version
+docker container run --rm -it ubuntu:14.04 bash 3 # --rm : remove container  
+#$:apt-get update && apt-get install -y curl # inside ubuntu bash
+#$: curl --version
+#+END_SRC 
+
+* TODO Assignment :DNS RoundRobin Test
+Requirement: 
+ - Know how to use -it to get shell in container
+ - Basics of Linux distribution like ubuntu and centos
+ - How to runcontainer
+ - Understand DNS Records
+What is DNS RoundRobin ?
+-  A same DNS or one DNS Server is having one or more  aliase servers 
+- Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
+
+
+Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+Steps :
+- Create a new virtaul network (default bridge)
+- Create two container from elasticsearch:2  image
+- Research and use -network-alias serach when creating them to give them an additional DNS
+- Run alpine nslookup search with --net to see the two containers list for the same DNS name
+- Run centos curl -s search:9200 with --net multiple times untill you see both "name" fields show
+
+#+BEGIN_SRC sh
+docker network create dude
+docker container -itd --net dude --net-alias serach elasticsearch:2
+# --net-alias or
+# --network-alias  both are same
+#+END_SRC
+* What is a Image (What n't)?
+- All about image, the building blood of containers
+- What's in a image (and what isn't )
+- Using Docker Hub Registry
+- managing our local image cache
+- Building our own images
+** What is an Image 
+ - App binaries and dependencies
+ - metadata about image and  how to run image
+ - Official Defination : "An image is an ordered collection of root filesystem change and the corresponding execution parameters for using within a contianer runtime."
+ - Not a complete OS, No kernel , kernel-module(kernel drivers)
+ - Img can be simillar Small as one file (your app binary) like a golang static binary
+ - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
+* Docker Hub:
+- hub.docker.com # hub for all docker hub
+#+BEGIN_SRC sh
+docker image ls # list of images
+docker pull nginx # download latest version
+# download specified version
+docker pull nginx:1.11
+
+docker image ls
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# alpine              latest              a187dde48cd2        5 days ago          5.6MB
+# nginx               latest              6678c7c2e56c        3 weeks ago         127MB
+# httpd               latest              c5a012f9cf45        4 weeks ago         165MB
+# centos              latest              470671670cac        2 months ago        237MB
+# Image Id : is sha256 of image in docker hub
+
+#+END_SRC
+
+* TODO Image and Their Layers Discover and Image Cache
+- Image Layer
+- Union file system
+- history and inspect commands
+- copy on write
+
+#+BEGIN_SRC sh
+docker image ls
+docker history nginx:latest
+0
+#+END_SRC 
+Conclusion : 
+Images are made up of : file system and meta data
+Each layer is uniquelu identified an only stored once on a host
+This saves storage space on host and transfer time on push/pull
+Container is just a single read/write layer on top of image
+* TODO Image Tagging and pushing to Docker Hub
+ #+BEGIN_SRC sh
+docker image tag --help
+docker image tag nginx bretfisher/nginx
+docker image ls # 
+docker image push bretfisher/nginx
+# 
+docker login
+cat .docker/config.json
+docker image push bretfisher/nginx
+
+docker image push bretfisher/nginx: testing
+docker logout
+
+ #+END_SRC
+
+
+* TODO Building Images from Docker file
+Docker file is look like shell but it is not
+#+BEGIN_SRC sh
+# Docker-formate not shell script
+FROm debian:jessie 
+ENV NGINX_VERSIN 1.11.10-1~jessie #ENV: Enviorment Variable
+
+RUN # INSTALL packages or unzip....etc
+#  &&    make all cmd into one layer
+#  &&      
+
+EXPOSE 80 443 # open port 80,443
+Cmd # file cmd will run end or restart of container
+#+END_SRC
+* Building Images from Docker file Build
+#+BEGIN_SRC sh
+ls
+# -rw-r--r--  1 jayradhe jayradhe   Dockerfile
+docker image build -t customngix . # -t tag, '.' build in current dir
+#+END_SRC
+* Build Image Extending Official Image
+run html
+#+BEGIN_SRC sh
+ls
+# Dockerfile
+# index.html
+
+docker image build -t ngin-with-html
+docker container run -p80:80 --rm nginx-with-html
+
+#+END_SRC
+
+* Assignment Build Your Docker Own Image
+ - Build Your Own App
+   - Dockerfiles are part process workflow and part 
+   - Take existing Node.js(Node 6) app and Dockerize
+   - make Dockerfile, Build it , Test, Push, Run
+   - Details in dockerfile-assignment-1/Dockerfile
+   - Expected result is web site at http:localhost
+   - Tag and push to your Docker Hub
+   - Remove your image from local cache, run it again from Hub
+
+#+BEGIN_SRC sh
+
+# >> Downlaod 
+FROm node:6-alpine
+
+EXPOSE 3000
+# to use alphine package mangaer : isntall tini: 'apk add --update tini'
+RUN apk add --update tini
+
+# Create dir /usr/src/app from
+RUN mkdir -p /usr/src/app
+
+# Node uses "package manager" , need to copy package.json file
+WORKDIR /usr/src/app
+COPY package.json package.json
+
+# run 'npm install' to install dependencies of file
+# to keep it clean and small, run 'npm cache clean'
+RUN npm install && npm cache clean 
+
+# need to copy in all files from current directory
+COPY ..
+
+# Need to start container with command 'tini' --node ./bin/www
+CmD [ "tini","--", "./bin/www" ]
+
+# exit
+# In terminal
+docker build -t testnode .
+docker container run --rm -p 80:3000 testnode 
+
+docker tag testnode bretfisher/testing-node
+docker push bretfisher/testing-node
+
+docker image rm bretfisher/testing-node
+
+docker container run  --rm -p 80:3000 bretfisher/testing-node
+#+END_SRC
+* Container Lifetime Persistent Data
+Overview
+ - Define Problem of persistent Data 
+ - Learning and using Data Volumes
+ - Learning and using Bind mounts
+ - Assignment
+
+Concept with containers:
+- Key concept with containers: immutalbe(unchange and disposal), ephemeral
+  - Idea is we can through container and create new one    
+- "immutable infrastructure" : only re-deploy containers never change
+  - We not talk of limitation but a desing goal or (best practies)
+  - We don't change if container is runining
+  - If config chagnges then we re-deployed 
+  - Trade-off: What happens if new data or unique data is created how to seperate data and binary, lib ?
+- This is the ideal scenario, but what about database or unique data ? 
+- Docker gives us features to ensure these "separation of concerns"
+- This unique data is called persistant data
+- Docker has two solution : Docker Volume and Bind mounts
+  - Docker Volumes: make special location outside of container Union File System
+  - Bind monts: (sharing or mount) or link container path  to host path
+* Persistent Data : Data Volume :
+search for mysql docker hub
+go to docker file we see Volume  
+Where the data is shared 
+#+BEGIN_SRC sh
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker container ls
+docker container inspect mysql
+# To check the volume
+docker volume ls
+
+docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker volume ls
+# DRIVE
+# local
+# local
+
+docker container stop mysql
+docker container stop mysql2
+
+docker container ls # check container are running
+docker container ls -a # check if container are present in hidden or stoped
+docker volume ls # check if volume are present or not
+
+docker container rm mysql mysql2
+docker volume ls # check if volume is present even after container is removed
+
+
+# Name Volume
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker container rm -f mysql
+ 
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
+
+# Create volume in run time
+docker volume create 
+#+END_SRC
+
+* Persistent Data : Bind E") stable"
+
+# Install Docker Engine and Docker Compose
+sudo apt-get update
+# Install Docker CE and Docker Compose
+sudo apt-get -y  install docker-ce docker-compose
+
+# Run docker command ans non-privillgeage
+sudo usermod -aG docker $USER
+#+END_SRC
+When you add user to user gorup : 
+For security some linux like redhat will not work docker or we need use sudo or add 
+
+cmd
+#+BEGIN_SRC sh
+docker container run #or
+docker run # older version
+
+docker version
+docker info 
+
+# docker sytanx 
+#(old) : docker <command>  (options)
+#(new) : docker <command> <sub-command> (options)
+#+END_SRC
+** Assignment : managing multiple containers
+create and run mysql, apache (httpd) nginx
+#+BEGIN_SRC sh
+docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
+docker container log mysqldb
+# search : "GENERATED ROOT PASSWORD"
+
+docker container run -d -p 8080:80 --name webserver httpd
+
+docker container run -d --nmae my_engineX -p nginx
+
+docker container ls
+
+curl localhost
+curl localhost:8080
+
+docker container stop 1e15b b9958d d282cc2a09
+
+docker image ls
+#+END_SRC
+* What's Going on inside containers
+#+BEGIN_SRC sh
+# List of process in one container
+docker container top [container-name]
+# Details of one container config
+docker container inspect [container-name]
+# performance stas for all containers
+docker container stats [container-name]
+
+#+END_SRC
+* Getting a shell inside containers
+#+BEGIN_SRC sh
+docker container run -it # start new container interactively
+docker container exec it # run additional  cmd in existing container
+# -t : Allocate a pseduo tty (simulate a real terminal like ssh does)
+# -i : interactive  (keep stdin open even if not attached) keep session open to receive terminal input
+# -d : detached (run container in background)
+# p : port configuration
+docker container run -it --name proxy nginx bash
+
+# docker container run -itd -name myubuntu ubuntu
+
+# Inside shell of database or servers :
+docker container exec --help
+docker container exec -it mysql bash
+#+END_SRC
+* Network Concept for Provate for Private and Public
+Concept of Docker Networking
+- Each container connected to private virtual network "bridge"
+- Each virtual network routs thorugh NAT firewall on host IP
+- Container does n't have same IP of host
+- All containers on virtual network can talk to each other without -p
+- make new virtual networks
+- Best Practice:is to create a new virtual network for each app:
+   - network "my_web_app" for mysq; and php/apache containers
+   - network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
+- Each container to more than one virtual network 
+- Skip virtual networks and use host IP (--net=host)
+  
+Example :
+#+BEGIN_SRC sh
+docker container run -itd -p 8080:80 --name webserver httpd
+# ether net is lisening to port 8080
+and rouths through webserver and go to httpd port 80
+#80 : is host OS port and 8080 is container prot
+
+ docker container ls -a
+# CONTAINER ID        IMAGE               COMMAND              #CREATED             STATUS              PORTS                  NAMES
+# 287e5a78867a        httpd               "httpd-foreground"   8 seconds ago       Up 3 seconds        0.0.0.0:8080->80/tcp   webserver
+
+docker container port webserver
+# 80/tcp -> 0.0.0.0:8080
+
+# Ip Address of Container and host Ip is not same
+docker container inspect --format '{{.NetworkSettings.IPAddress}}' webserver
+# 172.17.0.2 Container Ip Address
+
+ifconfig en0 
+# flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#        inet 192.168.0.105  netmask 255.255.255.0  broadcast 192.168.0.255
+# >> 192.168.0.105 Ip address of host ethernet
+
+
+
+#+END_SRC
+
+* cmd for Docker Network
+#+BEGIN_SRC sh
+docker network ls  # show network
+docker network inspect [container-name] # inspect
+docker network create --drive  [container-id] #  create a network
+docker network connect  [container-id] # attach a network to container
+dokcer network disconnect  [container-id] # detach a network from network
+
+# To see the containers attached to networks
+docker network inspect bridge
+#+END_SRC
+
+** Example 
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker network ls
+docker network inspect my_app_net 
+# create container with given network
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX -p nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+
+#+END_SRC
+
+** Example II
+#+BEGIN_SRC sh
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# 498f7bfea262        nginx               "nginx -g 'daemon of…"   15 seconds ago       Up 12 seconds       80/tcp                 my_engineX
+# 3928fe27faa0        httpd               "httpd-foreground"       About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   webserver
+docker network connect 498f7bf 3928fe27
+docker network inspect 
+docker network disconnect 498f7bf 3928fe27
+
+
+#+END_SRC
+* Docker Networks: DNS
+Docker Network DNS
+ - How DNS is key to easy inter-container comms
+ - How it works by default with custom networks
+ - How to use --link enable 
+
+The containers ip address is not same because containers are continously creatred and distroyed so we need other naming system so that they can connect regardless of ip address. The solution is using DNS naming 
+
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX --network my_app_net nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+docker container exec -it my_nginx ping new_nginx
+docker container exec -it new_nginx pring ny_nginx
+
+docker network ls # Doesn't DNS 
+#+END_SRC
+** Conclusion
+- Containers shouldn't rely on IP's for inter-communication
+- DNS for friendly names is built-in if you use custome networks
+- If You're using custome networks Then it gets way easier with docker compose in future  
+* Assignment: 
+Requirement : shell, container, CLI 
+Q) Run curl cli in different linux distro containers
+ANS) 
+ - Use two different terminal window to start bash in both centOS:7 and ubuntu:14.04, using -it
+ - Learn docker container --rm to cleanup
+ - install curl cmd in ubuntu and centos
+   - ubuntu: apt-get update && apt-get install curl
+   - centos: yum update curl
+ - Check curl --version
+Soulution
+#+BEGIN_SRC sh
+docker container run --rm it centos:7 bash # --rm remove container after exit
+#$: curl -version
+docker container run --rm -it ubuntu:14.04 bash 3 # --rm : remove container  
+#$:apt-get update && apt-get install -y curl # inside ubuntu bash
+#$: curl --version
+#+END_SRC 
+
+* TODO Assignment :DNS RoundRobin Test
+Requirement: 
+ - Know how to use -it to get shell in container
+ - Basics of Linux distribution like ubuntu and centos
+ - How to runcontainer
+ - Understand DNS Records
+What is DNS RoundRobin ?
+-  A same DNS or one DNS Server is having one or more  aliase servers 
+- Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
+
+
+Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+Steps :
+- Create a new virtaul network (default bridge)
+- Create two container from elasticsearch:2  image
+- Research and use -network-alias serach when creating them to give them an additional DNS
+- Run alpine nslookup search with --net to see the two containers list for the same DNS name
+- Run centos curl -s search:9200 with --net multiple times untill you see both "name" fields show
+
+#+BEGIN_SRC sh
+docker network create dude
+docker container -itd --net dude --net-alias serach elasticsearch:2
+# --net-alias or
+# --network-alias  both are same
+#+END_SRC
+* What is a Image (What n't)?
+- All about image, the building blood of containers
+- What's in a image (and what isn't )
+- Using Docker Hub Registry
+- managing our local image cache
+- Building our own images
+** What is an Image 
+ - App binaries and dependencies
+ - metadata about image and  how to run image
+ - Official Defination : "An image is an ordered collection of root filesystem change and the corresponding execution parameters for using within a contianer runtime."
+ - Not a complete OS, No kernel , kernel-module(kernel drivers)
+ - Img can be simillar Small as one file (your app binary) like a golang static binary
+ - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
+* Docker Hub:
+- hub.docker.com # hub for all docker hub
+#+BEGIN_SRC sh
+docker image ls # list of images
+docker pull nginx # download latest version
+# download specified version
+docker pull nginx:1.11
+
+docker image ls
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# alpine              latest              a187dde48cd2        5 days ago          5.6MB
+# nginx               latest              6678c7c2e56c        3 weeks ago         127MB
+# httpd               latest              c5a012f9cf45        4 weeks ago         165MB
+# centos              latest              470671670cac        2 months ago        237MB
+# Image Id : is sha256 of image in docker hub
+
+#+END_SRC
+
+* TODO Image and Their Layers Discover and Image Cache
+- Image Layer
+- Union file system
+- history and inspect commands
+- copy on write
+
+#+BEGIN_SRC sh
+docker image ls
+docker history nginx:latest
+0
+#+END_SRC 
+Conclusion : 
+Images are made up of : file system and meta data
+Each layer is uniquelu identified an only stored once on a host
+This saves storage space on host and transfer time on push/pull
+Container is just a single read/write layer on top of image
+* TODO Image Tagging and pushing to Docker Hub
+ #+BEGIN_SRC sh
+docker image tag --help
+docker image tag nginx bretfisher/nginx
+docker image ls # 
+docker image push bretfisher/nginx
+# 
+docker login
+cat .docker/config.json
+docker image push bretfisher/nginx
+
+docker image push bretfisher/nginx: testing
+docker logout
+
+ #+END_SRC
+
+
+* TODO Building Images from Docker file
+Docker file is look like shell but it is not
+#+BEGIN_SRC sh
+# Docker-formate not shell script
+FROm debian:jessie 
+ENV NGINX_VERSIN 1.11.10-1~jessie #ENV: Enviorment Variable
+
+RUN # INSTALL packages or unzip....etc
+#  &&    make all cmd into one layer
+#  &&      
+
+EXPOSE 80 443 # open port 80,443
+Cmd # file cmd will run end or restart of container
+#+END_SRC
+* Building Images from Docker file Build
+#+BEGIN_SRC sh
+ls
+# -rw-r--r--  1 jayradhe jayradhe   Dockerfile
+docker image build -t customngix . # -t tag, '.' build in current dir
+#+END_SRC
+* Build Image Extending Official Image
+run html
+#+BEGIN_SRC sh
+ls
+# Dockerfile
+# index.html
+
+docker image build -t ngin-with-html
+docker container run -p80:80 --rm nginx-with-html
+
+#+END_SRC
+
+* Assignment Build Your Docker Own Image
+ - Build Your Own App
+   - Dockerfiles are part process workflow and part 
+   - Take existing Node.js(Node 6) app and Dockerize
+   - make Dockerfile, Build it , Test, Push, Run
+   - Details in dockerfile-assignment-1/Dockerfile
+   - Expected result is web site at http:localhost
+   - Tag and push to your Docker Hub
+   - Remove your image from local cache, run it again from Hub
+
+#+BEGIN_SRC sh
+
+# >> Downlaod 
+FROm node:6-alpine
+
+EXPOSE 3000
+# to use alphine package mangaer : isntall tini: 'apk add --update tini'
+RUN apk add --update tini
+
+# Create dir /usr/src/app from
+RUN mkdir -p /usr/src/app
+
+# Node uses "package manager" , need to copy package.json file
+WORKDIR /usr/src/app
+COPY package.json package.json
+
+# run 'npm install' to install dependencies of file
+# to keep it clean and small, run 'npm cache clean'
+RUN npm install && npm cache clean 
+
+# need to copy in all files from current directory
+COPY ..
+
+# Need to start container with command 'tini' --node ./bin/www
+CmD [ "tini","--", "./bin/www" ]
+
+# exit
+# In terminal
+docker build -t testnode .
+docker container run --rm -p 80:3000 testnode 
+
+docker tag testnode bretfisher/testing-node
+docker push bretfisher/testing-node
+
+docker image rm bretfisher/testing-node
+
+docker container run  --rm -p 80:3000 bretfisher/testing-node
+#+END_SRC
+* Container Lifetime Persistent Data
+Overview
+ - Define Problem of persistent Data 
+ - Learning and using Data Volumes
+ - Learning and using Bind mounts
+ - Assignment
+
+Concept with containers:
+- Key concept with containers: immutalbe(unchange and disposal), ephemeral
+  - Idea is we can through container and create new one    
+- "immutable infrastructure" : only re-deploy containers never change
+  - We not talk of limitation but a desing goal or (best practies)
+  - We don't change if container is runining
+  - If config chagnges then we re-deployed 
+  - Trade-off: What happens if new data or unique data is created how to seperate data and binary, lib ?
+- This is the ideal scenario, but what about database or unique data ? 
+- Docker gives us features to ensure these "separation of concerns"
+- This unique data is called persistant data
+- Docker has two solution : Docker Volume and Bind mounts
+  - Docker Volumes: make special location outside of container Union File System
+  - Bind monts: (sharing or mount) or link container path  to host path
+* Persistent Data : Data Volume :
+search for mysql docker hub
+go to docker file we see Volume  
+Where the data is shared 
+#+BEGIN_SRC sh
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker container ls
+docker container inspect mysql
+# To check the volume
+docker volume ls
+
+docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker volume ls
+# DRIVE
+# local
+# local
+
+docker container stop mysql
+docker container stop mysql2
+
+docker container ls # check container are running
+docker container ls -a # check if container are present in hidden or stoped
+docker volume ls # check if volume are present or not
+
+docker container rm mysql mysql2
+docker volume ls # check if volume is present even after container is removed
+
+
+# Name Volume
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker container rm -f mysql
+ 
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
+
+# Create volume in run time
+docker volume create 
+#+END_SRC
+
+* Persistent Data : Bind E") stable"
+
+# Install Docker Engine and Docker Compose
+sudo apt-get update
+# Install Docker CE and Docker Compose
+sudo apt-get -y  install docker-ce docker-compose
+
+# Run docker command ans non-privillgeage
+sudo usermod -aG docker $USER
+#+END_SRC
+When you add user to user gorup : 
+For security some linux like redhat will not work docker or we need use sudo or add 
+
+cmd
+#+BEGIN_SRC sh
+docker container run #or
+docker run # older version
+
+docker version
+docker info 
+
+# docker sytanx 
+#(old) : docker <command>  (options)
+#(new) : docker <command> <sub-command> (options)
+#+END_SRC
+** Assignment : managing multiple containers
+create and run mysql, apache (httpd) nginx
+#+BEGIN_SRC sh
+docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
+docker container log mysqldb
+# search : "GENERATED ROOT PASSWORD"
+
+docker container run -d -p 8080:80 --name webserver httpd
+
+docker container run -d --nmae my_engineX -p nginx
+
+docker container ls
+
+curl localhost
+curl localhost:8080
+
+docker container stop 1e15b b9958d d282cc2a09
+
+docker image ls
+#+END_SRC
+* What's Going on inside containers
+#+BEGIN_SRC sh
+# List of process in one container
+docker container top [container-name]
+# Details of one container config
+docker container inspect [container-name]
+# performance stas for all containers
+docker container stats [container-name]
+
+#+END_SRC
+* Getting a shell inside containers
+#+BEGIN_SRC sh
+docker container run -it # start new container interactively
+docker container exec it # run additional  cmd in existing container
+# -t : Allocate a pseduo tty (simulate a real terminal like ssh does)
+# -i : interactive  (keep stdin open even if not attached) keep session open to receive terminal input
+# -d : detached (run container in background)
+# p : port configuration
+docker container run -it --name proxy nginx bash
+
+# docker container run -itd -name myubuntu ubuntu
+
+# Inside shell of database or servers :
+docker container exec --help
+docker container exec -it mysql bash
+#+END_SRC
+* Network Concept for Provate for Private and Public
+Concept of Docker Networking
+- Each container connected to private virtual network "bridge"
+- Each virtual network routs thorugh NAT firewall on host IP
+- Container does n't have same IP of host
+- All containers on virtual network can talk to each other without -p
+- make new virtual networks
+- Best Practice:is to create a new virtual network for each app:
+   - network "my_web_app" for mysq; and php/apache containers
+   - network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
+- Each container to more than one virtual network 
+- Skip virtual networks and use host IP (--net=host)
+  
+Example :
+#+BEGIN_SRC sh
+docker container run -itd -p 8080:80 --name webserver httpd
+# ether net is lisening to port 8080
+and rouths through webserver and go to httpd port 80
+#80 : is host OS port and 8080 is container prot
+
+ docker container ls -a
+# CONTAINER ID        IMAGE               COMMAND              #CREATED             STATUS              PORTS                  NAMES
+# 287e5a78867a        httpd               "httpd-foreground"   8 seconds ago       Up 3 seconds        0.0.0.0:8080->80/tcp   webserver
+
+docker container port webserver
+# 80/tcp -> 0.0.0.0:8080
+
+# Ip Address of Container and host Ip is not same
+docker container inspect --format '{{.NetworkSettings.IPAddress}}' webserver
+# 172.17.0.2 Container Ip Address
+
+ifconfig en0 
+# flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#        inet 192.168.0.105  netmask 255.255.255.0  broadcast 192.168.0.255
+# >> 192.168.0.105 Ip address of host ethernet
+
+
+
+#+END_SRC
+
+* cmd for Docker Network
+#+BEGIN_SRC sh
+docker network ls  # show network
+docker network inspect [container-name] # inspect
+docker network create --drive  [container-id] #  create a network
+docker network connect  [container-id] # attach a network to container
+dokcer network disconnect  [container-id] # detach a network from network
+
+# To see the containers attached to networks
+docker network inspect bridge
+#+END_SRC
+
+** Example 
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker network ls
+docker network inspect my_app_net 
+# create container with given network
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX -p nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+
+#+END_SRC
+
+** Example II
+#+BEGIN_SRC sh
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# 498f7bfea262        nginx               "nginx -g 'daemon of…"   15 seconds ago       Up 12 seconds       80/tcp                 my_engineX
+# 3928fe27faa0        httpd               "httpd-foreground"       About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   webserver
+docker network connect 498f7bf 3928fe27
+docker network inspect 
+docker network disconnect 498f7bf 3928fe27
+
+
+#+END_SRC
+* Docker Networks: DNS
+Docker Network DNS
+ - How DNS is key to easy inter-container comms
+ - How it works by default with custom networks
+ - How to use --link enable 
+
+The containers ip address is not same because containers are continously creatred and distroyed so we need other naming system so that they can connect regardless of ip address. The solution is using DNS naming 
+
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX --network my_app_net nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+docker container exec -it my_nginx ping new_nginx
+docker container exec -it new_nginx pring ny_nginx
+
+docker network ls # Doesn't DNS 
+#+END_SRC
+** Conclusion
+- Containers shouldn't rely on IP's for inter-communication
+- DNS for friendly names is built-in if you use custome networks
+- If You're using custome networks Then it gets way easier with docker compose in future  
+* Assignment: 
+Requirement : shell, container, CLI 
+Q) Run curl cli in different linux distro containers
+ANS) 
+ - Use two different terminal window to start bash in both centOS:7 and ubuntu:14.04, using -it
+ - Learn docker container --rm to cleanup
+ - install curl cmd in ubuntu and centos
+   - ubuntu: apt-get update && apt-get install curl
+   - centos: yum update curl
+ - Check curl --version
+Soulution
+#+BEGIN_SRC sh
+docker container run --rm it centos:7 bash # --rm remove container after exit
+#$: curl -version
+docker container run --rm -it ubuntu:14.04 bash 3 # --rm : remove container  
+#$:apt-get update && apt-get install -y curl # inside ubuntu bash
+#$: curl --version
+#+END_SRC 
+
+* TODO Assignment :DNS RoundRobin Test
+Requirement: 
+ - Know how to use -it to get shell in container
+ - Basics of Linux distribution like ubuntu and centos
+ - How to runcontainer
+ - Understand DNS Records
+What is DNS RoundRobin ?
+-  A same DNS or one DNS Server is having one or more  aliase servers 
+- Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
+
+
+Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+Steps :
+- Create a new virtaul network (default bridge)
+- Create two container from elasticsearch:2  image
+- Research and use -network-alias serach when creating them to give them an additional DNS
+- Run alpine nslookup search with --net to see the two containers list for the same DNS name
+- Run centos curl -s search:9200 with --net multiple times untill you see both "name" fields show
+
+#+BEGIN_SRC sh
+docker network create dude
+docker container -itd --net dude --net-alias serach elasticsearch:2
+# --net-alias or
+# --network-alias  both are same
+#+END_SRC
+* What is a Image (What n't)?
+- All about image, the building blood of containers
+- What's in a image (and what isn't )
+- Using Docker Hub Registry
+- managing our local image cache
+- Building our own images
+** What is an Image 
+ - App binaries and dependencies
+ - metadata about image and  how to run image
+ - Official Defination : "An image is an ordered collection of root filesystem change and the corresponding execution parameters for using within a contianer runtime."
+ - Not a complete OS, No kernel , kernel-module(kernel drivers)
+ - Img can be simillar Small as one file (your app binary) like a golang static binary
+ - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
+* Docker Hub:
+- hub.docker.com # hub for all docker hub
+#+BEGIN_SRC sh
+docker image ls # list of images
+docker pull nginx # download latest version
+# download specified version
+docker pull nginx:1.11
+
+docker image ls
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# alpine              latest              a187dde48cd2        5 days ago          5.6MB
+# nginx               latest              6678c7c2e56c        3 weeks ago         127MB
+# httpd               latest              c5a012f9cf45        4 weeks ago         165MB
+# centos              latest              470671670cac        2 months ago        237MB
+# Image Id : is sha256 of image in docker hub
+
+#+END_SRC
+
+* TODO Image and Their Layers Discover and Image Cache
+- Image Layer
+- Union file system
+- history and inspect commands
+- copy on write
+
+#+BEGIN_SRC sh
+docker image ls
+docker history nginx:latest
+0
+#+END_SRC 
+Conclusion : 
+Images are made up of : file system and meta data
+Each layer is uniquelu identified an only stored once on a host
+This saves storage space on host and transfer time on push/pull
+Container is just a single read/write layer on top of image
+* TODO Image Tagging and pushing to Docker Hub
+ #+BEGIN_SRC sh
+docker image tag --help
+docker image tag nginx bretfisher/nginx
+docker image ls # 
+docker image push bretfisher/nginx
+# 
+docker login
+cat .docker/config.json
+docker image push bretfisher/nginx
+
+docker image push bretfisher/nginx: testing
+docker logout
+
+ #+END_SRC
+
+
+* TODO Building Images from Docker file
+Docker file is look like shell but it is not
+#+BEGIN_SRC sh
+# Docker-formate not shell script
+FROm debian:jessie 
+ENV NGINX_VERSIN 1.11.10-1~jessie #ENV: Enviorment Variable
+
+RUN # INSTALL packages or unzip....etc
+#  &&    make all cmd into one layer
+#  &&      
+
+EXPOSE 80 443 # open port 80,443
+Cmd # file cmd will run end or restart of container
+#+END_SRC
+* Building Images from Docker file Build
+#+BEGIN_SRC sh
+ls
+# -rw-r--r--  1 jayradhe jayradhe   Dockerfile
+docker image build -t customngix . # -t tag, '.' build in current dir
+#+END_SRC
+* Build Image Extending Official Image
+run html
+#+BEGIN_SRC sh
+ls
+# Dockerfile
+# index.html
+
+docker image build -t ngin-with-html
+docker container run -p80:80 --rm nginx-with-html
+
+#+END_SRC
+
+* Assignment Build Your Docker Own Image
+ - Build Your Own App
+   - Dockerfiles are part process workflow and part 
+   - Take existing Node.js(Node 6) app and Dockerize
+   - make Dockerfile, Build it , Test, Push, Run
+   - Details in dockerfile-assignment-1/Dockerfile
+   - Expected result is web site at http:localhost
+   - Tag and push to your Docker Hub
+   - Remove your image from local cache, run it again from Hub
+
+#+BEGIN_SRC sh
+
+# >> Downlaod 
+FROm node:6-alpine
+
+EXPOSE 3000
+# to use alphine package mangaer : isntall tini: 'apk add --update tini'
+RUN apk add --update tini
+
+# Create dir /usr/src/app from
+RUN mkdir -p /usr/src/app
+
+# Node uses "package manager" , need to copy package.json file
+WORKDIR /usr/src/app
+COPY package.json package.json
+
+# run 'npm install' to install dependencies of file
+# to keep it clean and small, run 'npm cache clean'
+RUN npm install && npm cache clean 
+
+# need to copy in all files from current directory
+COPY ..
+
+# Need to start container with command 'tini' --node ./bin/www
+CmD [ "tini","--", "./bin/www" ]
+
+# exit
+# In terminal
+docker build -t testnode .
+docker container run --rm -p 80:3000 testnode 
+
+docker tag testnode bretfisher/testing-node
+docker push bretfisher/testing-node
+
+docker image rm bretfisher/testing-node
+
+docker container run  --rm -p 80:3000 bretfisher/testing-node
+#+END_SRC
+* Container Lifetime Persistent Data
+Overview
+ - Define Problem of persistent Data 
+ - Learning and using Data Volumes
+ - Learning and using Bind mounts
+ - Assignment
+
+Concept with containers:
+- Key concept with containers: immutalbe(unchange and disposal), ephemeral
+  - Idea is we can through container and create new one    
+- "immutable infrastructure" : only re-deploy containers never change
+  - We not talk of limitation but a desing goal or (best practies)
+  - We don't change if container is runining
+  - If config chagnges then we re-deployed 
+  - Trade-off: What happens if new data or unique data is created how to seperate data and binary, lib ?
+- This is the ideal scenario, but what about database or unique data ? 
+- Docker gives us features to ensure these "separation of concerns"
+- This unique data is called persistant data
+- Docker has two solution : Docker Volume and Bind mounts
+  - Docker Volumes: make special location outside of container Union File System
+  - Bind monts: (sharing or mount) or link container path  to host path
+* Persistent Data : Data Volume :
+search for mysql docker hub
+go to docker file we see Volume  
+Where the data is shared 
+#+BEGIN_SRC sh
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker container ls
+docker container inspect mysql
+# To check the volume
+docker volume ls
+
+docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker volume ls
+# DRIVE
+# local
+# local
+
+docker container stop mysql
+docker container stop mysql2
+
+docker container ls # check container are running
+docker container ls -a # check if container are present in hidden or stoped
+docker volume ls # check if volume are present or not
+
+docker container rm mysql mysql2
+docker volume ls # check if volume is present even after container is removed
+
+
+# Name Volume
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker container rm -f mysql
+ 
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
+
+# Create volume in run time
+docker volume create 
+#+END_SRC
+
+* Persistent Data : Bind E") stable"
+
+# Install Docker Engine and Docker Compose
+sudo apt-get update
+# Install Docker CE and Docker Compose
+sudo apt-get -y  install docker-ce docker-compose
+
+# Run docker command ans non-privillgeage
+sudo usermod -aG docker $USER
+#+END_SRC
+When you add user to user gorup : 
+For security some linux like redhat will not work docker or we need use sudo or add 
+
+cmd
+#+BEGIN_SRC sh
+docker container run #or
+docker run # older version
+
+docker version
+docker info 
+
+# docker sytanx 
+#(old) : docker <command>  (options)
+#(new) : docker <command> <sub-command> (options)
+#+END_SRC
+** Assignment : managing multiple containers
+create and run mysql, apache (httpd) nginx
+#+BEGIN_SRC sh
+docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
+docker container log mysqldb
+# search : "GENERATED ROOT PASSWORD"
+
+docker container run -d -p 8080:80 --name webserver httpd
+
+docker container run -d --nmae my_engineX -p nginx
+
+docker container ls
+
+curl localhost
+curl localhost:8080
+
+docker container stop 1e15b b9958d d282cc2a09
+
+docker image ls
+#+END_SRC
+* What's Going on inside containers
+#+BEGIN_SRC sh
+# List of process in one container
+docker container top [container-name]
+# Details of one container config
+docker container inspect [container-name]
+# performance stas for all containers
+docker container stats [container-name]
+
+#+END_SRC
+* Getting a shell inside containers
+#+BEGIN_SRC sh
+docker container run -it # start new container interactively
+docker container exec it # run additional  cmd in existing container
+# -t : Allocate a pseduo tty (simulate a real terminal like ssh does)
+# -i : interactive  (keep stdin open even if not attached) keep session open to receive terminal input
+# -d : detached (run container in background)
+# p : port configuration
+docker container run -it --name proxy nginx bash
+
+# docker container run -itd -name myubuntu ubuntu
+
+# Inside shell of database or servers :
+docker container exec --help
+docker container exec -it mysql bash
+#+END_SRC
+* Network Concept for Provate for Private and Public
+Concept of Docker Networking
+- Each container connected to private virtual network "bridge"
+- Each virtual network routs thorugh NAT firewall on host IP
+- Container does n't have same IP of host
+- All containers on virtual network can talk to each other without -p
+- make new virtual networks
+- Best Practice:is to create a new virtual network for each app:
+   - network "my_web_app" for mysq; and php/apache containers
+   - network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
+- Each container to more than one virtual network 
+- Skip virtual networks and use host IP (--net=host)
+  
+Example :
+#+BEGIN_SRC sh
+docker container run -itd -p 8080:80 --name webserver httpd
+# ether net is lisening to port 8080
+and rouths through webserver and go to httpd port 80
+#80 : is host OS port and 8080 is container prot
+
+ docker container ls -a
+# CONTAINER ID        IMAGE               COMMAND              #CREATED             STATUS              PORTS                  NAMES
+# 287e5a78867a        httpd               "httpd-foreground"   8 seconds ago       Up 3 seconds        0.0.0.0:8080->80/tcp   webserver
+
+docker container port webserver
+# 80/tcp -> 0.0.0.0:8080
+
+# Ip Address of Container and host Ip is not same
+docker container inspect --format '{{.NetworkSettings.IPAddress}}' webserver
+# 172.17.0.2 Container Ip Address
+
+ifconfig en0 
+# flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#        inet 192.168.0.105  netmask 255.255.255.0  broadcast 192.168.0.255
+# >> 192.168.0.105 Ip address of host ethernet
+
+
+
+#+END_SRC
+
+* cmd for Docker Network
+#+BEGIN_SRC sh
+docker network ls  # show network
+docker network inspect [container-name] # inspect
+docker network create --drive  [container-id] #  create a network
+docker network connect  [container-id] # attach a network to container
+dokcer network disconnect  [container-id] # detach a network from network
+
+# To see the containers attached to networks
+docker network inspect bridge
+#+END_SRC
+
+** Example 
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker network ls
+docker network inspect my_app_net 
+# create container with given network
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX -p nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+
+#+END_SRC
+
+** Example II
+#+BEGIN_SRC sh
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# 498f7bfea262        nginx               "nginx -g 'daemon of…"   15 seconds ago       Up 12 seconds       80/tcp                 my_engineX
+# 3928fe27faa0        httpd               "httpd-foreground"       About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   webserver
+docker network connect 498f7bf 3928fe27
+docker network inspect 
+docker network disconnect 498f7bf 3928fe27
+
+
+#+END_SRC
+* Docker Networks: DNS
+Docker Network DNS
+ - How DNS is key to easy inter-container comms
+ - How it works by default with custom networks
+ - How to use --link enable 
+
+The containers ip address is not same because containers are continously creatred and distroyed so we need other naming system so that they can connect regardless of ip address. The solution is using DNS naming 
+
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX --network my_app_net nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+docker container exec -it my_nginx ping new_nginx
+docker container exec -it new_nginx pring ny_nginx
+
+docker network ls # Doesn't DNS 
+#+END_SRC
+** Conclusion
+- Containers shouldn't rely on IP's for inter-communication
+- DNS for friendly names is built-in if you use custome networks
+- If You're using custome networks Then it gets way easier with docker compose in future  
+* Assignment: 
+Requirement : shell, container, CLI 
+Q) Run curl cli in different linux distro containers
+ANS) 
+ - Use two different terminal window to start bash in both centOS:7 and ubuntu:14.04, using -it
+ - Learn docker container --rm to cleanup
+ - install curl cmd in ubuntu and centos
+   - ubuntu: apt-get update && apt-get install curl
+   - centos: yum update curl
+ - Check curl --version
+Soulution
+#+BEGIN_SRC sh
+docker container run --rm it centos:7 bash # --rm remove container after exit
+#$: curl -version
+docker container run --rm -it ubuntu:14.04 bash 3 # --rm : remove container  
+#$:apt-get update && apt-get install -y curl # inside ubuntu bash
+#$: curl --version
+#+END_SRC 
+
+* TODO Assignment :DNS RoundRobin Test
+Requirement: 
+ - Know how to use -it to get shell in container
+ - Basics of Linux distribution like ubuntu and centos
+ - How to runcontainer
+ - Understand DNS Records
+What is DNS RoundRobin ?
+-  A same DNS or one DNS Server is having one or more  aliase servers 
+- Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
+
+
+Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+Steps :
+- Create a new virtaul network (default bridge)
+- Create two container from elasticsearch:2  image
+- Research and use -network-alias serach when creating them to give them an additional DNS
+- Run alpine nslookup search with --net to see the two containers list for the same DNS name
+- Run centos curl -s search:9200 with --net multiple times untill you see both "name" fields show
+
+#+BEGIN_SRC sh
+docker network create dude
+docker container -itd --net dude --net-alias serach elasticsearch:2
+# --net-alias or
+# --network-alias  both are same
+#+END_SRC
+* What is a Image (What n't)?
+- All about image, the building blood of containers
+- What's in a image (and what isn't )
+- Using Docker Hub Registry
+- managing our local image cache
+- Building our own images
+** What is an Image 
+ - App binaries and dependencies
+ - metadata about image and  how to run image
+ - Official Defination : "An image is an ordered collection of root filesystem change and the corresponding execution parameters for using within a contianer runtime."
+ - Not a complete OS, No kernel , kernel-module(kernel drivers)
+ - Img can be simillar Small as one file (your app binary) like a golang static binary
+ - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
+* Docker Hub:
+- hub.docker.com # hub for all docker hub
+#+BEGIN_SRC sh
+docker image ls # list of images
+docker pull nginx # download latest version
+# download specified version
+docker pull nginx:1.11
+
+docker image ls
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# alpine              latest              a187dde48cd2        5 days ago          5.6MB
+# nginx               latest              6678c7c2e56c        3 weeks ago         127MB
+# httpd               latest              c5a012f9cf45        4 weeks ago         165MB
+# centos              latest              470671670cac        2 months ago        237MB
+# Image Id : is sha256 of image in docker hub
+
+#+END_SRC
+
+* TODO Image and Their Layers Discover and Image Cache
+- Image Layer
+- Union file system
+- history and inspect commands
+- copy on write
+
+#+BEGIN_SRC sh
+docker image ls
+docker history nginx:latest
+0
+#+END_SRC 
+Conclusion : 
+Images are made up of : file system and meta data
+Each layer is uniquelu identified an only stored once on a host
+This saves storage space on host and transfer time on push/pull
+Container is just a single read/write layer on top of image
+* TODO Image Tagging and pushing to Docker Hub
+ #+BEGIN_SRC sh
+docker image tag --help
+docker image tag nginx bretfisher/nginx
+docker image ls # 
+docker image push bretfisher/nginx
+# 
+docker login
+cat .docker/config.json
+docker image push bretfisher/nginx
+
+docker image push bretfisher/nginx: testing
+docker logout
+
+ #+END_SRC
+
+
+* TODO Building Images from Docker file
+Docker file is look like shell but it is not
+#+BEGIN_SRC sh
+# Docker-formate not shell script
+FROm debian:jessie 
+ENV NGINX_VERSIN 1.11.10-1~jessie #ENV: Enviorment Variable
+
+RUN # INSTALL packages or unzip....etc
+#  &&    make all cmd into one layer
+#  &&      
+
+EXPOSE 80 443 # open port 80,443
+Cmd # file cmd will run end or restart of container
+#+END_SRC
+* Building Images from Docker file Build
+#+BEGIN_SRC sh
+ls
+# -rw-r--r--  1 jayradhe jayradhe   Dockerfile
+docker image build -t customngix . # -t tag, '.' build in current dir
+#+END_SRC
+* Build Image Extending Official Image
+run html
+#+BEGIN_SRC sh
+ls
+# Dockerfile
+# index.html
+
+docker image build -t ngin-with-html
+docker container run -p80:80 --rm nginx-with-html
+
+#+END_SRC
+
+* Assignment Build Your Docker Own Image
+ - Build Your Own App
+   - Dockerfiles are part process workflow and part 
+   - Take existing Node.js(Node 6) app and Dockerize
+   - make Dockerfile, Build it , Test, Push, Run
+   - Details in dockerfile-assignment-1/Dockerfile
+   - Expected result is web site at http:localhost
+   - Tag and push to your Docker Hub
+   - Remove your image from local cache, run it again from Hub
+
+#+BEGIN_SRC sh
+
+# >> Downlaod 
+FROm node:6-alpine
+
+EXPOSE 3000
+# to use alphine package mangaer : isntall tini: 'apk add --update tini'
+RUN apk add --update tini
+
+# Create dir /usr/src/app from
+RUN mkdir -p /usr/src/app
+
+# Node uses "package manager" , need to copy package.json file
+WORKDIR /usr/src/app
+COPY package.json package.json
+
+# run 'npm install' to install dependencies of file
+# to keep it clean and small, run 'npm cache clean'
+RUN npm install && npm cache clean 
+
+# need to copy in all files from current directory
+COPY ..
+
+# Need to start container with command 'tini' --node ./bin/www
+CmD [ "tini","--", "./bin/www" ]
+
+# exit
+# In terminal
+docker build -t testnode .
+docker container run --rm -p 80:3000 testnode 
+
+docker tag testnode bretfisher/testing-node
+docker push bretfisher/testing-node
+
+docker image rm bretfisher/testing-node
+
+docker container run  --rm -p 80:3000 bretfisher/testing-node
+#+END_SRC
+* Container Lifetime Persistent Data
+Overview
+ - Define Problem of persistent Data 
+ - Learning and using Data Volumes
+ - Learning and using Bind mounts
+ - Assignment
+
+Concept with containers:
+- Key concept with containers: immutalbe(unchange and disposal), ephemeral
+  - Idea is we can through container and create new one    
+- "immutable infrastructure" : only re-deploy containers never change
+  - We not talk of limitation but a desing goal or (best practies)
+  - We don't change if container is runining
+  - If config chagnges then we re-deployed 
+  - Trade-off: What happens if new data or unique data is created how to seperate data and binary, lib ?
+- This is the ideal scenario, but what about database or unique data ? 
+- Docker gives us features to ensure these "separation of concerns"
+- This unique data is called persistant data
+- Docker has two solution : Docker Volume and Bind mounts
+  - Docker Volumes: make special location outside of container Union File System
+  - Bind monts: (sharing or mount) or link container path  to host path
+* Persistent Data : Data Volume :
+search for mysql docker hub
+go to docker file we see Volume  
+Where the data is shared 
+#+BEGIN_SRC sh
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker container ls
+docker container inspect mysql
+# To check the volume
+docker volume ls
+
+docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker volume ls
+# DRIVE
+# local
+# local
+
+docker container stop mysql
+docker container stop mysql2
+
+docker container ls # check container are running
+docker container ls -a # check if container are present in hidden or stoped
+docker volume ls # check if volume are present or not
+
+docker container rm mysql mysql2
+docker volume ls # check if volume is present even after container is removed
+
+
+# Name Volume
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker container rm -f mysql
+ 
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
+
+# Create volume in run time
+docker volume create 
+#+END_SRC
+
+* Persistent Data : Bind E") stable"
+
+# Install Docker Engine and Docker Compose
+sudo apt-get update
+# Install Docker CE and Docker Compose
+sudo apt-get -y  install docker-ce docker-compose
+
+# Run docker command ans non-privillgeage
+sudo usermod -aG docker $USER
+#+END_SRC
+When you add user to user gorup : 
+For security some linux like redhat will not work docker or we need use sudo or add 
+
+cmd
+#+BEGIN_SRC sh
+docker container run #or
+docker run # older version
+
+docker version
+docker info 
+
+# docker sytanx 
+#(old) : docker <command>  (options)
+#(new) : docker <command> <sub-command> (options)
+#+END_SRC
+** Assignment : managing multiple containers
+create and run mysql, apache (httpd) nginx
+#+BEGIN_SRC sh
+docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
+docker container log mysqldb
+# search : "GENERATED ROOT PASSWORD"
+
+docker container run -d -p 8080:80 --name webserver httpd
+
+docker container run -d --nmae my_engineX -p nginx
+
+docker container ls
+
+curl localhost
+curl localhost:8080
+
+docker container stop 1e15b b9958d d282cc2a09
+
+docker image ls
+#+END_SRC
+* What's Going on inside containers
+#+BEGIN_SRC sh
+# List of process in one container
+docker container top [container-name]
+# Details of one container config
+docker container inspect [container-name]
+# performance stas for all containers
+docker container stats [container-name]
+
+#+END_SRC
+* Getting a shell inside containers
+#+BEGIN_SRC sh
+docker container run -it # start new container interactively
+docker container exec it # run additional  cmd in existing container
+# -t : Allocate a pseduo tty (simulate a real terminal like ssh does)
+# -i : interactive  (keep stdin open even if not attached) keep session open to receive terminal input
+# -d : detached (run container in background)
+# p : port configuration
+docker container run -it --name proxy nginx bash
+
+# docker container run -itd -name myubuntu ubuntu
+
+# Inside shell of database or servers :
+docker container exec --help
+docker container exec -it mysql bash
+#+END_SRC
+* Network Concept for Provate for Private and Public
+Concept of Docker Networking
+- Each container connected to private virtual network "bridge"
+- Each virtual network routs thorugh NAT firewall on host IP
+- Container does n't have same IP of host
+- All containers on virtual network can talk to each other without -p
+- make new virtual networks
+- Best Practice:is to create a new virtual network for each app:
+   - network "my_web_app" for mysq; and php/apache containers
+   - network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
+- Each container to more than one virtual network 
+- Skip virtual networks and use host IP (--net=host)
+  
+Example :
+#+BEGIN_SRC sh
+docker container run -itd -p 8080:80 --name webserver httpd
+# ether net is lisening to port 8080
+and rouths through webserver and go to httpd port 80
+#80 : is host OS port and 8080 is container prot
+
+ docker container ls -a
+# CONTAINER ID        IMAGE               COMMAND              #CREATED             STATUS              PORTS                  NAMES
+# 287e5a78867a        httpd               "httpd-foreground"   8 seconds ago       Up 3 seconds        0.0.0.0:8080->80/tcp   webserver
+
+docker container port webserver
+# 80/tcp -> 0.0.0.0:8080
+
+# Ip Address of Container and host Ip is not same
+docker container inspect --format '{{.NetworkSettings.IPAddress}}' webserver
+# 172.17.0.2 Container Ip Address
+
+ifconfig en0 
+# flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#        inet 192.168.0.105  netmask 255.255.255.0  broadcast 192.168.0.255
+# >> 192.168.0.105 Ip address of host ethernet
+
+
+
+#+END_SRC
+
+* cmd for Docker Network
+#+BEGIN_SRC sh
+docker network ls  # show network
+docker network inspect [container-name] # inspect
+docker network create --drive  [container-id] #  create a network
+docker network connect  [container-id] # attach a network to container
+dokcer network disconnect  [container-id] # detach a network from network
+
+# To see the containers attached to networks
+docker network inspect bridge
+#+END_SRC
+
+** Example 
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker network ls
+docker network inspect my_app_net 
+# create container with given network
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX -p nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+
+#+END_SRC
+
+** Example II
+#+BEGIN_SRC sh
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# 498f7bfea262        nginx               "nginx -g 'daemon of…"   15 seconds ago       Up 12 seconds       80/tcp                 my_engineX
+# 3928fe27faa0        httpd               "httpd-foreground"       About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   webserver
+docker network connect 498f7bf 3928fe27
+docker network inspect 
+docker network disconnect 498f7bf 3928fe27
+
+
+#+END_SRC
+* Docker Networks: DNS
+Docker Network DNS
+ - How DNS is key to easy inter-container comms
+ - How it works by default with custom networks
+ - How to use --link enable 
+
+The containers ip address is not same because containers are continously creatred and distroyed so we need other naming system so that they can connect regardless of ip address. The solution is using DNS naming 
+
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX --network my_app_net nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+docker container exec -it my_nginx ping new_nginx
+docker container exec -it new_nginx pring ny_nginx
+
+docker network ls # Doesn't DNS 
+#+END_SRC
+** Conclusion
+- Containers shouldn't rely on IP's for inter-communication
+- DNS for friendly names is built-in if you use custome networks
+- If You're using custome networks Then it gets way easier with docker compose in future  
+* Assignment: 
+Requirement : shell, container, CLI 
+Q) Run curl cli in different linux distro containers
+ANS) 
+ - Use two different terminal window to start bash in both centOS:7 and ubuntu:14.04, using -it
+ - Learn docker container --rm to cleanup
+ - install curl cmd in ubuntu and centos
+   - ubuntu: apt-get update && apt-get install curl
+   - centos: yum update curl
+ - Check curl --version
+Soulution
+#+BEGIN_SRC sh
+docker container run --rm it centos:7 bash # --rm remove container after exit
+#$: curl -version
+docker container run --rm -it ubuntu:14.04 bash 3 # --rm : remove container  
+#$:apt-get update && apt-get install -y curl # inside ubuntu bash
+#$: curl --version
+#+END_SRC 
+
+* TODO Assignment :DNS RoundRobin Test
+Requirement: 
+ - Know how to use -it to get shell in container
+ - Basics of Linux distribution like ubuntu and centos
+ - How to runcontainer
+ - Understand DNS Records
+What is DNS RoundRobin ?
+-  A same DNS or one DNS Server is having one or more  aliase servers 
+- Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
+
+
+Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+Steps :
+- Create a new virtaul network (default bridge)
+- Create two container from elasticsearch:2  image
+- Research and use -network-alias serach when creating them to give them an additional DNS
+- Run alpine nslookup search with --net to see the two containers list for the same DNS name
+- Run centos curl -s search:9200 with --net multiple times untill you see both "name" fields show
+
+#+BEGIN_SRC sh
+docker network create dude
+docker container -itd --net dude --net-alias serach elasticsearch:2
+# --net-alias or
+# --network-alias  both are same
+#+END_SRC
+* What is a Image (What n't)?
+- All about image, the building blood of containers
+- What's in a image (and what isn't )
+- Using Docker Hub Registry
+- managing our local image cache
+- Building our own images
+** What is an Image 
+ - App binaries and dependencies
+ - metadata about image and  how to run image
+ - Official Defination : "An image is an ordered collection of root filesystem change and the corresponding execution parameters for using within a contianer runtime."
+ - Not a complete OS, No kernel , kernel-module(kernel drivers)
+ - Img can be simillar Small as one file (your app binary) like a golang static binary
+ - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
+* Docker Hub:
+- hub.docker.com # hub for all docker hub
+#+BEGIN_SRC sh
+docker image ls # list of images
+docker pull nginx # download latest version
+# download specified version
+docker pull nginx:1.11
+
+docker image ls
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# alpine              latest              a187dde48cd2        5 days ago          5.6MB
+# nginx               latest              6678c7c2e56c        3 weeks ago         127MB
+# httpd               latest              c5a012f9cf45        4 weeks ago         165MB
+# centos              latest              470671670cac        2 months ago        237MB
+# Image Id : is sha256 of image in docker hub
+
+#+END_SRC
+
+* TODO Image and Their Layers Discover and Image Cache
+- Image Layer
+- Union file system
+- history and inspect commands
+- copy on write
+
+#+BEGIN_SRC sh
+docker image ls
+docker history nginx:latest
+0
+#+END_SRC 
+Conclusion : 
+Images are made up of : file system and meta data
+Each layer is uniquelu identified an only stored once on a host
+This saves storage space on host and transfer time on push/pull
+Container is just a single read/write layer on top of image
+* TODO Image Tagging and pushing to Docker Hub
+ #+BEGIN_SRC sh
+docker image tag --help
+docker image tag nginx bretfisher/nginx
+docker image ls # 
+docker image push bretfisher/nginx
+# 
+docker login
+cat .docker/config.json
+docker image push bretfisher/nginx
+
+docker image push bretfisher/nginx: testing
+docker logout
+
+ #+END_SRC
+
+
+* TODO Building Images from Docker file
+Docker file is look like shell but it is not
+#+BEGIN_SRC sh
+# Docker-formate not shell script
+FROm debian:jessie 
+ENV NGINX_VERSIN 1.11.10-1~jessie #ENV: Enviorment Variable
+
+RUN # INSTALL packages or unzip....etc
+#  &&    make all cmd into one layer
+#  &&      
+
+EXPOSE 80 443 # open port 80,443
+Cmd # file cmd will run end or restart of container
+#+END_SRC
+* Building Images from Docker file Build
+#+BEGIN_SRC sh
+ls
+# -rw-r--r--  1 jayradhe jayradhe   Dockerfile
+docker image build -t customngix . # -t tag, '.' build in current dir
+#+END_SRC
+* Build Image Extending Official Image
+run html
+#+BEGIN_SRC sh
+ls
+# Dockerfile
+# index.html
+
+docker image build -t ngin-with-html
+docker container run -p80:80 --rm nginx-with-html
+
+#+END_SRC
+
+* Assignment Build Your Docker Own Image
+ - Build Your Own App
+   - Dockerfiles are part process workflow and part 
+   - Take existing Node.js(Node 6) app and Dockerize
+   - make Dockerfile, Build it , Test, Push, Run
+   - Details in dockerfile-assignment-1/Dockerfile
+   - Expected result is web site at http:localhost
+   - Tag and push to your Docker Hub
+   - Remove your image from local cache, run it again from Hub
+
+#+BEGIN_SRC sh
+
+# >> Downlaod 
+FROm node:6-alpine
+
+EXPOSE 3000
+# to use alphine package mangaer : isntall tini: 'apk add --update tini'
+RUN apk add --update tini
+
+# Create dir /usr/src/app from
+RUN mkdir -p /usr/src/app
+
+# Node uses "package manager" , need to copy package.json file
+WORKDIR /usr/src/app
+COPY package.json package.json
+
+# run 'npm install' to install dependencies of file
+# to keep it clean and small, run 'npm cache clean'
+RUN npm install && npm cache clean 
+
+# need to copy in all files from current directory
+COPY ..
+
+# Need to start container with command 'tini' --node ./bin/www
+CmD [ "tini","--", "./bin/www" ]
+
+# exit
+# In terminal
+docker build -t testnode .
+docker container run --rm -p 80:3000 testnode 
+
+docker tag testnode bretfisher/testing-node
+docker push bretfisher/testing-node
+
+docker image rm bretfisher/testing-node
+
+docker container run  --rm -p 80:3000 bretfisher/testing-node
+#+END_SRC
+* Container Lifetime Persistent Data
+Overview
+ - Define Problem of persistent Data 
+ - Learning and using Data Volumes
+ - Learning and using Bind mounts
+ - Assignment
+
+Concept with containers:
+- Key concept with containers: immutalbe(unchange and disposal), ephemeral
+  - Idea is we can through container and create new one    
+- "immutable infrastructure" : only re-deploy containers never change
+  - We not talk of limitation but a desing goal or (best practies)
+  - We don't change if container is runining
+  - If config chagnges then we re-deployed 
+  - Trade-off: What happens if new data or unique data is created how to seperate data and binary, lib ?
+- This is the ideal scenario, but what about database or unique data ? 
+- Docker gives us features to ensure these "separation of concerns"
+- This unique data is called persistant data
+- Docker has two solution : Docker Volume and Bind mounts
+  - Docker Volumes: make special location outside of container Union File System
+  - Bind monts: (sharing or mount) or link container path  to host path
+* Persistent Data : Data Volume :
+search for mysql docker hub
+go to docker file we see Volume  
+Where the data is shared 
+#+BEGIN_SRC sh
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker container ls
+docker container inspect mysql
+# To check the volume
+docker volume ls
+
+docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker volume ls
+# DRIVE
+# local
+# local
+
+docker container stop mysql
+docker container stop mysql2
+
+docker container ls # check container are running
+docker container ls -a # check if container are present in hidden or stoped
+docker volume ls # check if volume are present or not
+
+docker container rm mysql mysql2
+docker volume ls # check if volume is present even after container is removed
+
+
+# Name Volume
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker container rm -f mysql
+ 
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
+
+# Create volume in run time
+docker volume create 
+#+END_SRC
+
+* Persistent Data : Bind E") stable"
+
+# Install Docker Engine and Docker Compose
+sudo apt-get update
+# Install Docker CE and Docker Compose
+sudo apt-get -y  install docker-ce docker-compose
+
+# Run docker command ans non-privillgeage
+sudo usermod -aG docker $USER
+#+END_SRC
+When you add user to user gorup : 
+For security some linux like redhat will not work docker or we need use sudo or add 
+
+cmd
+#+BEGIN_SRC sh
+docker container run #or
+docker run # older version
+
+docker version
+docker info 
+
+# docker sytanx 
+#(old) : docker <command>  (options)
+#(new) : docker <command> <sub-command> (options)
+#+END_SRC
+** Assignment : managing multiple containers
+create and run mysql, apache (httpd) nginx
+#+BEGIN_SRC sh
+docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
+docker container log mysqldb
+# search : "GENERATED ROOT PASSWORD"
+
+docker container run -d -p 8080:80 --name webserver httpd
+
+docker container run -d --nmae my_engineX -p nginx
+
+docker container ls
+
+curl localhost
+curl localhost:8080
+
+docker container stop 1e15b b9958d d282cc2a09
+
+docker image ls
+#+END_SRC
+* What's Going on inside containers
+#+BEGIN_SRC sh
+# List of process in one container
+docker container top [container-name]
+# Details of one container config
+docker container inspect [container-name]
+# performance stas for all containers
+docker container stats [container-name]
+
+#+END_SRC
+* Getting a shell inside containers
+#+BEGIN_SRC sh
+docker container run -it # start new container interactively
+docker container exec it # run additional  cmd in existing container
+# -t : Allocate a pseduo tty (simulate a real terminal like ssh does)
+# -i : interactive  (keep stdin open even if not attached) keep session open to receive terminal input
+# -d : detached (run container in background)
+# p : port configuration
+docker container run -it --name proxy nginx bash
+
+# docker container run -itd -name myubuntu ubuntu
+
+# Inside shell of database or servers :
+docker container exec --help
+docker container exec -it mysql bash
+#+END_SRC
+* Network Concept for Provate for Private and Public
+Concept of Docker Networking
+- Each container connected to private virtual network "bridge"
+- Each virtual network routs thorugh NAT firewall on host IP
+- Container does n't have same IP of host
+- All containers on virtual network can talk to each other without -p
+- make new virtual networks
+- Best Practice:is to create a new virtual network for each app:
+   - network "my_web_app" for mysq; and php/apache containers
+   - network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
+- Each container to more than one virtual network 
+- Skip virtual networks and use host IP (--net=host)
+  
+Example :
+#+BEGIN_SRC sh
+docker container run -itd -p 8080:80 --name webserver httpd
+# ether net is lisening to port 8080
+and rouths through webserver and go to httpd port 80
+#80 : is host OS port and 8080 is container prot
+
+ docker container ls -a
+# CONTAINER ID        IMAGE               COMMAND              #CREATED             STATUS              PORTS                  NAMES
+# 287e5a78867a        httpd               "httpd-foreground"   8 seconds ago       Up 3 seconds        0.0.0.0:8080->80/tcp   webserver
+
+docker container port webserver
+# 80/tcp -> 0.0.0.0:8080
+
+# Ip Address of Container and host Ip is not same
+docker container inspect --format '{{.NetworkSettings.IPAddress}}' webserver
+# 172.17.0.2 Container Ip Address
+
+ifconfig en0 
+# flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+#        inet 192.168.0.105  netmask 255.255.255.0  broadcast 192.168.0.255
+# >> 192.168.0.105 Ip address of host ethernet
+
+
+
+#+END_SRC
+
+* cmd for Docker Network
+#+BEGIN_SRC sh
+docker network ls  # show network
+docker network inspect [container-name] # inspect
+docker network create --drive  [container-id] #  create a network
+docker network connect  [container-id] # attach a network to container
+dokcer network disconnect  [container-id] # detach a network from network
+
+# To see the containers attached to networks
+docker network inspect bridge
+#+END_SRC
+
+** Example 
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker network ls
+docker network inspect my_app_net 
+# create container with given network
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX -p nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+
+#+END_SRC
+
+** Example II
+#+BEGIN_SRC sh
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# 498f7bfea262        nginx               "nginx -g 'daemon of…"   15 seconds ago       Up 12 seconds       80/tcp                 my_engineX
+# 3928fe27faa0        httpd               "httpd-foreground"       About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   webserver
+docker network connect 498f7bf 3928fe27
+docker network inspect 
+docker network disconnect 498f7bf 3928fe27
+
+
+#+END_SRC
+* Docker Networks: DNS
+Docker Network DNS
+ - How DNS is key to easy inter-container comms
+ - How it works by default with custom networks
+ - How to use --link enable 
+
+The containers ip address is not same because containers are continously creatred and distroyed so we need other naming system so that they can connect regardless of ip address. The solution is using DNS naming 
+
+#+BEGIN_SRC sh
+docker network create my_app_net
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX --network my_app_net nginx
+docker network inspect my_app_network
+
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+# b98f30cc34bd        nginx               "nginx -g 'daemon of…"   About a minute ago   Created                                    new_nginx
+# 3928fe27faa0        httpd               "httpd-foreground"       19 minutes ago       Up 19 minutes       0.0.0.0:8080->80/tcp   webserver
+
+docker container exec -it my_nginx ping new_nginx
+docker container exec -it new_nginx pring ny_nginx
+
+docker network ls # Doesn't DNS 
+#+END_SRC
+** Conclusion
+- Containers shouldn't rely on IP's for inter-communication
+- DNS for friendly names is built-in if you use custome networks
+- If You're using custome networks Then it gets way easier with docker compose in future  
+* Assignment: 
+Requirement : shell, container, CLI 
+Q) Run curl cli in different linux distro containers
+ANS) 
+ - Use two different terminal window to start bash in both centOS:7 and ubuntu:14.04, using -it
+ - Learn docker container --rm to cleanup
+ - install curl cmd in ubuntu and centos
+   - ubuntu: apt-get update && apt-get install curl
+   - centos: yum update curl
+ - Check curl --version
+Soulution
+#+BEGIN_SRC sh
+docker container run --rm it centos:7 bash # --rm remove container after exit
+#$: curl -version
+docker container run --rm -it ubuntu:14.04 bash 3 # --rm : remove container  
+#$:apt-get update && apt-get install -y curl # inside ubuntu bash
+#$: curl --version
+#+END_SRC 
+
+* TODO Assignment :DNS RoundRobin Test
+Requirement: 
+ - Know how to use -it to get shell in container
+ - Basics of Linux distribution like ubuntu and centos
+ - How to runcontainer
+ - Understand DNS Records
+What is DNS RoundRobin ?
+-  A same DNS or one DNS Server is having one or more  aliase servers 
+- Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
+
+
+Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+Steps :
+- Create a new virtaul network (default bridge)
+- Create two container from elasticsearch:2  image
+- Research and use -network-alias serach when creating them to give them an additional DNS
+- Run alpine nslookup search with --net to see the two containers list for the same DNS name
+- Run centos curl -s search:9200 with --net multiple times untill you see both "name" fields show
+
+#+BEGIN_SRC sh
+docker network create dude
+docker container -itd --net dude --net-alias serach elasticsearch:2
+# --net-alias or
+# --network-alias  both are same
+#+END_SRC
+* What is a Image (What n't)?
+- All about image, the building blood of containers
+- What's in a image (and what isn't )
+- Using Docker Hub Registry
+- managing our local image cache
+- Building our own images
+** What is an Image 
+ - App binaries and dependencies
+ - metadata about image and  how to run image
+ - Official Defination : "An image is an ordered collection of root filesystem change and the corresponding execution parameters for using within a contianer runtime."
+ - Not a complete OS, No kernel , kernel-module(kernel drivers)
+ - Img can be simillar Small as one file (your app binary) like a golang static binary
+ - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
+* Docker Hub:
+- hub.docker.com # hub for all docker hub
+#+BEGIN_SRC sh
+docker image ls # list of images
+docker pull nginx # download latest version
+# download specified version
+docker pull nginx:1.11
+
+docker image ls
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# alpine              latest              a187dde48cd2        5 days ago          5.6MB
+# nginx               latest              6678c7c2e56c        3 weeks ago         127MB
+# httpd               latest              c5a012f9cf45        4 weeks ago         165MB
+# centos              latest              470671670cac        2 months ago        237MB
+# Image Id : is sha256 of image in docker hub
+
+#+END_SRC
+
+* TODO Image and Their Layers Discover and Image Cache
+- Image Layer
+- Union file system
+- history and inspect commands
+- copy on write
+
+#+BEGIN_SRC sh
+docker image ls
+docker history nginx:latest
+0
+#+END_SRC 
+Conclusion : 
+Images are made up of : file system and meta data
+Each layer is uniquelu identified an only stored once on a host
+This saves storage space on host and transfer time on push/pull
+Container is just a single read/write layer on top of image
+* TODO Image Tagging and pushing to Docker Hub
+ #+BEGIN_SRC sh
+docker image tag --help
+docker image tag nginx bretfisher/nginx
+docker image ls # 
+docker image push bretfisher/nginx
+# 
+docker login
+cat .docker/config.json
+docker image push bretfisher/nginx
+
+docker image push bretfisher/nginx: testing
+docker logout
+
+ #+END_SRC
+
+
+* TODO Building Images from Docker file
+Docker file is look like shell but it is not
+#+BEGIN_SRC sh
+# Docker-formate not shell script
+FROm debian:jessie 
+ENV NGINX_VERSIN 1.11.10-1~jessie #ENV: Enviorment Variable
+
+RUN # INSTALL packages or unzip....etc
+#  &&    make all cmd into one layer
+#  &&      
+
+EXPOSE 80 443 # open port 80,443
+Cmd # file cmd will run end or restart of container
+#+END_SRC
+* Building Images from Docker file Build
+#+BEGIN_SRC sh
+ls
+# -rw-r--r--  1 jayradhe jayradhe   Dockerfile
+docker image build -t customngix . # -t tag, '.' build in current dir
+#+END_SRC
+* Build Image Extending Official Image
+run html
+#+BEGIN_SRC sh
+ls
+# Dockerfile
+# index.html
+
+docker image build -t ngin-with-html
+docker container run -p80:80 --rm nginx-with-html
+
+#+END_SRC
+
+* Assignment Build Your Docker Own Image
+ - Build Your Own App
+   - Dockerfiles are part process workflow and part 
+   - Take existing Node.js(Node 6) app and Dockerize
+   - make Dockerfile, Build it , Test, Push, Run
+   - Details in dockerfile-assignment-1/Dockerfile
+   - Expected result is web site at http:localhost
+   - Tag and push to your Docker Hub
+   - Remove your image from local cache, run it again from Hub
+
+#+BEGIN_SRC sh
+
+# >> Downlaod 
+FROm node:6-alpine
+
+EXPOSE 3000
+# to use alphine package mangaer : isntall tini: 'apk add --update tini'
+RUN apk add --update tini
+
+# Create dir /usr/src/app from
+RUN mkdir -p /usr/src/app
+
+# Node uses "package manager" , need to copy package.json file
+WORKDIR /usr/src/app
+COPY package.json package.json
+
+# run 'npm install' to install dependencies of file
+# to keep it clean and small, run 'npm cache clean'
+RUN npm install && npm cache clean 
+
+# need to copy in all files from current directory
+COPY ..
+
+# Need to start container with command 'tini' --node ./bin/www
+CmD [ "tini","--", "./bin/www" ]
+
+# exit
+# In terminal
+docker build -t testnode .
+docker container run --rm -p 80:3000 testnode 
+
+docker tag testnode bretfisher/testing-node
+docker push bretfisher/testing-node
+
+docker image rm bretfisher/testing-node
+
+docker container run  --rm -p 80:3000 bretfisher/testing-node
+#+END_SRC
+* Container Lifetime Persistent Data
+Overview
+ - Define Problem of persistent Data 
+ - Learning and using Data Volumes
+ - Learning and using Bind mounts
+ - Assignment
+
+Concept with containers:
+- Key concept with containers: immutalbe(unchange and disposal), ephemeral
+  - Idea is we can through container and create new one    
+- "immutable infrastructure" : only re-deploy containers never change
+  - We not talk of limitation but a desing goal or (best practies)
+  - We don't change if container is runining
+  - If config chagnges then we re-deployed 
+  - Trade-off: What happens if new data or unique data is created how to seperate data and binary, lib ?
+- This is the ideal scenario, but what about database or unique data ? 
+- Docker gives us features to ensure these "separation of concerns"
+- This unique data is called persistant data
+- Docker has two solution : Docker Volume and Bind mounts
+  - Docker Volumes: make special location outside of container Union File System
+  - Bind monts: (sharing or mount) or link container path  to host path
+* Persistent Data : Data Volume :
+search for mysql docker hub
+go to docker file we see Volume  
+Where the data is shared 
+#+BEGIN_SRC sh
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker container ls
+docker container inspect mysql
+# To check the volume
+docker volume ls
+
+docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker volume ls
+# DRIVE
+# local
+# local
+
+docker container stop mysql
+docker container stop mysql2
+
+docker container ls # check container are running
+docker container ls -a # check if container are present in hidden or stoped
+docker volume ls # check if volume are present or not
+
+docker container rm mysql mysql2
+docker volume ls # check if volume is present even after container is removed
+
+
+# Name Volume
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker container rm -f mysql
+ 
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
+
+# Create volume in run time
+docker volume create 
+#+END_SRC
+
+* Persistent Data : Bind Mounting
+Maps a host file/directory to a container file/directory
+Basically just two locations pointing to same files
+Again skips UFS, and host files overwite any  in container
+Con't use in Dockerfile, must be at  container runtime
+....run -v /Users/bret/stuff:/path/container (mac/linux)
+....run -v //C/Users/breff:path/container (window)
+
+# Difference btw name-volume an bind mounth is : bind mount start with forword slash(/) but not name-volume
+#+BEGIN_SRC sh
+# cd dockerfile-sample-2
+docker container run -d --name nginx -p 80:80 -v /$(pwd):/usr/share/nginx/html nginx
+
+docker container exec -it nginx bash
+# $#cd /usr/share/nginx/html
+# ls -al
+#  exit
+
+cd dockerfile-sample-2
+echo "is it me you're looking for "> testme.txt
+# RUN localhost:8080
+
+#+END_SRC 
+
+* Assignment: Database Upgrade using Docker Volume 
+You are running postgress mysql version 9.x.x and you want to upgrade to 9.6.1 or doing security fix 
+
+Q) How to do in container ?
+Ans)
+
+Database upgrade with containers
++ Create a postgres container with  named volume psql-data using version 9.6.1
++ Use Docker Hub to learn VOLUME path and version needed to run it 
++ Check logs, stop container
++ Create a new postgress container with same named volume using 9.6.2
++ Check logs to validate
+
+#+BEGIN_SRC sh
+# Go hub.docker > postgress> tag> 9.6.1 search volume path:
+docker conatainer run -d --name psql -v psql:/var/lib/postgresql/data postgres:9.6.1
+docker container logs -f psql
+docker container stop 5c049295147a
+docker conatainer run -d --name psql2 -v psql:/var/lib/postgresql/data postgres:9.6.2
+docker container ps -a
+docker volume ls
+
+docker container logs 7ec0e42  # psql2- id
+
+
+
+#+END_SRC
+
+* Assignment: Database Upgrade using Docker Bind mount 
+Use a Jekyll "Static Site Generator " to start a local web server
+Don't have to be web developer: this  is example of bridging  the gap between local file access and apps running in containers
+Source code is in the course repo under bindmount -sample-1
+
+We edit files with editor on our host using  navite tool
+Container detects changes with host files and update web servers
+start container with docker run -p 80:4000 -v $(pwd):/site/bretfisher/jekyll-serve
+Refresh our borwser to see changes
+Change the file in _posts\ and refresh browser to see change
+
+
+
+#+BEGIN_SRC sh
+#cd bindmount-sample-1
+docker run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve
+#+END_SRC
+
+* Docker Compose and Docker Compose.yml file
+
+Docker Compose:
+ Why cofigure relationships between containers
+ Why save our docker container run setting in easy to read file
+ Comprised of 2 separate but related things
+ 
+Consist
+   1. Yaml-Formatted file
+      - containers
+      - networks
+      - volumes
+   2. CLI took : docker compose used for local dev/test automation with those YAml files
+** Docker-Compose.yml file
+- Compose Yaml foramt has it's own version 1,2,3,3.1
+- Yaml file can be used with docker-compose command for local  docker automation or
+- With docker directly in production  with  Swarm (as  v1.13)
+- docker-compose --help
+- docker-compose.yml is default filename, but any can be used with docker-compose -f
+
+#+BEGIN_SRC sh
+#docker run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve
+# yaml file for sh
+version: '2'
+
+services:
+  jekyll:
+   image: bretfisher/jekyll-serve
+   volumes:
+      - ./site # '.' Current Working Directory
+   ports:
+      - '80:4000'
+#+END_SRC
+
+* Docker Compose cmd:
+- cli tool comes with docker for window/mac, but seperate download for Linux
+- Not a production-grade tool but ideal for local development and test
+- Two most common commands are 
+  - docker-compose up 
+  - docker-compose down
+
+Ex:
+ If all your project has a Docker file and docker-compose yaml file
+ Then "new developer onboarding" would be:
+ #+BEGIN_SRC sh
+git clone url
+docker-compose up
+ #+END_SRC
+
+Ex:
+#+BEGIN_SRC sh
+# cd compose-sample-2
+cat docker-compose.yml
+docker-compose up
+
+docker-compose ps
+docker-compose top
+docker-compose down
+
+#+END_SRC
+ 
+* Assignment Build a Compose File for a multi-Container Service
+- Create Compose File
+  - Build a basic compose file for a Drupal contant management system
+  - Use the drupa1 image along with  postgres image
+  - Use ports to expose Drupal on 8080 so you can localhost:8080
+  - Be sure to set POSTGRES_PASSWORD for postgress
+  - Walk through Drupal setup via browser
+  - Tip: Drupal assumes DB is localhost, but  it's service name
+  - Extra Credit : Use volume to store Drupal  unique data
+** Solution
+
+#+BEGIN_SRC sh
+# cat docker-compose.yml
+
+  version : '2'
+
+  services: 
+      drupal:
+         image:drupal
+         ports:
+            - "8080:80"
+         volumes:
+           -  drupal-modules:/var/www/html/modules
+           -  drupal-profiles:/var/www/html/profiles
+           -  drupal-sites:/var/www/html/sites
+           -  drupal-themes:/var/www/html/themes
+      postgres:
+         image: postgres
+         environment: 
+         - POSTGRES_PASSWORD=mypassword
+   volumes:
+      drupal-modules:
+      drupal-profiles
+      drupal-sites
+      drupal-themes:  
+
+docker-compose up
+docker-compose down --help
+docker-compose down -v # remove volume (docker by default keep volume ) to remove volume -v
+#+END_SRC
+
+* Adding Image Building to Compose File
+- Compose can also build your custom images
+- Will build them with docker-compose up if not found in cache
+- Also rebuild with docker-compose build
+- Great for complex build that have lots of vars or build args
+
+#+BEGIN_SRC sh
+#cd compose-sample-3
+#ls 
+#docker-copmose.yml
+#cat docker-compose.yml
+
+version: '2'
+
+services:
+   proxy:
+     build:
+        context:
+        dockerfile:nginx
+     image: nginx-custom
+     ports:
+        - '80:80'
+   web: 
+     image:httpd
+     volume:
+        - ./html:/usr/local/apache2/htdocs/
+#docker-compose up
+#+END_SRC 
+
+* Assignment Compose For Run-Time Build a multi-container Development [60]
+- Building custom drupal image for local testing
+- Compose isn't just for developers
+- maybe you learning Drupal admin, or are software tester
+- start with compose file from previous assignment
+- make you Dockerfile and docker-compose.yml in dir compose-assignment
+- Use the drupal image along with  postgress image as before
+- Use Readme.md in that dir for details
+
+
+#+BEGIN_SRC sh
+#cd compose-assignment-2 
+#ls
+#cat Dockerfile
+
+FROm drupal:8.2
+
+RUN apt-get update && apt-get install -y git\
+    && rm -rf /var/lib/apt/lists/*
+    
+WORKDIR /var/www/html/themes
+RUN git clone --branch 8.x-3.x --single-branch --depth 1 $git_url
+    &&chown -R www-data:www-data bootstrap
+
+WORKDIR /var/www/html
+
+# all command in yml are run as root
+
+#+END_SRC
+
+#+BEGIN_SRC sh
+#cd docker-compose.yml
+  version : '2'
+
+  services: 
+      drupal:
+         image: custom-drupal
+         build: . # build in current dir
+         ports:
+            - "8080:80"
+         volumes:
+           -  drupal-modules:/var/www/html/modules
+           -  drupal-profiles:/var/www/html/profiles
+           -  drupal-sites:/var/www/html/sites
+           -  drupal-themes:/var/www/html/themes
+      postgres:
+         image: postgres:9.6
+         environment: 
+           - POSTGRES_PASSWORD=mypassword
+         volumes:
+           - drupal-data: /var/lib/postgresql/data
+   volumes:
+      drupal-data:
+      drupal-modules:
+      drupal-profiles
+      drupal-sites
+      drupal-themes:  
+
+docker-compose up
+docker-compose down -v # remove volume (docker by default keep volume ) to remove volume -v
+
+#+END_SRC
+* Docker Swarm < Start >
+* Swarm mode Build-In Orchestration
+Why Orchestration
+- How do we automate container lifecycle ?
+- How can we easily scale out/in/up/down ?
+- How can we ensure our container and  re-created if they fail ?
+- How can we replace container without downtime (blue/green deploy) ?
+- How can we control /track where container get started ?
+- How can we ensure only trusted servers run out containers ?
+- How can we store secrets, key, passwords and get them to the right container(and only that container) ?
+
+Swarm mode : Buil-In Orches
+- Swarm mode is a clustering solution build inside Docker
+- Not related to Swarm "classic" for  pre-1.12
+- Added in 1.12 (Summer 2016) via SwarmKit tool kit
+- Enhanced in 1.13 (January 2017)  via  Stacks and Secrets
+- Not enable by default, new commonds once enable
+  - docker swarm
+  - docker node
+  - docker service
+  - docker stack
+  - docker secret
+
+* Create Your First Service and Scale it locally
+#+BEGIN_SRC sh
+docker swarm init  # Initialized swarn
+#+END_SRC
+
+Swarm init 
+- Lot of PKI and security automation
+  - Root Signing Certificate created for  our Swarm
+  - Certificate is issused for first management node
+  - Join token are created
+- Raft database created to store root CA, configs and secrets
+ - Encypted by default on disk (1.13+)
+ - No need for another key/value system to hold orchestration/secretes
+ - Repilcates logs amongs managers via  mutual TLS in  "control plane"
+
+ #+BEGIN_SRC sh
+docker node ls # 
+dokcer node --help
+#docker node : demote, inspect, ls, promate, ps, rm, update
+docker swarm --help
+#docker swarm : init,join,join-token, leave, unlock, unlock-key, update
+docker service --help
+# create, inspect,logs, logs, ls, ps, rm , scale, update
+
+docker service create apline ping 8.8.8.8 # google devops servers
+# k5afadf  # gives an id of service id not container id 
+docker service ls # list of all service 
+
+docker container ls
+
+# scale up
+docker service update k5afadf --replicas 3
+
+#check new scale up services
+dockers service ls
+docker service ps frosty_newton
+
+#docker update --help 
+docker service update --help
+
+docker container rm -f frosty_newton.1.voyoq
+
+docker service ls # 2/3
+docker service ls # 3/3
+
+docker service rm forsty_newton
+
+dokcer service ls
+docker container ls
+ #+END_SRC
+
+* Create 3-Node Swarn Cluster [66]
+Option
+-  *Play-with-docker.com*
+    - Only need a brower, but resets after 4 hours
+-  *Docker-machine + Virtual Box*
+    - Free and runs locally, but requires a machines with 8 GB memory
+-  *Digital Ocean + Docker install*
+    - most like a production setup, but costs $5-10/node/month while learning
+    - Use my referral code in section resource to get $10 free
+-  *Roll you own*
+    - Docker-machine can provision machine for Amaon, Azure, DO,Google,etc.
+    - Install docker anywhere with get.docker.com
+
+ 
+#+BEGIN_SRC 
+docker-machine node1
+docker-machine ssh node1
+docker-machine env node1
+
+#+END_SRC
+
+* Scaling Out with Overlay Networking [68]
+Overlay choose --driver overlay when creating network
+For container-to-container traffic inside a single Swarm
+Optinal IPSec(AES) encryption on network creation
+Each service can be connected to multiple networks
+ - Eg: Front-end , back-end
+#+BEGIN_SRC sh
+docker network create --driver overlay mydrupal
+docekr network ls
+docker service create --name psql --network mydrupal -e POSTGRESS_PASSWORD=mypass postgres
+docker service ls
+psql replicated ps psql
+docker container ls
+
+
+docker service create --name drupal --network mydrupal -p 80:80 drupal
+docker service ls
+
+watch docker ls # linux re-run 
+docker service ps drupal # see -where drupal service is running : let be node2
+
+# How to make talk to each other 
+#+END_SRC
+
+* Scaling Out with Routing mesh
+** Swarm Routing mesh(Global Traffic Routing)
+Routes ingress (incoming) packets for service to proper task
+Spans all nodes in swarm
+Uses IPVS from Linux Kernel
+Load balances Swarm Services across their Tasks
+Two ways this works:
+Container-to-Container in a Overlay network (Use VIP)
+External traffic incoming to published ports (all nodes listen)
+#+BEGIN_SRC sh
+docker service create --name serach --replicas -p 9200:9200 elasticsearch:2 # elasticserach is a serach database for web api
+
+docker service ps serach
+
+curl localhost:9200
+
+#+END_SRC
+
+* Assignment Ans : Create a multi-server multi-node web app[70]
+#+BEGIN_SRC sh
+
+docker node ls
+docker ps -a
+docker services ls
+
+docker network craete -d overlay backend # only one network we can crate
+docker network craete -d overlay frontend
+#+END_SRC
+
+yml file
+#+BEGIN_SRC sh
+- vote
+   - dockersamples/examplevotingapp_vote:before
+   - web front end for users to vote dog/cat
+   - ideally published on TCP 80. Container listen on 80
+   - on frontend network
+   - 2+ replicas of this contianer
+docker service create -name vote -p 80:80 --network frontend
+--replica 2 dockersamples/examplevotingapp_vote:bofore
+-redis
+  - redis:3.2
+  - key/value storge for incoming votes
+  - no public ports
+  - on frontend network
+  - 2 replicas
+docker services create --name redis --network frontend --replica 2 redis:3.2
+- worker
+  - dockersamples/examplevotingapp_worker
+  - backend processor of redis oand storing results in postgres 
+  - no public ports
+  - on frontend and backend networks
+  - 1 replica
+docker service create --name worker --network frontend --network backend dockersamples/examples/examplevotingapp_worke
+- db
+   - postgres: 9.4
+   - one name volue needed, pointing to /var/lib/postgresql/date
+   - on bakcend network
+   - 1 replica
+docker service create --name db --network backend --mount type=volume, source=db-data, target=/var/lib/postgresql/data |
+- result
+   - dockersamples/examplevotingapp_result:before
+   - web app that shows results
+   - runs on high port since just for admins (lets image)
+   - so run on a high port of your choosing (I choose 5001), container liseten on 80
+   - on backend network
+   - 1 replica
+docker servie create --name result --network backend -p 5001:80
+
+ #+END_SRC
+* Stacks : Production Grade Compose
+- In 1.13 Docker adds a new layer of abstraction to swarm called stack
+- Stacks accept Compose files as their  declarative definition for services, networks, and volumes
+- We use docker stack deploy  rather then docker service create
+- Stacks manages all those obj for us, including overlay netwok per stack. Add stack name to start of their  name
+- New deplo : key in Compose file. Can't do build:
+
+* Kuberneteics(K8) [89]
+- Kuberneteics : popular container orchestrator
+- Container Orchestration = make many servers act like one
+- Released by Google in 2015 , maintained by large community
+- Runs on top of Docker (usually) as  set of API's in containers
+- Provides API/CLI to manage containers across servers
+- many clouds provide it for you
+- many vendor make a "distribution" of it
+- 
+*  Kubernetics or Swarm
+-  Kubernetics and Swarm are both container orchestrators
+- Both are solid platform with vendor backing
+- Swarm: Easier to deploy/manage
+- Kubernetes: more feature and flexibility
+- What's right for you ? Understand both know  your requirements
+
+Advangatages of Swarm
+- Comes with Docker, Single vendor container platform
+- Easiest Orchestration to deploy/mangae youself
+- Follows 80/20 rule, 20% of features for 80% of use case
+- Runs anywhere Docker does::
+   - local, cloud, datacenter,
+   - ARm, Winodws, 32-bit
+- Secure by default
+- Easier to troubleshoot
+
+Advangates of Kubernetics
+- Has vendor support
+- Infrastructure vendor are making  the own distribution
+- Widest adoption and community
+- Flexible: Covers widest set of use cases
+- "Kubernetes first" vendor support
+- "No one ever got fired for buying IBm"
+- Picking solution isn't 100% rational
+- Trendy, will benefit you career
+* Architecture Terminology 
+Kubernetes: The whole orchestation system
+Kubectl: CLI to configure Kubernetes and manage apps
+  - Using "CUBE CONTROL" offical pronunciaton
+
+    - Some time called   "Kubelet" : Kubernetes agent running  on nodes
+    - Include 
+       Kubelet
+       Kube-proxy
+
+Node : Single server in Kubernetes cluster
+Control Plane: Set of Containers that manages the cluster
+   - Some time it is called "master"
+   - Includes 
+       API server, 
+       scheduler, 
+       Controller manger,
+       etcd, and 
+       more 
+
+
+
+
+* k8 local install
+- Kubernetes is a series of container,CLI and configrations
+- many ways to install, let focus on  easier for learning
+- Dokcer Destop : Enable in settings
+                  - Sets up everything inside Docker's existing Linxu Vm
+- Docker Toolbox on Windows: miniKube
+                  - Use VirtualBox to make Linux Vm
+- Your Own Linux Host or Vm : microk8's
+                  - Install Kubernetes right on the  OS
+- Kubernetes in a browser
+  https:katakoda.com
+  https:play-with-k8.com
+
+
+ 
+
+
+
+  
+* df 
+k8s Container Abstraction
+kubectl Run, Create, Apply
+Our First Pod
+Scaling ReplicaSets
+Inspecting Objects
+
+

@@ -1,242 +1,5 @@
-* Linux Tutorial
-** Vagrant Virtualization (Creating virtual meachine Environment)
-*** Introduction Why Virtualization 
-**** Why use the Virtualization (Linux installallation) in class ?
-- No suprises which lets you to stay  focused on scripting
-- Allow you to get the best help possible(in class all students has same os)
-- Quickly crete multiple Linux system
-**** What is Virtualization Software 
-- Allow to RUN Linux inside virtual machine(eg: VirtualBox(oracle) )
-- Free to download and easy to install
-- Run on winodws,mac,linux 
-- Provides full virtualization are know as Virtual Box(). 
-- Pyhsical computer = host.
-- Virtual Computer = guest
-- Guest OS think it's runing on real hardware but it is actually running on host Os
-**** Why Vagrant
-- In VirtualBox we can manually create a virtual os, but it is difficult to replicate the os(type, config,share sys setting) to other computers. So Vagrant provieds it
-- Virtual Box is time consuming , not automate it
-- Easy to configure , reproduce environments
-***** Pros and Cons of Vagrant
-- Pros
-  - Free
-  - Automation of virtual machine management tasks
-  - Easy to use commands
-  - Easy to Configure of OS, Share Configuration of Os  
-  - Local testing
-  - Well Documented
-  - Vagrant is decentralized so anyone can make a container package to get a project started. you aren't limited to wordpress, or even one style of wordpress install (you can make a sage.io wordpress environment).
-  - Vagrant easily lets you set ports and URLs for local development.
-- Cons
-  - Can be difficult to set up(setup in cmd ) Lacks a GUI
-  - Uses lots of resources on old machines
-  - Compatibility issues with some operating systems (Windows 8.1 home, Windows 10 home)
-  - Can take up a lot of disk space if running several VMs with various configurations
+ Linux Tutorial
 
-
-
-    
-
-
-**** Vagrant Boxes 
-Box = Operating System Image
-#+BEGIN_SRC sh
-# vargrant box add <USER>/<BOX> # USER : user name of os, BOX : Iso image of OS
-# Eg:
-vargrant box add jasonc/centos7
-#+END_SRC
-**** Create Vagrant Projects
-To Create a Vagrant Project :
-- Create and Open a Folder
-- Inicialize Vagrant Project
-#+BEGIN_SRC sh
-mkdir VagrantProject1
-cd VagrantProject1
-vagrant init jasonc/centos7 
-vagrant up
-#+END_SRC
-
-**** Start Virtual machine in Vagrant Project 
-#+BEGIN_SRC sh
-vagrant up # Vagrant will import box into Virtual Box and start it.
-
-#+END_SRC
-**** Vagrant Up/ multi-machine
-#+BEGIN_SRC sh
-#Synatx:
-#       vagrant up <Vm_Name>
-vagrant up master
-vagrant up server1
-vagrant up          # start all virtual machines 
-#+END_SRC
-*** SSH-Secure Shell
-**** Introduction
-SSH : Secure Shell
-Cryptographic Network Protocol
-Uses for acessing remote servers
-SSH uses Asysmmetric Cipers
-In cryptograph,cipher is an algorithm for performing encryption and decryption
-- Why we need ssh
-  - Username and password can be stolen in middle but ssh ensure no 3rd party know username and password
-
-- SSH create public key and a private pair
-  - private key is not share to any one
-  - public key is shared to any one
-
-- There are many encryption methods like (rsa, dsa, ed25519...etc)
-
-Cons in SSH:
- - Since it's a service, so its not available until system starts
- - If by mistake (forgot or deleted private key)  then you can't log back in
-https://www.youtube.com/watch?v=y2SWzw9D4RA 
- https://www.youtube.com/watch?v=AtuAdk4MwWw : Dynamic ssh, reverser ssh, ssh tunneling
-
-Network protacol used to connect to Linux
-No built-in SSH client
-Git include as SSH client
-**** SSH in Vagrant
-Vagrant provide simple shortcut to ssh into the meachine
-#+BEGIN_SRC sh
-vagrant ssh <Vm-name> # Vm-name :to ssh into Project name
-exit # to end ssh connection
-# log out of the Linux system by running the "exit" command.
-#+END_SRC
-
-**** Vagrant Halt,Suspent,Resume,Destroy
-Vagrant it can use to control the Vm   like halt
-#+BEGIN_SRC sh
-vagrant halt <vm-name> # halt <vm-name>
-vagrant halt           # halt all virtual machines 
-# you will not lose any work you’ve performed on the virtual machine.  The virtual machine will still exist in VirtualBox, it will simply be stopped.
-vagrant up <vm-name> # start and
-vagrant suspend <vm-name>  # to suspend
-vagrant resume <vm-name>   # to resume 
-vagrant destroy <vm-name>  # to remove virtual-meachine from virtual box
-# you want to start over with a fresh copy of the virtual machine, run "vagrant destroy" all work inside virtual-meachine will be lost.
-vagrant # help
-#+END_SRC 
-**** Vagrantfile[in Project file]
-
-#+BEGIN_SRC sh
-Vagrant.configure(2) do |config|
-   config.vm.box = "jasonc/centos7"  #Operating System like Ubuntu-64, Centos,...etc
-   config.vm.network "private_network", ip "10.2.3.4" # How your host see your box : configure ip address...etc
-   config.vm.provision "shell",path ="setup.sh" # what we want setup # lamp stack, mean stack,Nodejs
-   config.vm.synced_folder # How you access file in your computer : edit files using atom, vs code.....etc
-   config.vm.provider # Virtualbox like hyperV, VmWare
-end
-#+END_SRC
-
-**** Example fo vagrant file
-#+BEGIN_SRC sh
-    Vagrant.configure("2") do |config|
-      config.vm.box = "jasonc/centos7"
-      config.vm.define "test1" do |test1|
-        test1.vm.hostname = "test1"
-        test1.vm.network "private_network", ip: "10.9.8.5"
-      end
-      config.vm.define "test2" do |test2|
-        test2.vm.hostname = "test2"
-        test2.vm.network "private_network", ip: "10.9.8.6"
-      end
-    end
-
-#+END_SRC
-#+BEGIN_SRC sh 
-config.vm.box = "ubuntu/trusty64"
-# config.vm.box = "jasonc/centos7"
-config.vm.provider "virtualbox" do |vb|
-#+END_SRC
-**** Vagrantfile
-#+BEGIN_SRC sh
-# vi Vagrantfile
-Vagrant.configure(2) do | config | 
-     config.vm.box= "jasonc/centos7"
-     config.vm.hostname = "linuxsvrl"
-     config.vm.network "private_network", ip :"10.2.3.4"
-     config.vm.provider "virtualbox" do |vb|
-       vb.gui = true
-       vb.memory = "1024"
-     end    
-     config.vm.provision "shell", path : "setup.sh"
-end
-#+END_SRC
-*** Config vagrant file for multi-virtual machine project
-#+BEGIN_SRC sh
-vagrant box add jasonc/centos7   # img is load in os
-cd /Workspace/Shell/shellclass
-mkdir multitest
-cd multitest
-vagrant init jasonc/centos7
-# edit vagrantfile 
-vi vagrantfile                 # inside vagrantfiel
-Vagrant.configure("2") do |config|
-   config.vm.box = "jasonc/centos7"  
-
-   config.vm.define "test1" do |test1|
-       test1.vm.hostname = "test1"
-       test1.vm.network "private_network", ip "10.9.8.5" # How your host see your
-   end 
-
-   config.vm.define "test2" do |test2|
-       test1.vm.hostname = "test2"
-       test1.vm.network "private_network", ip "10.9.8.6" # How your host see your
-   end 
-end
-
-
-# in terminal in /Workspaec/Shell/shellcalss/multitest
-vagrant up   # up every meachines test1,test2
-vagrant status # show 2 running virtualbox
-vagrant ssh test1
-exit 
-vagrant ssh test2
-ping -c 3 10.9.8.6 # ip address of test2 system
-#+END_SRC
-
-*** Excersise 
-#+BEGIN_SRC sh
-cd /Workspace/Linux_script/udemy_shellclass/
-cd localuser
-# pwd Workspace/Linux_script/udemy_shellclass/
-vagrant init jasonc/centos7
-vagrant up
-vagrant status
-vagrant ssh
-# root
-# |- Vagrant  (home directory)
-#    |- Vagrantfile(config)
-#+END_SRC
-** Creating User Account in Vagrant 
-*** Introduction 
-- Your First Script
- - Create new account 
- - Checks for proper privileges 
- - Reports if account creation failed
-- But 1st need to Learn all *Concepts and Techinques*
- - project based learing helps you learn and retain new material
- - You'll use what you learn in the appropiate context
-- Net 4 Lesson consist of demonstration and teaching
-  - You can watch or follow along
-  - All scripts are in course download
-- Practice Your Skills in Exercise
- - Follow instruction for exercise
- - You'll write the script and test it.
- - Watch the instruction implement  script
-
-*CONTINUE LECTURE*
-
-*** Creating
-#+BEGIN_SRC sh
-# man useradd  
-# useradd [options] LOGIN : Login are username , there should be 8 char or less it's general  practice, but it can more tha 8-char eg: ps -ef
-# usernaem is case sensetive, No special chara
-
-sudo useradd dougstamper   # create user : dougstamper
-passwd # set passwd for  dougstamper
-
-
-#+END_SRC
 ** Linux File System
 #+BEGIN_SRC 
 (/)root
@@ -437,13 +200,26 @@ owner-group-user        owner  group
 [root@ansible-master ansible]# chown -R ansible:ansible ansible.txt 
 
 -rwxrwxrwx  1 root    root     1156 Mar 24 08:36 hosts
--rw-r--r--  1 ansible ansible     0 Mar 24 14:17 ansible.txt
+-rw-r--r--  1 ansible ansible     0 Mar 24 14:17 ansible.tx
 
 
   ## ##########################################################
   # change owner of file or dir : chown
   ## ##########################################################
-  chown ec2-user:ec2-user <file/dir>
+chown owner-user file 
+chown owner-user:owner-group file/directory
+
+
+# ls -l demo.txt      #>> -rw-r--r-- 1 root root 0 Aug 31 05:48 demo.txt
+
+# chown vivek demo.txt 
+# ls -l demo.txt      # >> -rw-r--r-- 1 vivek root 0 Aug 31 05:48 demo.txt
+
+# chown vivek:vivek demo.txt
+# ls -l demo.txt      #>>   -rw-r--r-- 1 vivek vivek 0 Aug 31 05:48 demo.txt
+
+
+chown ec2-user:ec2-user <file/dir>
 
   # Eg:
   cd ~
@@ -459,6 +235,7 @@ owner-group-user        owner  group
   ping google.com          # Network commands
   nslookup google.com      # find ip address of URL
   telnet google.com 23     # check port 
+  ifconfig
   # GET ip
 
   ## ##########################################################
@@ -471,7 +248,7 @@ owner-group-user        owner  group
 
   # copy for other user to current user
   scp <file-name> username@ip: /opt
-
+  scp -i key.pem /path/to/myfile.txt ec2-user@IPAddressOfEC2:/ 
 
   ## ##########################################################
   #  Create Users
@@ -518,31 +295,18 @@ owner-group-user        owner  group
   # process running 
   ## ##########################################################
   ps -ef | grep <process-name>
+
   # check ports is running
   netstat -anp | grep <ports-no>
 
   uptime  # find out how long system is active. 
  
-#+END_SRC
 
-** Linux PIP Cmd 
- <|(pip)> cmd : is to run more than one cmd
-#+BEGIN_SRC sh
-# 
-#   Pip cmd(|)
-# 
-ls -latr | grep test.sh |rm -rf
-
-
-# ##############################
-# redirect
-####################
-# >  : create a file 
-# >> : append the file
-df -h > disk.log # each time it create a disk.log and insert data and remove previous log
-
-# find the size of /dev/xvda1
-df -h |grep /dev/xvda1
+#  
+#   Run levels https://www.liquidweb.com/kb/linux-runlevels-explained/
+#
+Run levels 
+#Q) What is runlevels in linux
 
 
 # 
@@ -573,12 +337,9 @@ cut -c 1,6 filename    # fa
 cut -c 1 sat 
 
 
-#  
-#   Run levels https://www.liquidweb.com/kb/linux-runlevels-explained/
-#
-Run levels 
-#Q) What is runlevels in linux
-
+#+END_SRC
+** TODO Crontab
+#+BEGIN_SRC sh
 
 #
 #    Crontab  
@@ -735,9 +496,9 @@ man whoami
   # ${4} is shatish
   # $#   is No.Of parameter in command line or ${#}
   # $? : Exist Status of  previous cmd executed sucessfull : true / false(not exectued sucessfull)
-
+  # "${@} : all parameter starting from 1 or ${1}${2}${3}${4}"
 #+END_SRC
-** Argument Examples
+*** Argument Examples
 #+BEGIN_SRC sh
 
 echo "You executeed in this command :${0}"
@@ -759,7 +520,8 @@ do
   echo "${USER_NAME}: ${PASSWORD}"
 done
 #+END_SRC
-** PATH basename variable
+** PATH variable,  basename N dirname variable
+
 The search path for commands.  
 It is  a  colon-separated  list of directories  in  which  the  shell looks for commands
 #+BEGIN_SRC sh
@@ -776,6 +538,23 @@ dirname= /opt/software/apache-maven-3.6.3/bin/not/here
 # > /opt/softwar/apache-maven-3.6.3/bin/not
 #+END_SRC
 
+#+BEGIN_SRC sh
+
+echo "You executeed in this command :${0}"
+
+echo "You used $(dirname ${0}) as the path to $(basename ${0}) script"
+
+NoOfParameter= "${#}"
+echo "You supplied ${NoOfParameters} arguments(s) on the command line."
+
+if [[ "${NoOfParameters}" -lt 1]]
+then 
+    echo "Usage : ${0} USER_NAmE [USER_NAmE]]"
+    exit 1
+fi
+
+#+END_SRC
+
 ** READ 
 read -p “ prompt_text”
 
@@ -787,13 +566,16 @@ Here we read the data along with some hint text . The hint text helps the user i
 # You will be prompted for the account name and password.
 
 # Ask for the user name.
-read -p 'Enter the username to create: ' USER_NAME
+read -p 'Enter the username to create: ' USER_NAME 
 
 # Ask for the real name.
 read -p 'Enter the name of the person who this account is for: ' USER_DETAILS
 
 # Ask for the password.
-read -p 'Enter the password to use for the account: ' PASSWORD
+# read -p 'Enter the password to use for the account: ' PASSWORD
+
+read -s -p "Enter Password: " password
+echo $password
 
 # Create the user.
 useradd -c "${USER_DETAILS}" -m ${USER_NAME}
@@ -976,7 +758,7 @@ fi
 ** Example 
 deployment :
 To developers
-To System Integration and testing
+To System Integration and Testing
 To Preproduction
 To production 
 
@@ -1196,6 +978,7 @@ cat name
 #hh
 #kk
 
+# for i in $(cat people_data.csv); do  echo "$i"; done
 for i in `cat name`
 do
 echo "$i"
@@ -1304,7 +1087,7 @@ then
 deploy dev 192.145.67.8
 fi 
 
-if evn == sit
+if evn == sit     # System Integration and Testing
 then 
 deploy dev 192.145.67.8
 fi 
@@ -1433,56 +1216,65 @@ else
   exit 1
 fi
 #+END_SRC
-** TODO Regular expression 
+** Regular expression 
+Regular Expression
+ - Flexible search pattern
+ - made up of:
+   - anchors        - specify
+   - character sets - what is searched
+   - modifiers      - specify  how many times the previous character set  is repeted
+|-----------+--------------------------------------------------------------------|
+| ANCHORS   |                                                                    |
+|-----------+--------------------------------------------------------------------|
+| .(period) | any char except '\n'                                               |
+| ^         | matches start of string                                            |
+| *         | matches up zero or more time the preceding character               |
+| $         | matches end of string                                              |
+| \         | Represent special  character                                       |
+| ()        | Group of regural Expression                                        |
+| ?         | match up exactly one character                                     |
+| {n}       | matches the preceding char appearing 'n' times exactly             |
+| {n,m}     | matches the preceding char appearing 'n' times but not more than m |
+| {n,}      | matches the preceding char appearing 'n' times or more             |
+|           |                                                                    |
 
-*** Cheat Sheet:
-Special seq of char that helps you match or find other stings or set of strings or set of string used specialized sysntax held in a pattern
-
-moudle re provides full support for perl-like regualr expression in python
-
-raises the expception re.error if error occurs while compiling or using regular expression
-
-Raw string as r'expression'
+Extended Regular Expression
+| \+ | matches one or more occurrence of the previous character |
+| \? | matches zero or one occurrence of previous character     |
+| {} | Brace Expression                                        |
 
 
-| Basic Patterns | matchs                                   |
-| .(period)      | any char except '\n'                     |
-|                |                                          |
-| \d             | Digit [0-9]                              |
-| \D             | Not a Digit(0-9)                         |
-|                |                                          |
-| \w             | Word Character (letters(a-z A-Z,0-9,'_') |
-| \W             | Not word charcter                        |
-|                |                                          |
-| \s             | Whitespace (space, \n, tab )             |
-| \S             | Non-whitespcae(except space, \t, tab)    |
-|----------------+------------------------------------------|
-| ANCHORS       |                                          |
-|----------------+------------------------------------------|
-|  ^             | matches start of string                  |
-| $              | matches end of string                    |
-| \b             | Word Boundary btw word and non-word      |
-| \B             | Not a Word Boundary                      |
-| \t \n\r        | tab newline return                       |
-|                |                                          |
+#+BEGIN_SRC sh
+cat sample |grep ^a  #
+cat sample | grep t$
+echo -e "apple\npant\npeople" |grep -E p\{2}   # apple 
+echo -e "bat\nant\neat\npant\ntaste" | grep "a\+t" # bat, eat
 
-| a,X,9          | ordinary char just match themselves exactly              |
+echo -e "bat\nhat\nrat\nsat\neat\npeople" |grep '[b,h]at'
+#bat
+#hat
+# asdfbatadfadsd
+# adfahatadfad
 
-*** Quantifiers
-| symbols | Function                          |
-|---------+-----------------------------------|
-| *       | 0 or more                         |
-| +       | 1 or more                         |
-| ?       | 0 or One                          |
-| {3}     | Exact Number                      |
-| {3,4}   | Range of Number{minimum, maximum} |
+echo -e "0324-241-341" |grep '[0-9][0-9][0-9][0-9]'
+# 0324-241-341
+echo -e "0324-241-341" |grep -oP '[0-9]{3}'
+# 032
+# 241
+# 341
+grep -n ^'work' GNULicense.txt
+grep -n 'work'$ GNULicense.txt
+grep -n 'th..' GNULicense.txt
+#the that this....etc
+#Exception want to search for []
+grep -n '\[\]' GNULicense.txt
+grep -n '\<work\>' GNULicense.txt # search for word "work" with no starting and ending extentions
 
-| [ch]at       | search for ...cat... or .. hat... |
-| '[0-9]'      | search nubmer                     |
-| '[a-z]'      | seach lower char                  |
-| '[A-Z]'      | seach upper char                  |
-| '[a-z][A-Z]' | search all lower and upper char   |
-|              |                                   |
+# global serach using regular expression
+# grep -i # ignore case
+# grep -
+#+END_SRC
+
 ** cut and Awk
 #+BEGIN_SRC sh
 #type -c 1 <file_name>
@@ -1502,14 +1294,15 @@ echo -e "aefdadsfa\nasfadfad"  #>>>  aefdadsfa
 echo -e 'one\ttwo\tthree'| cut -f 1 # f : field
 echo -e 'one\ttwo\tthree'| cut -f 2 # f : field
 echo -e 'one\ttwo\tthree'| cut -f 3 # f : field
-echo  'one,two,three' |cut -d ',' 1   # correct way to do 
-echo 'one,two,three' |cut -d , 2
-echo 'one,two,three' |cut -d, 3
+
+echo  'one,two,three' |cut -d ',' -f 1   # correct way to do 
+echo 'one,two,three' |cut -d , 2 # Error
+echo 'one,two,three' |cut -d, 3 # Error
 echo 'one\two\three' |cut -d \ 3  #ERROR : 
-echo 'one\two\three' |cut -d '\' 3  #Correct way 
+echo 'one\two\three' |cut -d '\' -f 3  #Correct way 
 
 # print the uid of password in/etc/passwrd
-cut -d ':' -f 1,3 /etc/passwrd
+cut -d ':' -f 1,3 /etc/passwd
 echo 'first,last' > people.csv
 echo 'John,Smitt' >>people.csv
 echo 'firstly,masdfaf' >>people.csv
@@ -1528,7 +1321,7 @@ grep -v '^first,last' peopel.csv   # doesn't match  w
 
 grep -v '^first,last' peopel.csv |cut  -d ',' -f1
 John
-firstly
+firstlyls
 mr.firstly
 
 #or
@@ -1540,29 +1333,29 @@ Data: firstData:last
 Data: JohnData:Smitt
 Data: firstlyData:mclasty
 Data: mr.firstlyData:mclasty
-cat -d ':' -f 2 people_data.csv  # above peopel_data we can't seperate it only by using cut but we can do it by awk command
+cut -d ':' -f 2 people_data.csv  # above peopel_data we can't seperate it only by using cut but we can do it by awk command
 
 awk -F {Data:} '{print $2}' people_data.csv
 
 # Example :
 cut -d ':' -f 1,3 /etc/passwd 
-awk -F ':' '{print $1, $3}' /etc/passwrd # here , is space in output
-awk -F ':' '{print $1$3}' /etc/passwrd # here , is space in output
+awk -F ':' '{print $1, $3}' /etc/passwd # here , is space in output
+awk -F ':' '{print $1$3}' /etc/passwd # here , is space in output
 # awk has special variable called OFS:Output Field Seperator
 
 
 # to change the variable in awk use -v option
-awk -F ':' -v OFS=',' '{print $1,$3}' /etc/passwrd
-awk -F ':' '{print "COL: " $1 $3}' /etc/passwrd
+awk -F ':' -v OFS=',' '{print $1,$3}' /etc/passwd
+awk -F ':' '{print "COL: " $1 $3}' /etc/passwd
 # cut : can't arrange the order in which it print output
 # awk : can do it
-cut -d ':' -f 3,1 /etc/passwrd
-awk -F ':' '{print $3,$1}' /etc/passwrd
-awk -F ':' '{print "UID: " $3 "LOGIN:" $1}' /etc/passwrd
+cut -d ':' -f 3,1 /etc/passwd
+awk -F ':' '{print $3,$1}' /etc/passwd
+awk -F ':' '{print "UID: " $3 "LOGIN:" $1}' /etc/passwd
 
-# PRINT LAST (FIELD or Colum) 
-awk -F ':' '{print $NF}' /etc/passwrd
-awk -F ':' '{print $(NF-1)}' /etc/passwrd
+# PRINT LAST (FIELD or Colum)
+awk -F ':' '{print $NF}' /etc/passwd
+awk -F ':' '{print $(NF-1)}' /etc/passwd
 
 #
 # Example : 
@@ -1611,7 +1404,7 @@ sort -r /etc/passwd  # print in reverse order
 # sort with numbers
 cut -d ':' -f 3 /etc/passwd | sort   # not sorted numerically
 cut -d ':' -f 3 /etc/passwd | sort -n  # sort by nubmer
-cut -d ':' -f 3 /etc/passwd | sort -r  # reverse sort
+cut -d ':' -f 3 /etc/passwd | sort -nr  # reverse sort
 
 #
 # du : disk usage
@@ -2230,7 +2023,8 @@ exit() # to exist
 #NOTE: we can connect from master to slave but not from slave to master
 #+END_SRC
 
-Exercies : create 5 servers in aws (build,dev,sit,uat,prod) servers and create common user(user:devops passwd: dev@!23)
+Exercies : create 5 servers in aws 
+(build,dev,sit(System Integration and Testing),uat(UAT (User Acceptance Testing)),prod) servers and create common user(user:devops passwd: dev@!23)
 
 Ques)make build as master and (dev,sit,uat,prod) as slave
 Ans) build server (keygen, ssh-copy-id to dev,sit,uat,prod) 
@@ -2249,12 +2043,12 @@ then
   scp $scr_path $username@$ip:$dst_path 
 fi
 
-if [$env =="sit"]
+if [$env =="sit"]       # System Integrety and Testing
 then
   scp $src_path $username@$ip:$dst_path
 fi
 
-if [$env =="uat"]
+if [$env =="uat"]   # UAT (User Acceptance Testing)
 then
   scp $src_path $username@$ip:$dst_path
 fi
@@ -2265,7 +2059,7 @@ then
 fi
 
 # OR CASE STATmENT
-case $env in 
+cuase $env in 
 dev) scp $scr_path $username@$ip:$dst_path
 ;;
 sit) scp $scr_path $username@$ip:$dst_path
@@ -2307,4 +2101,243 @@ ssh devops@3.15.169.84 sh /opt/delete.sh
 *** AWS-EC2
 #+BEGIN_SRC sh
 scp -i key.pem /path/to/myfile.txt ec2-user@IPAddressOfEC2:/ 
+#+END_SRC
+* Vagrant
+** Vagrant Virtualization (Creating virtual meachine Environment)
+*** Introduction Why Virtualization 
+**** Why use the Virtualization (Linux installallation) in class ?
+- No suprises which lets you to stay  focused on scripting
+- Allow you to get the best help possible(in class all students has same os)
+- Quickly crete multiple Linux system
+**** What is Virtualization Software 
+- Allow to RUN Linux inside virtual machine(eg: VirtualBox(oracle) )
+- Free to download and easy to install
+- Run on winodws,mac,linux 
+- Provides full virtualization are know as Virtual Box(). 
+- Pyhsical computer = host.
+- Virtual Computer = guest
+- Guest OS think it's runing on real hardware but it is actually running on host Os
+**** Why Vagrant
+- In VirtualBox we can manually create a virtual os, but it is difficult to replicate the os(type, config,share sys setting) to other computers. So Vagrant provieds it
+- Virtual Box is time consuming , not automate it
+- Easy to configure , reproduce environments
+***** Pros and Cons of Vagrant
+- Pros
+  - Free
+  - Automation of virtual machine management tasks
+  - Easy to use commands
+  - Easy to Configure of OS, Share Configuration of Os  
+  - Local testing
+  - Well Documented
+  - Vagrant is decentralized so anyone can make a container package to get a project started. you aren't limited to wordpress, or even one style of wordpress install (you can make a sage.io wordpress environment).
+  - Vagrant easily lets you set ports and URLs for local development.
+- Cons
+  - Can be difficult to set up(setup in cmd ) Lacks a GUI
+  - Uses lots of resources on old machines
+  - Compatibility issues with some operating systems (Windows 8.1 home, Windows 10 home)
+  - Can take up a lot of disk space if running several VMs with various configurations
+
+
+
+    
+
+
+**** Vagrant Boxes 
+Box = Operating System Image
+#+BEGIN_SRC sh
+# vargrant box add <USER>/<BOX> # USER : user name of os, BOX : Iso image of OS
+# Eg:
+vargrant box add jasonc/centos7
+#+END_SRC
+**** Create Vagrant Projects
+To Create a Vagrant Project :
+- Create and Open a Folder
+- Inicialize Vagrant Project
+#+BEGIN_SRC sh
+mkdir VagrantProject1
+cd VagrantProject1
+vagrant init jasonc/centos7 
+vagrant up
+#+END_SRC
+
+**** Start Virtual machine in Vagrant Project 
+#+BEGIN_SRC sh
+vagrant up # Vagrant will import box into Virtual Box and start it.
+
+#+END_SRC
+**** Vagrant Up/ multi-machine
+#+BEGIN_SRC sh
+#Synatx:
+#       vagrant up <Vm_Name>
+vagrant up master
+vagrant up server1
+vagrant up          # start all virtual machines 
+#+END_SRC
+*** SSH-Secure Shell
+**** Introduction
+SSH : Secure Shell
+Cryptographic Network Protocol
+Uses for acessing remote servers
+SSH uses Asysmmetric Cipers
+In cryptograph,cipher is an algorithm for performing encryption and decryption
+- Why we need ssh
+  - Username and password can be stolen in middle but ssh ensure no 3rd party know username and password
+
+- SSH create public key and a private pair
+  - private key is not share to any one
+  - public key is shared to any one
+
+- There are many encryption methods like (rsa, dsa, ed25519...etc)
+
+Cons in SSH:
+ - Since it's a service, so its not available until system starts
+ - If by mistake (forgot or deleted private key)  then you can't log back in
+https://www.youtube.com/watch?v=y2SWzw9D4RA 
+ https://www.youtube.com/watch?v=AtuAdk4MwWw : Dynamic ssh, reverser ssh, ssh tunneling
+
+Network protacol used to connect to Linux
+No built-in SSH client
+Git include as SSH client
+**** SSH in Vagrant
+Vagrant provide simple shortcut to ssh into the meachine
+#+BEGIN_SRC sh
+vagrant ssh <Vm-name> # Vm-name :to ssh into Project name
+exit # to end ssh connection
+# log out of the Linux system by running the "exit" command.
+#+END_SRC
+
+**** Vagrant Halt,Suspent,Resume,Destroy
+Vagrant it can use to control the Vm   like halt
+#+BEGIN_SRC sh
+vagrant halt <vm-name> # halt <vm-name>
+vagrant halt           # halt all virtual machines 
+# you will not lose any work you’ve performed on the virtual machine.  The virtual machine will still exist in VirtualBox, it will simply be stopped.
+vagrant up <vm-name> # start and
+vagrant suspend <vm-name>  # to suspend
+vagrant resume <vm-name>   # to resume 
+vagrant destroy <vm-name>  # to remove virtual-meachine from virtual box
+# you want to start over with a fresh copy of the virtual machine, run "vagrant destroy" all work inside virtual-meachine will be lost.
+vagrant # help
+#+END_SRC 
+**** Vagrantfile[in Project file]
+
+#+BEGIN_SRC sh
+Vagrant.configure(2) do |config|
+   config.vm.box = "jasonc/centos7"  #Operating System like Ubuntu-64, Centos,...etc
+   config.vm.network "private_network", ip "10.2.3.4" # How your host see your box : configure ip address...etc
+   config.vm.provision "shell",path ="setup.sh" # what we want setup # lamp stack, mean stack,Nodejs
+   config.vm.synced_folder # How you access file in your computer : edit files using atom, vs code.....etc
+   config.vm.provider # Virtualbox like hyperV, VmWare
+end
+#+END_SRC
+
+**** Example fo vagrant file
+#+BEGIN_SRC sh
+    Vagrant.configure("2") do |config|
+      config.vm.box = "jasonc/centos7"
+      config.vm.define "test1" do |test1|
+        test1.vm.hostname = "test1"
+        test1.vm.network "private_network", ip: "10.9.8.5"
+      end
+      config.vm.define "test2" do |test2|
+        test2.vm.hostname = "test2"
+        test2.vm.network "private_network", ip: "10.9.8.6"
+      end
+    end
+
+#+END_SRC
+#+BEGIN_SRC sh 
+config.vm.box = "ubuntu/trusty64"
+# config.vm.box = "jasonc/centos7"
+config.vm.provider "virtualbox" do |vb|
+#+END_SRC
+**** Vagrantfile
+#+BEGIN_SRC sh
+# vi Vagrantfile
+Vagrant.configure(2) do | config | 
+     config.vm.box= "jasonc/centos7"
+     config.vm.hostname = "linuxsvrl"
+     config.vm.network "private_network", ip :"10.2.3.4"
+     config.vm.provider "virtualbox" do |vb|
+       vb.gui = true
+       vb.memory = "1024"
+     end    
+     config.vm.provision "shell", path : "setup.sh"
+end
+#+END_SRC
+*** Config vagrant file for multi-virtual machine project
+#+BEGIN_SRC sh
+vagrant box add jasonc/centos7   # img is load in os
+cd /Workspace/Shell/shellclass
+mkdir multitest
+cd multitest
+vagrant init jasonc/centos7
+# edit vagrantfile 
+vi vagrantfile                 # inside vagrantfiel
+Vagrant.configure("2") do |config|
+   config.vm.box = "jasonc/centos7"  
+
+   config.vm.define "test1" do |test1|
+       test1.vm.hostname = "test1"
+       test1.vm.network "private_network", ip "10.9.8.5" # How your host see your
+   end 
+
+   config.vm.define "test2" do |test2|
+       test1.vm.hostname = "test2"
+       test1.vm.network "private_network", ip "10.9.8.6" # How your host see your
+   end 
+end
+
+
+# in terminal in /Workspaec/Shell/shellcalss/multitest
+vagrant up   # up every meachines test1,test2
+vagrant status # show 2 running virtualbox
+vagrant ssh test1
+exit 
+vagrant ssh test2
+ping -c 3 10.9.8.6 # ip address of test2 system
+#+END_SRC
+
+*** Excersise 
+#+BEGIN_SRC sh
+cd /Workspace/Linux_script/udemy_shellclass/
+cd localuser
+# pwd Workspace/Linux_script/udemy_shellclass/
+vagrant init jasonc/centos7
+vagrant up
+vagrant status
+vagrant ssh
+# root
+# |- Vagrant  (home directory)
+#    |- Vagrantfile(config)
+#+END_SRC
+** Creating User Account in Vagrant 
+*** Introduction 
+- Your First Script
+ - Create new account 
+ - Checks for proper privileges 
+ - Reports if account creation failed
+- But 1st need to Learn all *Concepts and Techinques*
+ - project based learing helps you learn and retain new material
+ - You'll use what you learn in the appropiate context
+- Net 4 Lesson consist of demonstration and teaching
+  - You can watch or follow along
+  - All scripts are in course download
+- Practice Your Skills in Exercise
+ - Follow instruction for exercise
+ - You'll write the script and test it.
+ - Watch the instruction implement  script
+
+*CONTINUE LECTURE*
+
+*** Creating
+#+BEGIN_SRC sh
+# man useradd  
+# useradd [options] LOGIN : Login are username , there should be 8 char or less it's general  practice, but it can more tha 8-char eg: ps -ef
+# usernaem is case sensetive, No special chara
+
+sudo useradd dougstamper   # create user : dougstamper
+passwd # set passwd for  dougstamper
+
+
 #+END_SRC

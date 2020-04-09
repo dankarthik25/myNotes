@@ -97,6 +97,7 @@ constitute the DevOps Life cycle [[img] [https://d1jnx9ba8s6j9r.cloudfront.net/b
 *** Stage – 4: Continuous Deployment
 
 Tools Used: 
+*** Stage – 5: Contionous monitoring 
 * AWS EC2 installation
 * Linux and Shell
 Visit : Linux Tutorial for both Linux and Shell
@@ -471,22 +472,25 @@ vi ww
 ** stash
 
 * Github
-
 version control 
 sharing code
-* Build maven
--  install maven in ubuntu there are two ways
-    - using apt-get install
-    - using wget and extracting and creating link
-** install using apt-get
-#+BEGIN_SRC 
-sudo apt install default-jdk
-java -version
-sudo apt update
-sudo apt install maven
-mvn - version
+* maven
+maven is a java based build tool and it is use to create artifacts like jar, war,ear
 
+Build server: 
+Build server job is take the code from git and build artifact
+(war web archive, 
+ jar java archive, 
+ ear enterprise ) 
+
+Requirement: java  is required  since maven is java complied
+
+
+#+BEGIN_SRC sh
+mvn archetype:generate # Need 3 input : group Id, version, artifact Id
 #+END_SRC
+
+
 ** using wget and extracting and install
 #+BEGIN_SRC sh
 # Download maven in /temp using wget
@@ -498,7 +502,7 @@ sudo ln -s /opt/apache-maven-3.6.0 /opt/maven
 #+END_SRC
 https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-18-04/
 
-** Setup environment variable
+*** Setup environment variable
 #+BEGIN_SRC sh
 # Open mavenenv.sh in /etc/profile.d dir
 sudo nano /etc/profile.d/maven.sh
@@ -522,7 +526,8 @@ mvn -version
 
 ** Create maven project
 #+BEGIN_SRC sh
-cd /Workspace/Devops # Directory for maven project
+cd /Workspace/Devops # Directory for maven project here pom.xml file
+
 mvn archetype:generate -DgroupId=world -DartifactId=india -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
 # [INFO] ----------------------------------------------------------------------------
 # [INFO] Using following parameters for creating project from Old (1.x) Archetype: maven-archetype-webapp:1.0
@@ -535,12 +540,168 @@ mvn archetype:generate -DgroupId=world -DartifactId=india -DarchetypeArtifactId=
 # [INFO] Parameter: version, Value: 1.0-SNAPSHOT
 # [INFO] project created from Old (1.x) Archetype in dir: /home/jayradhe/Workspace/Devops/india
 # [INFO] ------------------------------------------------------------------------
+pwd
+# ~/Workspace/Devops
+ls
+# india |- src    # india : ArtifactId
+#       |-pom.xml 
+
+ # Developers put there code in and push it to github
+# artifact_Id/src/main/java/group_Id
+
+# Pull the code and build artifact
+maven comple
+maven package
+maven install
+maven deploy
+
+#+END_SRC
+
+Q)Who create src file and pom.xml file ?
+maven create src dir and pom.xml 
+maven is a project management tool and we need 3 argument: group Id, Artifact Id, Version
+
+Q)For running maven cmd (compile,package,install,deploy)  why it should present in the same directory where pom.xml is present
+
+** TODO maven life cycle [Need to visit : javatpoint.com maven-life-cycle: 8items=> validate,test ]
+compile : want to compile
+package : want to create a package
+install : copy to local repos (.m2)   # create a .war file
+deploy  : deploy to (remote repo) 
+
+#+BEGIN_SRC sh
+# hello.java 
+hello.class -compile -mvn compile #
+# TO create a package 
+mvn package
+#+END_SRC
+
+*** Question and Answers
+Q) Why it is called maven life cycle ?
+Ex if we need to run install : we need to go step by step like compile, package, install
+
+Q) What is difference between Snapshot and Version ?
+Snapshot : For every realased snapshot is increased or updated.
+But version is different it not updated or increased for every deployment but for final-deployment Version is updated.
+
+
+Q) What is actually pom.xml  file
+- Consist of 
+   group Id, 
+   artifact Id, 
+   version
+   dependency-links
+- Link to remote repository 
+
+Q) What is maven archtype:generate ?
+It is a maven plugin use to generate src and pom.xml file
+
+
+
+*** Step in how to build artifact in organisation
+
+- Step 1: OPS : Create git repo and send to all dev
+- Step 2: DEV : clone the repo
+- Step 3: DEV : push code into github (contain src and pom.xml in github)
+- Step 4: OPS : clone the repo
+- Step 5: OPS : Build artifacts (war file: mvn package)
+- Step 6: OPS : push(scp) war file  to dev,sit,preproduct, prod servers
+
+#+BEGIN_QUOTE
+- Developers will create maven file and in src file they will uploade developer code and push code to github
+- OR
+- Developerss will 1st create a maven project and then it will write the code then they will version control (git) and upload them th remote repository (github)
+
+
+*Note* :For Continous Testing & Deployment:  We need to deploy the artifacts to different envirnoment (development, sit (System Integration and Testing),uat (User Acceptance Testing),prod)
+
+#+END_QUOTE
+
+#+BEGIN_SRC sh
+mvn archetype:generate -DgroupId=world -DartifactId=india -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+#tree -L 1
+#LG
+#|- india/
+#|     |-  src/
+#|     |-  pom.xml
+#|
+#|- READ.md
+
+
+
+#- Step 1: OPS : Create git repo and send to all dev
+#- Step 2: DEV : clone the repo
+#- Step 3: DEV : push code into github (contain src and pom.xml in github)
+# Above all code is writen by developers with devops are also present
+git add india
+git commit -m "created mvn project"
+git push origin master
+
+#
+#  How to create war file for github
+#
+git clone https://github.com/kliakos/sparkjava-war-example.git
+cd sparkjava-war-example
+
+#- Step 5: OPS : Build artifacts (war file: mvn package)
+mvn install  # will create a war file 
 
 
 #+END_SRC
 
+#+BEGIN_SRC sh
+#!/bin/bash
+
+#- Step 6: OPS : push(scp) war file  to dev,sit,preproduct, prod servers
+
+src=india/target/web.war
+dest=/opt/
+env=$1
+if [$env=='sit']
+then
+   scp $src@192.124.24.5:$dest
+fi
+
+#+END_SRC
+** maven repository
+
+# maven has three repose
+# 1.Local Repo (dir by name .m2 )
+# 2.Central Repo (Internet)
+# 3.Remote Repo
+
+# Why we need repo ? we run 
+# mvn archetype:generate >>> it search for all dependency in local then central,last remote repo
+
+# Remote repo is custome repo like personal details (salary, bank  balance,how much loan taken ....etc)
+# remote repo consist of custome (war,jar) file we store in remote repo
+
+
 * Servers (Tomcat) 
+Server contains: 
+  - Start and shutdown programs (irctc ticket booking at night 12am)
+  - Can be supported to run war or ear files continously
+     Ex: sbi.war is copied in to server then sbi site is opend
+
+Type of Servers
+ - Webservers - Eg: apache tomcat 
+    -  it can be supported only war file it wont support ear files
+ - Application Servers : jboss
+   - it can be supported  ear file
+ - Cluser: 
+   - web logics
+   - group of servers
+   - support ear files  
+
+
+
+# By default tomcat server is 8080 
+# We can change server in conf/server.xml - conncetor port
+# After starting if there is some error then check log file
+
 we are using tomcat 9 server there is 10 but 10 is alpha and 9 is stable version
+
 
 ** installation
 https://www.youtube.com/watch?v=Feui5F42bII
@@ -566,28 +727,44 @@ source ~/.bash_profile
 
 cd Workspace/Devops/tomcat
 sh startup.sh
-firefox localhost:8080
+
+# Run tomcat server
+sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/startup.sh
+
+# Stop tomcat server
+sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/shutdown.sh
+
+
+## Create symbolic link 
+#ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/startup.sh /usr/local/bin/tomcatup
+#ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/shutdown.sh /usr/local/bin/tomcatdown
+
+## To start tomcat as root anywhere in shell
+#tomcatup
+## To stop tomcat
+#tomcatdown
+
+
+firefox localhost:8080 # By default tomcat server is 8080 
+# We can change server in conf/server.xml - conncetor port
+# After starting if there is some error then check log file
 #+END_SRC
-** installation version 2
+** Change Port Number
+*** Tomcat File system
 #+BEGIN_SRC sh
-mkdir /opt/tomcat
-mv apache-tomcat-9.0.31.tar.gz /opt/tomcat
-cd /opt/tomcat
-md5sum apache-tomcat-9.0.31.tar.gz
-tar -xvzf apache-tomcat-9.0.31.tar.gz
-cd apache-tomcat-9.0.31/bin
-chmod 700 /opt/tomcat/apache-tomcat-9.0.31/bin/*.sh
-
-# Create symbolic link 
-ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/startup.sh /usr/local/bin/tomcatup
-ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/shutdown.sh /usr/local/bin/tomcatdown
-
-# To start tomcat as root anywhere in shell
-tomcatup
-
-# To stop tomcat
-tomcatdown
-
+Tomcat
+├── bin  # executable file : start up and shutdown
+├── conf # server.xml : change config 
+|     └──server.xml # like port by default port is  :8080
+├── log    
+└── webapps 
+      └── sbi.war 
+#+END_SRC
+*** Edit server.xml 
+#+BEGIN_SRC sh
+cat server.xml
+######################################################
+# Change port :8080 
 #+END_SRC
 ** install using apt-get 
 https://www.youtube.com/watch?v=26ipmonPmRw
@@ -601,14 +778,16 @@ sudo service tomcat9 stop
 sudo status tomcat9
 #+END_SRC
 
-** Configurations
-https://www.youtube.com/watch?v=pVrix9lo5zA
-used for shortcut tomcatup, tomcatdown and more cmd for installation
-#+BEGIN_SRC sh
-ln -s /opt/softwares/apache-tomcat-9.0.31/bin/startup.sh /usr/local/bin/tomcatup
-ln -s /opt/softwares/apache-tomcat-9.0.31/bin/shutdown.sh /usr/local/bin/tomcatdown
+** Deployment process
 
-#+END_SRC
+Deployment Process
+- Stop the server process
+- take required backups sbi.war-> sbi.war'data'.zip
+- Deploy sbi.war(build server (scp * .war $user@$ip :opt/apache-tomcat-9.0.16/webapps/*.war )
+  - Deployed to dev,sat,uat,pre-production,production
+- start the server
+- check it in web browser
+
 ** Example 
 SampleWebApp.war file
 https://www.middlewareinventory.com/blog/sample-web-application-war-file-download/
@@ -616,11 +795,6 @@ https://www.middlewareinventory.com/blog/sample-web-application-war-file-downloa
 # download  or SampleWebApp.war file to tomcat/webapps dir # 
 # /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/webapps
 
-# Run tomcat server
-sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/startup.sh
-
-# Stop tomcat server
-sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/shutdown.sh
 
 #+END_SRC
 
@@ -633,6 +807,89 @@ https://github.com/kliakos/sparkjava-war-example
 git clone https://github.com/kliakos/sparkjava-war-example.git
 
 #+END_SRC
+** TODO Deploy war file to tomcat
+#+BEGIN_SRC sh
+#!/bin/bash
+env=$1
+if[$env=='dev']
+then 
+scp sbi.war dev@192.145.67.8: tomcat/webapps
+fi
+
+#+END_SRC
+** How to Deploy (automate) git code to tomcat server  [029 Udemy Lecture]
+- Steps required
+  - Configure Tomcat or Create User for remote acess
+  - Create Job to Produce Tomcat Deployable Artifacts
+  - Install "Copy Artifact" & "Deploy to Containers" Plugins
+  - Create Job to Deploy Artifacts to Tomcat server or(Staging Env).
+*** Configure Jenkins with Tomcat for Auto Deployment of Artifacts.
+#+BEGIN_SRC sh
+cd /opt/tomcat/conf
+# update tomcat-users.xml file
+# roles : manger-script & manger-gui
+# Set password:tomcat
+
+#  <role rolename="manager-script"/>
+#  <role rolename="manager-gui"/>
+#  <user username="tomcat" password="tomcat" roles="manager-script,admin-gui" />
+#</tomcat-users>
+
+
+# Restart the tomcat server
+/opt/tomcat/bin/shutdown.sh
+/opt/tomcat/bin/startup.sh
+
+#+END_SRC
+*** Create Job to Produce Tomcat Deployable Artifacts
+Create a view :
+View Name : _TomcatDeploy_View_
+List View : select
+
+Inside "TomcatDeploy_View" Create a New JOB   :
+New item > Name _Package_Application_
+Genral :        
+    Description: This Job is Packaging Java-Tomcat-Sample Project  and Create war file
+    Discard Old Build: 5 days and 5 builds
+Source Code management:
+    git :https://github.com/anshulc55/Jenkins_Upgradev3.git 
+
+Build Trigger :
+    Poll SCm: * * * * *
+Build: _Invoke top-level maven target_
+    pom : _location of pox.xml_
+
+Post-build Action : _Archive the artifacts_
+    Files to archive : _**/*.war_
+
+Post-build Action : _Build Other Project_
+    Project to build : _Depoly Application Staging Env_ (Below Stage Job Name)
+    Trigger only if build is stable : Ok
+Save Job
+*** Create Job to Deploy Artifacts to Tomcat server or(Staging Env)
+Step 1:  Install "Copy Artifact" & "Deploy to Containers" Plugins
+Step 2:
+New item > Name : _Depoly Application Staging Env_
+           FreeStyle
+Genreal:
+     Description : This Will Deploy the Java_Tomcat_sample in Staging Enviroment
+     Discard Old Build : 5 days , 5 build
+Build:
+     _Copy Artifacts from Another Project_
+     Project Name :  _Package_Application_   (Project Name for above Prj)
+     Artifacts to Copy :  _**/*war_
+
+Post-build Action
+   _Deploy war/ear to a container_
+    War/Ear files : _**/*.war_ 
+    Context Path : _/_
+    Containers : _Tomcat 9_
+    Credentials : Add credentials 
+             Username : tomcat
+             Password : tomcat (For configuration we set)
+    Tomcat Url : Same page url.
+       
+
 * Jenkins 
 - Jenkins 
   - installation
@@ -652,7 +909,7 @@ git clone https://github.com/kliakos/sparkjava-war-example.git
   - Countious Development
   - backup
   - build triggers (poll SCm)
-
+    
 ** installation
 - Jenkins can be install in 3 ways
   - 1. using executal file (unzip and install)
@@ -712,6 +969,16 @@ create user : dankarthik
 passwrod : dankarthik
  
 #+END_SRC
+**** Change Port 
+In case you want to change the default jenkins port on Linux,
+You can go to /etc/default/jenkins  
+add --httpPort=9999 or whatever port to JENKINS_ARGS
+#+BEGIN_SRC sh
+vi /etc/default/jenkins
+# # port for HTTP connector (default 8080; disable with -1)
+# HTTP_PORT=8080
+
+#+END_SRC
 *** Install jenkins in tomcat
 #+BEGIN_SRC sh
 cd /opt/softwares/apache-tomcat-9.0.31/webapps
@@ -722,77 +989,132 @@ tomcatdown
 tomcatup
 
 #+END_SRC
-** Createing 1st job
-** Plugis update, install, advance
-** Integrating with gmail
-how to create a empty job ?
-how to configure git,maven ?
+*** Install using java
+#+BEGIN_SRC sh
+java -jar jenkins.war
+java -jar jenkins.war --httpPort=9090
+#+END_SRC
+
+** DONE Createing 1st job
+Create 1st   
+
+
+|-------------------+-------------------------------------|
+| New Item          | Create a job or project             |
+|-------------------+-------------------------------------|
+| People            | User which are connected to Jenkins |
+|-------------------+-------------------------------------|
+| Build             | Build                               |
+|-------------------+-------------------------------------|
+| manage Jenkins    | manage                              |
+|-------------------+-------------------------------------|
+| my views          |                                     |
+|-------------------+-------------------------------------|
+| lockable resource |                                     |
+|-------------------+-------------------------------------|
+| credentials       | Create Credentials                  |
+|-------------------+-------------------------------------|
+| new view          |                                     |
+|-------------------+-------------------------------------|
+
+(menu)Jenkins > New Items > FreeStyles >  
+
+- General 
+  - Description
+  - Discard odl builds : Remove  the old build
+      - Days to keep builds    :__________
+      - max # of build to keep :__________
+  - GitHub Project 
+      - give url for source code:________
+  - TODO :Build requires lockable resource
+
+  - Project is parametrized :
+         : Project require agruments to be passed 
+  - Throttle builds   # No.of Concurrent(parallel) build
+
+      
+- Source Code management
+   Git : url_________ 
+   Subversion:
+
+
+- Build Triggers
+   - Trigger Build remotely: using url or (Authentication Token)
+
+   - Build after other project are build :
+
+   - Build Periodically 
+#+BEGIN_SRC sh
+# * * * * * 
+#+END_SRC  
+    - Github hook for GIT_SCm Polling
+    - Poll SCm
+     
+- Build Environment
+  - Delete Workspace before build starts (discard old build result and start fresh build)
+  - Use secret text or file
+         - password protection
+    - Abort build if it's stuck
+    - Inspect build log for published Gradle build scans
+- Build
+   - Execute shell
+   - Execute Powershell
+   - 
+
+- Post-build Actions
+  - E-mail Notification
+  - Editable Notification
+  - Git Publisher
+  - Set Github commit status
+  - Delete workspace when build is done
+
+
+
+Build a job
+Double Click Project > Build Now
+
+
+** DONE Plugis update, install, advance
+
+** DONE Integrating with gmail
 how to send an email to other ?
  - why should i share user and pwd to other client,middle-men, higher secured so we need to configure  and we send only log file to client,manager...etc
-
-Path : Jenkins/manage Jenkins/Configure System/
-
+#+BEGIN_SRC
 step1: 
-manage jenkins - configure system - email notification:
-smtp.gmail.com
-@gmail.com
-username: sanjy@gmail.com
-passwd:
+manage jenkins - 
+    configure system - 
+       Extended email notification:
+          SmTP server                  : smtp.gmail.com
+          Default user E-mail suffix   : @gmail.com
+          Use SmTP Authentication      : Check-Ok
+          Username                     : sanjy@gmail.com
+          passwd                       : 
 
-use ssl checked
-port:456
+          Use ssl                      : Check-Ok
+          SmTP port                    : 456
+
+       E-mail Notification:
+          Test Configuration by sending test e-mail : Check-Ok
+          Test e-mail recipient                     : omshiva003@gmail.com
 
 step2: go to google account -> security-> on less security 
 test:
-sajay@gmail.com
+
 
 go to job:
-post build actions->editable email notification -> mails
-
-attached log
-aways
-
-save
-
-build now 
-#+BEGIN_SRC 
-SMTP server name : smtp.gmail.com
-User name: user_email_id@gmail.com
-Password: 123456
-Use SSL : Checked
-SMTP Port: 456
+post build actions 
+       editable email notification :
+            Project From            : jenkins
+            Project Recipient List  : cc:omshiva003@gmail.com
+            Attach Build Log        : Attach Build Log
+            Content Token Reference : Advance
+                               Trigger : Always (Always form Add Trigger)
+Save
+Build now 
 
 #+END_SRC
-
-#+BEGIN_SRC 
-email :
-step1: 
-manage jenkins - configure system - email notification:
-smtp.gmail.com
-@gmail.com
-username: sanjy@gmail.com
-passwd:
-
-use ssl checked
-port:456
-
-step2: go to google account -> security-> on less security 
-test:
-sajay@gmail.com
-
-go to job:
-post build actions->editable email notification -> mails
-
-attached log
-aways
-
-save
-
-build now 
-
-#+END_SRC
-** Permissions Add-Users Account (Role Based management) 
-** Upstream and Downstream
+** TODO Permissions Add-Users Account (Role Based management) 
+** TODO Upstream and Downstream
 ** master -slave :
 https://www.youtube.com/watch?v=8dZKT79DUfk
 copy D:\jenkins\worksape\sample\target\*.war D:\tomcat\webapps
@@ -914,7 +1236,7 @@ manage jenkins > mange nodes
 
 run as admin
 start jenkins
-** Backup and Restoring point  
+** TODO Backup and Restoring point  
 ** Build Trigger
 ** Shell/Powershell  Scripts 
 
@@ -2194,12 +2516,12 @@ local and container are have shared space
 * Docker File
 #+BEGIN_SRC sh
 # To delete used image 
-docker system prune -a # remove 
+docker system prune -a # remove  unused images,container
 docker pull msql:5
 
 # -e : password
 docker run -itd --name sathish_mydb -e mYSQL_ROOT_PASSWORD=DEVOPS@12345 
-# Interview : How to pass password in docker cli
+# Interview : How to pass password(mysql) in docker cli
 
 dokcer exec -it 015ffdcb /bin/bash
 mysql -u root -p
@@ -2208,10 +2530,277 @@ mysql -u root -p
 
 #+END_SRC
 
-* Docker File
+* 3rd April Docker File
+Docker file is look like shell but it is not
+** Edit Docker File 
+#+BEGIN_SRC sh
+# Docker-formate not shell script
+# 1
+FROm debian:jessie 
+FROm centos
+# 2
+mAINTAINER "sathish"
 
+LABEL CEO ="apple"
+LABEL DRT ="stephen"
+
+
+# 3
+RUN mkdir /opt/demo
+RUN mkdir /opt/demo && \
+    touch /opt/devops && \
+    yum install git -y \
+    yum update ;
+
+RUN mkdir /opt/demo && touch /opt/devops && yum install git -y    yum update ;
+
+RUN # INSTALL packages or unzip....etc
+#  &&    make all cmd into one layer
+#  &&      
+
+# 4
+WORDIR /opt
+RUN mkdir aws
+ADD www.tomcat.tar /opt
+# 6
+# COPY SRC DEST
+COPY /opt/sample.war /tmp
+
+# 7
+ADD 
+# 1) Copy a file from local linux to container
+# 2) it download from internet 
+ADD www.tomcat.tar /opt # download tocat.tar to /opt
+
+# 8
+ENV    # SET ENVIROmENT Varible 
+# 
+# # set environment in linux
+#
+#export JAVA_HOME=/usr/lib/jvm/default-java
+#export M2_HOME=/opt/maven
+#export MAVEN_HOME=/opt/maven
+#export PATH=${M2_HOME}/bin:${PATH}
+#
+# SET ENVIROmENT VARIABLE IN DOCKER FILE
+#
+ENV JAVA_HOME /opt/java-1.8.0/java
+ENV PATH /opt/java-1.8.0/java/bin
+ENV NGINX_VERSIN 1.11.10-1~jessie
+RUN export JAVA_HOME
+RUN export PATH
+
+# 9) 
+EXPOSE 8080  # Enable port 
+# 10
+
+#CMD and ENTRYPOINT
+
+
+
+EXPOSE 80 443 # open port 80,443
+Cmd # file cmd will run end or restart of container
+CmD ["java","-version"]
+ENTRYPOINT ["java", "-jar", "jenkins.war"]
+
+#+END_SRC
+
+** Run(Execute) Docekr file 
+Run a docker file
+#+BEGIN_SRC sh
+#
+#   Build the docker image by docker-file
+#
+docker build -t docker_file_name  # -t: tag #-f : docker file path
+docker build -t sathish -f dockerfile-dev . # . : current dir
+
+#
+# start container 
+#
+docker run -itd sathish
+
+# inside the container
+
+#+END_SRC
+
+#+BEGIN_SRC sh
+# docker run -it sathish
+
+java -jar jenkins.war
+
+#+END_SRC
+** install jenkins in Docker using (java -jar ) cmd
+#+BEGIN_SRC sh
+FROM centos:7
+LABEL name="sathish-devopstrainer"
+
+RUN yum -y update && \
+    yum install java-1.8.0-openjdk -y;
+
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.242.b08-0.el7_7.x86_64/jre/bin/java
+ENV PATH ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.242.b08-0.el7_7.x86_64/jre/bin/java/bin:$PATH
+
+RUN export JAVA_HOME
+RUN export PATH
+
+WORKDIR /opt
+EXPOSE 8081
+ADD https://updates.jenkins-ci.org/download/war/2.229/jenkins.war .
+RUN java -jar jenkins.war
+ENTRYPOINT ["java", "-jar", "jenkins.war"]
+#cat /root/.jenkins/secrets/initalAdminPassword
+
+
+
+#
+#    Install tomcat  
+#
+
+#ADD http://apachemirror.wuchna.com/tomcat/tomcat-9/v9.0.33/bin/apache-tomcat-9.0.33.tar.gz .
+#RUN tar -xvf apache-tomcat-9.0.33.tar.gz
+#RUN sh /opt/apache-tomcat-9.0.33/bin/startup.sh
+
+
+
+
+
+#+END_SRC
+
+* 7th April Docker File [Cmd Entripoint]
+Difference
+- Examin
+- Override
+- default
+
+-1   To execute a msg while running inside container
+      CmD 'echo hai'
+       or
+      CMD ["ECHO" "Hai"]
+
+      Ex:
+      RUN mkdir /opt/satish
+      CmD 'echo floder created'
+#+BEGIN_SRC sh
+docker run -it sathish-own echo directory created
+docker run -it sathish-own echo sathish folder is created
+#+END_SRC
+-2 cmd can be OVERRIDE while entrpoint can't be override but appended
+
+#+BEGIN_SRC sh
+# FileName : dockerfile
+FROM centos
+RUN mkdir /opt/azuredevops
+ENTRY ["echo", "floder created"]
+#+END_SRC
+ 
+#+BEGIN_SRC sh
+docker run -it sathish-owm
+docker run -it sathish-own  echo sathish is created # we see it is not over-ride but appended
+#+END_SRC
+
+-3 passs ${1} parameter to shell scripts inside docker-file 
+
+#+BEGIN_SRC sh
+# cat deployment.sh
+env= $1
+echo "$1 is working in IBM"
+#+END_SRC
+
+#+BEGIN_SRC sh
+FROM centos
+WORKDIR /opt
+copy deployment.sh .
+ENTRYPOINT ["sh","deployment.sh"]
+CMD ["sathish"]   # Sathish is paramenter to ENTRYPOINT
+#+END_SRC
+
+#+BEGIN_SRC sh
+docker build -t sathish-own -f dockerfile_1 .
+docker run -it sathish-owm 
+# sathish is working in IBM
+
+#+END_SRC
+
+Example 2:
+#+BEGIN_SRC sh
+#cat dockerfile2
+FROM centos:7
+LABEL name="sathish-devopstrainer"
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.242.b08-0.e17_7.x86_64/jre/bbin/java
+RUN yum -y update &&\
+    yum install java-1.8.0-openjdk -y;
+RUN export JAVA_HOME
+CMD ["java","-version"]
+#+END_SRC
+
+#+BEGIN_SRC sh
+docker build -t sathish-own -f dockerfile2 .
+docker run -it sathish-owm 
+#+END_SRC
+
+-3 Change default process
+#+BEGIN_SRC sh
+docker ps -a    #by default the command is bash
+#          COMMAND
+#          /bin/bash
+#          /bin/bash
+#          /bin/bash
+#+END_SRC
+
+Example : 
+#+BEGIN_SRC sh
+#wget jenkins.war_url  #download jenkins.war file
+ #cat dockerfile2
+FROM centos:7
+LABEL name="sathish-devopstrainer"
+ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.242.b08-0.e17_7.x86_64/jre/bbin/java
+RUN yum -y update &&\
+    yum install java-1.8.0-openjdk -y;
+RUN export JAVA_HOME
+COPY jenkins.war
+
+CMD ["java","-version"]
+#+END_SRC
+
+
+
+
+Real time we can use sleep and wait commond.
+
+* [8th April] Link N Docker-Compose
+
+
+Link 
+#+BEGIN_SRC sh
+# To delete used image 
+docker system prune -a # remove  unused images,container
+docker pull msql
+docker pull wordpress
+docker run -itd --name mydb -e mYSQL_ROOT_PASSWORD=DEVOPS@12345 mysql:5.7
+dokcer exec -it 015ffdcb /bin/bash
+mysql -u root -p
+#show database;
+#create employ (){.......etc
+docker run -itd -itd wordpress  --link mydb:mysql -p 83:80 wordpress
+#+END_SRC
 * TODO Phase 5: Continuous Monitoring 
 (Tools Used: Splunk, ELK Stack, Nagios, New Relic)
+Nagios: is a monitoring tool
+
+- disc space
+- services 
+- URL avaialbility
+
+
+www.dev-facbook.com
+www.sit-facebook.com
+www.preprod-facebook.com
+www.prod-facebook.com
+
+master - nagios
+
+slave - linux  NRPE 
+window - slave NSclient
 * Real Time Sceanior
 Real time there are 5 environment
 - dev env

@@ -1,4 +1,4 @@
-* OpenGl by Ben Cook
+* OpenGl by Ben Cook Udemy 
 ** modern OpenGl Techniques
 *** Introduction to GLEW, GLFW and SDL
 
@@ -282,3 +282,9 @@ pip install glfw
 #+END_SRC
 
 
+* Theory of Camera matrix,
+http://www.opengl-tutorial.org/
+
+
+3D -model with mouse and keyboard moving 
+https://www.youtube.com/watch?v=g4E9iq0BixA

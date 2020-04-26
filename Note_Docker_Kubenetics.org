@@ -92,12 +92,9 @@ docker ps
 docker top mydb
 ps aux | grep 'mongo' # it may have different process it but it run in host kernal
 #+END_SRC
-* run /stop /remove containers
-
 * Docker Install
 ** In windows docker run  a tiny Hyper-V  
-** Ubuntu
-*** asdf s
+** Linux Installation
 Older versions of Docker were called docker, docker.io, or docker-engine. If these are installed, uninstall them:
 #+BEGIN_SRC sh
 # Uninstall old version
@@ -135,16 +132,17 @@ docker info
 #(old) : docker <command>  (options)
 #(new) : docker <command> <sub-command> (options)
 #+END_SRC
+
+* Container Creating,inspect,shell inside container, 
 ** Assignment : managing multiple containers
 create and run mysql, apache (httpd) nginx
 #+BEGIN_SRC sh
-docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
-docker container log mysqldb
+docker container run -itd -p 3306:3306  --name mysqldb2 -e MYSQL_RANDOM_ROOT_PASSWORD=yes mysql
+docker container logs mysqldb2 | grep -w 'GENERATED ROOT PASSWORD' # TO Get the password
 # search : "GENERATED ROOT PASSWORD"
 
 docker container run -d -p 8080:80 --name webserver httpd
-
-docker container run -d --nmae my_engineX -p nginx
+docker container run -d -p 80:80 --name my_engineX  nginx
 
 docker container ls
 
@@ -155,17 +153,13 @@ docker container stop 1e15b b9958d d282cc2a09
 
 docker image ls
 #+END_SRC
-* What's Going on inside cont1ainers
+** Container CLI : Stauts
 #+BEGIN_SRC sh
-# List of process in one container
-docker container top [container-name]
-# Details of one container config
-docker container inspect [container-name]
-# performance stas for all containers
-docker container stats [container-name]
-
+docker container top <container-name>      # process list in one container
+docker container inspect <container-name>  # details of one container config
+docker container stats  # performance stats for all containers
 #+END_SRC
-* Getting a shell inside containers
+** Getting a shell inside containers
 #+BEGIN_SRC sh
 docker container run -it # start new container interactively
 docker container exec it # run additional  cmd in existing container
@@ -181,25 +175,34 @@ docker container run -it --name proxy nginx bash
 docker container exec --help
 docker container exec -it mysql bash
 #+END_SRC
-* Network Concept for Provate for Private and Public
-Concept of Docker Networking
-- Each container connected to private virtual network "bridge"
-- Each virtual network routs thorugh NAT firewall on host IP
-- Container does n't have same IP of host
-- All containers on virtual network can talk to each other without -p
-- make new virtual networks
-- Best Practice:is to create a new virtual network for each app:
-   - network "my_web_app" for mysq; and php/apache containers
-   - network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
-- Each container to more than one virtual network 
-- Skip virtual networks and use host IP (--net=host)
+* Network : Port Forwording, Creating Network, Network inspect, Network DNS,DNS RoundRobin   
+** Network Concept for Provate for Private and Public: Port Forwording
+- Concept of Docker Networking
+  - Review of docker container run -p
+  - For local dev/testing,networks usually "just work"
+  - Quick port check with docker container port <container-name>
+  - Learn concepts of Docker Networking
+  - Understand how network packets move around Docker
+
+- Docker Networs Defaults
+  - Each container connected to private virtual network "bridge"
+  - Each virtual network routs thorugh NAT firewall on host IP
+  - Container does n't have same IP of host
+  - All containers on virtual network can talk to each other without -p
+  - make new virtual networks
+  - Best Practice:is to create a new virtual network for each app:
+    * network "my_web_app" for mysq; and php/apache containers
+    * network "my_api" for mongo and nodejs containers (they can talk to each other without configur, they can't talk too other network like my_web_app network
+
+- Docker Networks Cont
+  - Each container to more than one virtual network 
+  - Skip virtual networks and use host IP (--net=host)
   
 Example :
 #+BEGIN_SRC sh
-docker container run -itd -p 8080:80 --name webserver httpd
-# ether net is lisening to port 8080
-and rouths through webserver and go to httpd port 80
-#80 : is host OS port and 8080 is container prot
+docker container run -itd -p 8080:80 --name webserver httpd    # Port Forwarding 
+# ether net is lisening to port 8080 and rouths through webserver and go to httpd port 80
+# 8080 : is host OS port and 80 is container prot
 
  docker container ls -a
 # CONTAINER ID        IMAGE               COMMAND              #CREATED             STATUS              PORTS                  NAMES
@@ -221,19 +224,29 @@ ifconfig en0
 
 #+END_SRC
 
-* cmd for Docker Network
+** Docker Network CLI management
 #+BEGIN_SRC sh
 docker network ls  # show network
-docker network inspect [container-name] # inspect
-docker network create --drive  [container-id] #  create a network
-docker network connect  [container-id] # attach a network to container
-dokcer network disconnect  [container-id] # detach a network from network
+# NETWORK ID          NAME                DRIVER              SCOPE
+# e4412c25e3f8        bridge              bridge              local
+# fc3fb3bc492f        dude                bridge              local
+# bde494d3eca8        my_app_net          bridge              local
+# b5c2bb5208eb        none                null                local
+# 85464f22d4d4        host                host                local  # host network is special network,it gain performance by skipping virtual networks but sacrifices security of container model
 
+
+docker network inspect [container-name] # inspect
+# docker network inspect bridge
+docker network inspect bridge | grep 'Containers' # List of containers in bridge
+docker network create --drive  [container-id] #  create a network
+docker network connect  [container-id]        # attach a network to container
+docker network disconnect  [container-id]     # detach a network from network
+docker network create --help              
 # To see the containers attached to networks
 docker network inspect bridge
 #+END_SRC
 
-** Example 
+*** Example 
 #+BEGIN_SRC sh
 docker network create my_app_net
 docker network ls
@@ -253,7 +266,7 @@ docker container ls
 
 #+END_SRC
 
-** Example II
+*** Example II
 #+BEGIN_SRC sh
 docker container ls
 # CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
@@ -265,7 +278,7 @@ docker network disconnect 498f7bf 3928fe27
 
 
 #+END_SRC
-* Docker Networks: DNS
+** Docker Networks: DNS
 Docker Network DNS
  - How DNS is key to easy inter-container comms
  - How it works by default with custom networks
@@ -291,11 +304,11 @@ docker container exec -it new_nginx pring ny_nginx
 
 docker network ls # Doesn't DNS 
 #+END_SRC
-** Conclusion
+*** Conclusion
 - Containers shouldn't rely on IP's for inter-communication
 - DNS for friendly names is built-in if you use custome networks
 - If You're using custome networks Then it gets way easier with docker compose in future  
-* Assignment: 
+** Assignment: 
 Requirement : shell, container, CLI 
 Q) Run curl cli in different linux distro containers
 ANS) 
@@ -314,18 +327,20 @@ docker container run --rm -it ubuntu:14.04 bash 3 # --rm : remove container
 #$: curl --version
 #+END_SRC 
 
-* TODO Assignment :DNS RoundRobin Test
+** TODO Assignment :DNS RoundRobin Test
 Requirement: 
  - Know how to use -it to get shell in container
  - Basics of Linux distribution like ubuntu and centos
  - How to runcontainer
  - Understand DNS Records
-What is DNS RoundRobin ?
--  A same DNS or one DNS Server is having one or more  aliase servers 
-- Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
+- What is DNS RoundRobin ?
+  -  A same DNS or one DNS Server is having one or more  aliase servers 
+   - Ex: google : Google has 1000 or millons of servers but it has one DNS which is called DNS RoundRobin 
 
 
-Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+- Assignment
+- Since Docker Engin 1.11  we can have multiple container on a created network respond to same DNS address
+
 Steps :
 - Create a new virtaul network (default bridge)
 - Create two container from elasticsearch:2  image
@@ -339,20 +354,21 @@ docker container -itd --net dude --net-alias serach elasticsearch:2
 # --net-alias or
 # --network-alias  both are same
 #+END_SRC
-* What is a Image (What n't)?
+* Container Images Pull,Build Image by Dockerfile, Push image
+** What is a Image (What n't)?
 - All about image, the building blood of containers
 - What's in a image (and what isn't )
 - Using Docker Hub Registry
 - managing our local image cache
 - Building our own images
-** What is an Image 
+*** What is an Image 
  - App binaries and dependencies
  - metadata about image and  how to run image
  - Official Defination : "An image is an ordered collection of root filesystem change and the corresponding execution parameters for using within a contianer runtime."
  - Not a complete OS, No kernel , kernel-module(kernel drivers)
  - Img can be simillar Small as one file (your app binary) like a golang static binary
- - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
-* Docker Hub:
+   - Img can be bigger like ubuntu distro with apt and Apache,PHP and more installed
+** Docker Hub:
 - hub.docker.com # hub for all docker hub
 #+BEGIN_SRC sh
 docker image ls # list of images
@@ -370,7 +386,7 @@ docker image ls
 
 #+END_SRC
 
-* TODO Image and Their Layers Discover and Image Cache
+** Image and Their Layers Discover and Image Cache
 - Image Layer
 - Union file system
 - history and inspect commands
@@ -379,35 +395,43 @@ docker image ls
 #+BEGIN_SRC sh
 docker image ls
 docker history nginx:latest
-0
+docker image inspect nginx # meta data
+
 #+END_SRC 
 Conclusion : 
 Images are made up of : file system and meta data
 Each layer is uniquelu identified an only stored once on a host
 This saves storage space on host and transfer time on push/pull
 Container is just a single read/write layer on top of image
-* TODO Image Tagging and pushing to Docker Hub
+** Image Tagging and pushing to Docker Hub
  #+BEGIN_SRC sh
 docker image tag --help
 docker image tag nginx bretfisher/nginx
 docker image ls # 
-docker image push bretfisher/nginx
-# 
+# REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+# mysql               latest              8e8c6f8dc9df        4 days ago          546MB
+# tomcat              9                   29ba6a893a43        4 days ago          647MB
+# alpine              latest              a187dde48cd2        4 weeks ago         5.6MB
+# nginx               latest              6678c7c2e56c        6 weeks ago         127MB
+# httpd               latest              c5a012f9cf45        7 weeks ago         165MB
+# centos              latest              470671670cac        3 months ago        237MB
+
+docker image push bretfisher/nginx # need to login 
 docker login
 cat .docker/config.json
 docker image push bretfisher/nginx
 
-docker image push bretfisher/nginx: testing
+docker image tag bretfisher/nginx bretfisher/nginx:testing # create image with tag testing 
+docker image push bretfisher/nginx:testing
 docker logout
 
  #+END_SRC
-
-
-* TODO Building Images from Docker file
+** Building Images from Docker file [Format of Docker file]
 Docker file is look like shell but it is not
 #+BEGIN_SRC sh
 # Docker-formate not shell script
-FROm debian:jessie 
+FROM debian:jessie 
+
 ENV NGINX_VERSIN 1.11.10-1~jessie #ENV: Enviorment Variable
 
 RUN # INSTALL packages or unzip....etc
@@ -415,27 +439,35 @@ RUN # INSTALL packages or unzip....etc
 #  &&      
 
 EXPOSE 80 443 # open port 80,443
-Cmd # file cmd will run end or restart of container
+
+CMD ["nginx", "-g", "daemon off;"] # file cmd will run end or restart of container
 #+END_SRC
-* Building Images from Docker file Build
+** Building Images from Docker file Build
 #+BEGIN_SRC sh
 ls
 # -rw-r--r--  1 jayradhe jayradhe   Dockerfile
-docker image build -t customngix . # -t tag, '.' build in current dir
+docker image build -t customngix . # -t tag: name of image, '.' build in current dir
 #+END_SRC
-* Build Image Extending Official Image
+** Build Image Extending Official Image
 run html
 #+BEGIN_SRC sh
 ls
 # Dockerfile
 # index.html
+cat Docker.file
+
+# FROM nginx:latest
+# WORKDIR /usr/share/nginx/html
+# COPY index.html index.html 
 
 docker image build -t ngin-with-html
 docker container run -p80:80 --rm nginx-with-html
-
+docker image tag nginx-with-html:latest bretfisher/nginx-with-html:latest
+docker image ls
+#docker push bretfisher/nginx-with-html
 #+END_SRC
 
-* Assignment Build Your Docker Own Image
+** Assignment Build Your Docker Own Image
  - Build Your Own App
    - Dockerfiles are part process workflow and part 
    - Take existing Node.js(Node 6) app and Dockerize
@@ -446,9 +478,10 @@ docker container run -p80:80 --rm nginx-with-html
    - Remove your image from local cache, run it again from Hub
 
 #+BEGIN_SRC sh
+#cat /home/jayradhe/Workspace/Devops/udemy-docker-mastery-master/dockerfile-assignment-1
+#cat Dockefile 
 
-# >> Downlaod 
-FROm node:6-alpine
+FROM node:6-alpine
 
 EXPOSE 3000
 # to use alphine package mangaer : isntall tini: 'apk add --update tini'
@@ -469,10 +502,13 @@ RUN npm install && npm cache clean
 COPY ..
 
 # Need to start container with command 'tini' --node ./bin/www
-CmD [ "tini","--", "./bin/www" ]
+CMD [ "tini","--", "./bin/www" ]
 
 # exit
 # In terminal
+#+END_SRC
+
+#+BEGIN_SRC sh
 docker build -t testnode .
 docker container run --rm -p 80:3000 testnode 
 
@@ -482,8 +518,10 @@ docker push bretfisher/testing-node
 docker image rm bretfisher/testing-node
 
 docker container run  --rm -p 80:3000 bretfisher/testing-node
+
 #+END_SRC
-* Container Lifetime Persistent Data
+* Container Lifetime & Persistent Data : Volume /Bind mounting 
+** Container Lifetime Persistent Data
 Overview
  - Define Problem of persistent Data 
  - Learning and using Data Volumes
@@ -491,7 +529,8 @@ Overview
  - Assignment
 
 Concept with containers:
-- Key concept with containers: immutalbe(unchange and disposal), ephemeral
+- Key concept with containers:
+  - Containers are usually immutalbe(unchange and disposal), ephemeral
   - Idea is we can through container and create new one    
 - "immutable infrastructure" : only re-deploy containers never change
   - We not talk of limitation but a desing goal or (best practies)
@@ -501,25 +540,72 @@ Concept with containers:
 - This is the ideal scenario, but what about database or unique data ? 
 - Docker gives us features to ensure these "separation of concerns"
 - This unique data is called persistant data
+
 - Docker has two solution : Docker Volume and Bind mounts
   - Docker Volumes: make special location outside of container Union File System
   - Bind monts: (sharing or mount) or link container path  to host path
-* Persistent Data : Data Volume :
+** Persistent Data : Data Volume :
 search for mysql docker hub
-go to docker file we see Volume  
-Where the data is shared 
+go to docker file we see VOLUME /var/lib/mysql
+
+Means : Any file in /var/lib/mysql : will outlive in container after container is removed.
+   
+
 #+BEGIN_SRC sh
 docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
 docker container ls
-docker container inspect mysql
+docker container inspect mysql | grep "Volumes" # give volume dir-y
 # To check the volume
 docker volume ls
+# DRIVER              VOLUME NAME
+# local               3ed15a8edd4dd743046a4d521e7680a581ad12f772f74b4bd22ba57953ae3052
+# local               8f694d03c78d35940dd68f62293f2c8bf17ed16a984c4a68b57d737a31dcadcc
+# local               bd10f81f13cdf494b86af6ee7621af081b942fbcd285e78178ad125d69dcba31
+# local               d2eb9a8ae4398ae6afc3e288cdcd0bc8985a815d9c81e7dc930ab5b60053f73a
 
+#######################################################################################################
+docker volume inspect  3ed15a8edd4dd743046a4d521e7680a581ad12f772f74b4bd22ba57953ae3052
+#[
+#    {
+#        "CreatedAt": "2020-04-22T10:45:51+05:30",
+#        "Driver": "local",
+#        "Labels": null,
+#        "Mountpoint": "/var/lib/docker/volumes/caa37875bf146c52eb7069e5450adc2fd9ff761b16b41a4e49854aed93f9cfad/_data",
+#        "Name": "caa37875bf146c52eb7069e5450adc2fd9ff761b16b41a4e49854aed93f9cfad",
+#        "Options": null,
+#        "Scope": "local"
+#    }
+#]
+
+# Mountpoint : Directory where actually file is actually stored in Host OS
+# Name : Is Reference : where we can acess the Docker Volume:
+
+docker container inspect mysql | grep "Mounts" # give volume dir-y
+
+#"Mounts": [
+#            {
+#                "Type": "volume",
+#                "Name": "caa37875bf146c52eb7069e5450adc2fd9ff761b16b41a4e49854aed93f9cfad",
+#                "Source": "/var/lib/docker/volumes/caa37875bf146c52eb7069e5450adc2fd9ff761b16b41a4e49854aed93f9cfad/_data",
+#                "Destination": "/var/lib/mysql",
+#                "Driver": "local",
+#                "Mode": "",
+#                "RW": true,
+#                "Propagation": ""
+#            }
+# Source : actuall directory where file is stored
+# Destination: where docker link in given for storing data
+########################################################################################################3
+#+END_SRC
+
+*** Removing container will not remove volume 
+#+BEGIN_SRC sh
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
 docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
 docker volume ls
-# DRIVE
-# local
-# local
+# CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                 NAMES
+# 3cc73e458f42        mysql               "docker-entrypoint.s…"   19 seconds ago      Up 10 seconds       3306/tcp, 33060/tcp   mysql
+# 4211d14111da        mysql               "docker-entrypoint.s…"   18 minutes ago      Up 17 minutes       3306/tcp, 33060/tcp   mysql2
 
 docker container stop mysql
 docker container stop mysql2
@@ -528,150 +614,61 @@ docker container ls # check container are running
 docker container ls -a # check if container are present in hidden or stoped
 docker volume ls # check if volume are present or not
 
-docker container rm mysql mysql2
-docker volume ls # check if volume is present even after container is removed
-
-
-# Name Volume
-docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
-docker container rm -f mysql
- 
-docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
-
-# Create volume in run time
-docker volume create 
-#+END_SRC
-
-* Persistent Data : Bind E") stable"
-
-# Install Docker Engine and Docker Compose
-sudo apt-get update
-# Install Docker CE and Docker Compose
-sudo apt-get -y  install docker-ce docker-compose
-
-# Run docker command ans non-privillgeage
-sudo usermod -aG docker $USER
-#+END_SRC
-When you add user to user gorup : 
-For security some linux like redhat will not work docker or we need use sudo or add 
-
-cmd
-#+BEGIN_SRC sh
-docker container run #or
-docker run # older version
-
-docker version
-docker info 
-
-# docker sytanx 
-#(old) : docker <command>  (options)
-#(new) : docker <command> <sub-command> (options)
-#+END_SRC
-** Assignment : managing multiple containers
-create and run mysql, apache (httpd) nginx
-#+BEGIN_SRC sh
-docker container run -d -p 3306:3306 --name mysqldb -e MYSQL_RANDO_ROOT_PASSWORD=yes mysql
-docker container log mysqldb
-# search : "GENERATED ROOT PASSWORD"
-
-docker container run -d -p 8080:80 --name webserver httpd
-
-docker container run -d --nmae my_engineX -p nginx
-
-docker container ls
-
-curl localhost
-curl localhost:8080
-
-docker container stop 1e15b b9958d d282cc2a09
-
-docker image ls
-#+END_SRC
-* TODO Image and Their Layers Discover and Image Cache
-- Image Layer
-- Union file system
-- history and inspect commands
-- copy on write
-
-#+BEGIN_SRC sh
-docker image ls
-docker history nginx:latest
-0
-#+END_SRC 
-Conclusion : 
-Images are made up of : file system and meta data
-Each layer is uniquelu identified an only stored once on a host
-This saves storage space on host and transfer time on push/pull
-Container is just a single read/write layer on top of image
-* TODO Image Tagging and pushing to Docker Hub
- #+BEGIN_SRC sh
-docker image tag --help
-docker image tag nginx bretfisher/nginx
-docker image ls # 
-docker image push bretfisher/nginx
-# 
-docker login
-cat .docker/config.json
-docker image push bretfisher/nginx
-
-docker image push bretfisher/nginx: testing
-docker logout
-
- #+END_SRC
-
-
-* Persistent Data : Data Volume :
-search for mysql docker hub
-go to docker file we see Volume  
-Where the data is shared 
-#+BEGIN_SRC sh
-docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
-docker container ls
-docker container inspect mysql
-# To check the volume
-docker volume ls
-
-docker container run -d --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
-docker volume ls
-# DRIVE
-# local
-# local
-
-docker container stop mysql
-docker container stop mysql2
-
-docker container ls # check container are running
-docker container ls -a # check if container are present in hidden or stoped
-docker volume ls # check if volume are present or not
+# DRIVER              VOLUME NAME
+# local               3f0a30709078decf4a17738137f6ab03e36ad04f6ff48e560cc9658ac758363d
+# local               caa37875bf146c52eb7069e5450adc2fd9ff761b16b41a4e49854aed93f9cfad
 
 docker container rm mysql mysql2
 docker volume ls # check if volume is present even after container is removed
 
+# DRIVER              VOLUME NAME
+# local               3f0a30709078decf4a17738137f6ab03e36ad04f6ff48e560cc9658ac758363d
+# local               caa37875bf146c52eb7069e5450adc2fd9ff761b16b41a4e49854aed93f9cfad
 
+# Note: So we can say that removing container will not remove the  volume 
+# Note: volume are removed manually 
+docker volume rm 3f0a307 caa378
+#OR: To remove unused local volumes
+docker volume prune
+
+# Question) Is there a way to same volume for two or more container  
+# Ans) We use name value
+#+END_SRC
+*** Name Volume and using same volume in other container
+#+BEGIN_SRC sh
 # Name Volume
-docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # NAME VOLUME: mysql-db at  dir /var/lib
 docker container rm -f mysql
- 
-docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created again but re-using same database.
+docker volume ls
+# DRIVER              VOLUME NAME
+# local               mysql-db      # name volume
+
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql # new volume is not created, but re-using same database.
+docker volume ls
+# DRIVER              VOLUME NAME
+# local               mysql-db      # name volume
+
 
 # Create volume in run time
-docker volume create 
-#+END_SRC
+docker volume create --help
 
-* Persistent Data : Bind Mounting
-Maps a host file/directory to a container file/directory
-Basically just two locations pointing to same files
-Again skips UFS, and host files overwite any  in container
-Con't use in Dockerfile, must be at  container runtime
-....run -v /Users/bret/stuff:/path/container (mac/linux)
-....run -v //C/Users/breff:path/container (window)
+#+END_SRC
+** Persistent Data : Bind Mounting
+- Bind Mount
+  - Maps a host file/directory to a container file/directory
+     - Basically just two locations pointing to same files
+  - Again skips UFS, and host files overwite any  in container
+  - Con't use in Dockerfile, must be at  container runtime
+  - Syntax :
+     - ....run -v /Users/bret/stuff:/path/container (mac/linux)
+     - ....run -v //C/Users/breff:path/container (window)
 
 # Difference btw name-volume an bind mounth is : bind mount start with forword slash(/) but not name-volume
 #+BEGIN_SRC sh
 # cd dockerfile-sample-2
 docker container run -d --name nginx -p 80:80 -v /$(pwd):/usr/share/nginx/html nginx
 
-docker container exec -it nginx bash
+docker container exec -it nginx bash # nginx with no-bind mounts
 # $#cd /usr/share/nginx/html
 # ls -al
 #  exit
@@ -682,8 +679,8 @@ echo "is it me you're looking for "> testme.txt
 
 #+END_SRC 
 
-* Assignment: Database Upgrade using Docker Volume 
-You are running postgress mysql version 9.x.x and you want to upgrade to 9.6.1 or doing security fix 
+** Assignment: Database Upgrade using Docker Volume 
+You are running postgress mysql version 9.x.x and you want to upgrade to 9.6.1 or doing security fix with-out deleteing data
 
 Q) How to do in container ?
 Ans)
@@ -710,7 +707,7 @@ docker container logs 7ec0e42  # psql2- id
 
 #+END_SRC
 
-* Assignment: Database Upgrade using Docker Bind mount 
+** Assignment: Database Upgrade using Docker Bind mount 
 Use a Jekyll "Static Site Generator " to start a local web server
 Don't have to be web developer: this  is example of bridging  the gap between local file access and apps running in containers
 Source code is in the course repo under bindmount -sample-1
@@ -724,11 +721,13 @@ Change the file in _posts\ and refresh browser to see change
 
 
 #+BEGIN_SRC sh
-#cd bindmount-sample-1
+#cd /home/jayradhe/Workspace/Devops/udemy-docker-mastery-master/bindmount-sample-1
 docker run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve
-#+END_SRC
 
-* Docker Compose and Docker Compose.yml file
+#+END_SRC
+w
+* Docker Compose Tool
+** Docker Compose and Docker Compose.yml file
 
 Docker Compose:
  Why cofigure relationships between containers
@@ -740,8 +739,27 @@ Consist
       - containers
       - networks
       - volumes
+#+BEGIN_SRC sh
+# cd /home/jayradhe/Workspace/Devops/udemy-docker-mastery-master/compose-sample-1
+# cat template.yml
+
+version: '3.1'  # if no version is specified then v1 is assumed. Recommend v2 minimum
+
+services:  # containers. same as docker run
+  servicename: # a friendly name. this is also DNS name inside network
+    image: # Optional if you use build:
+    command: # Optional, replace the default CMD specified by the image
+    environment: # Optional, same as -e in docker run
+    volumes: # Optional, same as -v in docker run
+  servicename2:
+
+volumes: # Optional, same as docker volume create
+
+networks: # Optional, same as docker network create
+
+#+END_SRC
    2. CLI took : docker compose used for local dev/test automation with those YAml files
-** Docker-Compose.yml file
+*** Docker-Compose.yml file
 - Compose Yaml foramt has it's own version 1,2,3,3.1
 - Yaml file can be used with docker-compose command for local  docker automation or
 - With docker directly in production  with  Swarm (as  v1.13)
@@ -762,7 +780,7 @@ services:
       - '80:4000'
 #+END_SRC
 
-* Docker Compose cmd:
+** Docker Compose cmd:
 - cli tool comes with docker for window/mac, but seperate download for Linux
 - Not a production-grade tool but ideal for local development and test
 - Two most common commands are 
@@ -779,8 +797,21 @@ docker-compose up
 
 Ex:
 #+BEGIN_SRC sh
-# cd compose-sample-2
+# cd /home/jayradhe/Workspace/Devops/udemy-docker-mastery-master/compose-sample-2
 cat docker-compose.yml
+
+version: '3'
+
+services:
+  proxy:
+    image: nginx:1.13 # this will use the latest version of 1.13.x
+    ports:
+      - '80:80' # expose 80 on host and sent to 80 in container
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  web:
+    image: httpd  # this will use httpd:latest
+
 docker-compose up
 
 docker-compose ps
@@ -789,7 +820,7 @@ docker-compose down
 
 #+END_SRC
  
-* Assignment Build a Compose File for a multi-Container Service
+** TODO Assignment Build a Compose File for a multi-Container Service
 - Create Compose File
   - Build a basic compose file for a Drupal contant management system
   - Use the drupa1 image along with  postgres image
@@ -798,11 +829,11 @@ docker-compose down
   - Walk through Drupal setup via browser
   - Tip: Drupal assumes DB is localhost, but  it's service name
   - Extra Credit : Use volume to store Drupal  unique data
-** Solution
+*** Solution
 
 #+BEGIN_SRC sh
+# cd /home/jayradhe/Workspace/Devops/udemy-docker-mastery-master/compose-sample-3
 # cat docker-compose.yml
-
   version : '2'
 
   services: 
@@ -830,7 +861,7 @@ docker-compose down --help
 docker-compose down -v # remove volume (docker by default keep volume ) to remove volume -v
 #+END_SRC
 
-* Adding Image Building to Compose File
+** TODO Compose File for building a image
 - Compose can also build your custom images
 - Will build them with docker-compose up if not found in cache
 - Also rebuild with docker-compose build
@@ -847,7 +878,7 @@ version: '2'
 services:
    proxy:
      build:
-        context:
+        context: .
         dockerfile:nginx
      image: nginx-custom
      ports:
@@ -859,7 +890,7 @@ services:
 #docker-compose up
 #+END_SRC 
 
-* Assignment Compose For Run-Time Build a multi-container Development [60]
+** TODO Assignment Compose For Run-Time Build a multi-container Development [60]
 - Building custom drupal image for local testing
 - Compose isn't just for developers
 - maybe you learning Drupal admin, or are software tester
@@ -921,8 +952,10 @@ docker-compose up
 docker-compose down -v # remove volume (docker by default keep volume ) to remove volume -v
 
 #+END_SRC
-* Docker Swarm < Start >
-* Swarm mode Build-In Orchestration
+* Swarm 
+** Intro and Creating a 3-Node Swarm Cluster
+*** Docker Swarm < Start >
+*** Swarm mode Build-In Orchestration[62]
 Why Orchestration
 - How do we automate container lifecycle ?
 - How can we easily scale out/in/up/down ?
@@ -932,32 +965,35 @@ Why Orchestration
 - How can we ensure only trusted servers run out containers ?
 - How can we store secrets, key, passwords and get them to the right container(and only that container) ?
 
-Swarm mode : Buil-In Orches
-- Swarm mode is a clustering solution build inside Docker
-- Not related to Swarm "classic" for  pre-1.12
-- Added in 1.12 (Summer 2016) via SwarmKit tool kit
-- Enhanced in 1.13 (January 2017)  via  Stacks and Secrets
-- Not enable by default, new commonds once enable
-  - docker swarm
-  - docker node
-  - docker service
-  - docker stack
-  - docker secret
-
-* Create Your First Service and Scale it locally
+- Swarm mode : Buil-In Orches
+ - Swarm mode is a clustering solution build inside Docker
+ - Not related to Swarm "classic" for  pre-1.12
+ - Added in 1.12 (Summer 2016) via SwarmKit tool kit
+ - Enhanced in 1.13 (January 2017)  via  Stacks and Secrets
+ - Not enable by default, new commonds once enable
+   - docker swarm
+   - docker node
+   - docker service
+   - docker stack
+   - docker secret
+    
+*** Create Your First Service and Scale it locally
 #+BEGIN_SRC sh
+docker info | grep "Swarm"  # Check if swarm is active or not
+# Swarm: inactive
+
 docker swarm init  # Initialized swarn
 #+END_SRC
 
-Swarm init 
-- Lot of PKI and security automation
-  - Root Signing Certificate created for  our Swarm
-  - Certificate is issused for first management node
-  - Join token are created
-- Raft database created to store root CA, configs and secrets
- - Encypted by default on disk (1.13+)
- - No need for another key/value system to hold orchestration/secretes
- - Repilcates logs amongs managers via  mutual TLS in  "control plane"
+- Swarm init background work
+  - Lot of PKI and security automation
+    - Root Signing Certificate created for  our Swarm
+    - Certificate is issused for first management node
+    - Join token are created
+  - Raft database created to store root CA, configs and secrets
+    - Encypted by default on disk (1.13+)
+    - No need for another key/value system to hold orchestration/secretes
+    - Repilcates logs amongs managers via  mutual TLS in  "control plane"
 
  #+BEGIN_SRC sh
 docker node ls # 
@@ -971,11 +1007,15 @@ docker service --help
 docker service create apline ping 8.8.8.8 # google devops servers
 # k5afadf  # gives an id of service id not container id 
 docker service ls # list of all service 
+# ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+# mkh7filvd8gb        clever_shirley      replicated          1/1                 apline:latest       
+
 
 docker container ls
 
 # scale up
 docker service update k5afadf --replicas 3
+docker service update --help
 
 #check new scale up services
 dockers service ls
@@ -995,13 +1035,13 @@ dokcer service ls
 docker container ls
  #+END_SRC
 
-* Create 3-Node Swarn Cluster [66]
+*** Create 3-Node Swarn Cluster [66]
 Option
 -  *Play-with-docker.com*
     - Only need a brower, but resets after 4 hours
 -  *Docker-machine + Virtual Box*
     - Free and runs locally, but requires a machines with 8 GB memory
--  *Digital Ocean + Docker install*
+-  *Digital Ocean + Docker install* [ *default* ]
     - most like a production setup, but costs $5-10/node/month while learning
     - Use my referral code in section resource to get $10 free
 -  *Roll you own*
@@ -1009,14 +1049,16 @@ Option
     - Install docker anywhere with get.docker.com
 
  
-#+BEGIN_SRC 
-docker-machine node1
-docker-machine ssh node1
-docker-machine env node1
+#+BEGIN_SRC sh
+docker-machine node1  # create a node1 
+ 
+docker-machine ssh node1 # to move inside the machine
+docker-machine env node1 # 
 
 #+END_SRC
 
-* Scaling Out with Overlay Networking [68]
+* Swarm Basic Feature and How to Use them in Workflow
+** Scaling Out with Overlay Networking [67]
 Overlay choose --driver overlay when creating network
 For container-to-container traffic inside a single Swarm
 Optinal IPSec(AES) encryption on network creation
@@ -1040,8 +1082,8 @@ docker service ps drupal # see -where drupal service is running : let be node2
 # How to make talk to each other 
 #+END_SRC
 
-* Scaling Out with Routing mesh
-** Swarm Routing mesh(Global Traffic Routing)
+** Scaling Out with Routing mesh[68]
+*** Swarm Routing mesh(Global Traffic Routing)
 Routes ingress (incoming) packets for service to proper task
 Spans all nodes in swarm
 Uses IPVS from Linux Kernel
@@ -1058,7 +1100,7 @@ curl localhost:9200
 
 #+END_SRC
 
-* Assignment Ans : Create a multi-server multi-node web app[70]
+** Assignment Ans : Create a multi-server multi-node web app[69]
 #+BEGIN_SRC sh
 
 docker node ls
@@ -1071,52 +1113,55 @@ docker network craete -d overlay frontend
 
 yml file
 #+BEGIN_SRC sh
-- vote
-   - dockersamples/examplevotingapp_vote:before
-   - web front end for users to vote dog/cat
-   - ideally published on TCP 80. Container listen on 80
-   - on frontend network
-   - 2+ replicas of this contianer
-docker service create -name vote -p 80:80 --network frontend
+#- vote
+#   - dockersamples/examplevotingapp_vote:before
+#   - web front end for users to vote dog/cat
+#   - ideally published on TCP 80. Container listen on 80
+#   - on frontend network
+#   - 2+ replicas of this contianer
+docker service create --name vote -p 80:80 --network frontend
 --replica 2 dockersamples/examplevotingapp_vote:bofore
--redis
-  - redis:3.2
-  - key/value storge for incoming votes
-  - no public ports
-  - on frontend network
-  - 2 replicas
+#-redis
+#  - redis:3.2
+#  - key/value storge for incoming votes
+#  - no public ports
+#  - on frontend network
+#  - 2 replicas
 docker services create --name redis --network frontend --replica 2 redis:3.2
-- worker
-  - dockersamples/examplevotingapp_worker
-  - backend processor of redis oand storing results in postgres 
-  - no public ports
-  - on frontend and backend networks
-  - 1 replica
+#- worker
+#  - dockersamples/examplevotingapp_worker
+#  - backend processor of redis oand storing results in postgres 
+#  - no public ports
+#  - on frontend and backend networks
+#  - 1 replica
 docker service create --name worker --network frontend --network backend dockersamples/examples/examplevotingapp_worke
-- db
-   - postgres: 9.4
-   - one name volue needed, pointing to /var/lib/postgresql/date
-   - on bakcend network
-   - 1 replica
+#- db
+#   - postgres: 9.4
+#   - one name volue needed, pointing to /var/lib/postgresql/date
+#   - on bakcend network
+#   - 1 replica
 docker service create --name db --network backend --mount type=volume, source=db-data, target=/var/lib/postgresql/data |
-- result
-   - dockersamples/examplevotingapp_result:before
-   - web app that shows results
-   - runs on high port since just for admins (lets image)
-   - so run on a high port of your choosing (I choose 5001), container liseten on 80
-   - on backend network
-   - 1 replica
+#- result
+#   - dockersamples/examplevotingapp_result:before
+#   - web app that shows results
+#   - runs on high port since just for admins (lets image)
+#   - so run on a high port of your choosing (I choose 5001), container liseten on 80
+#  - on backend network
+#   - 1 replica
 docker servie create --name result --network backend -p 5001:80
 
  #+END_SRC
-* Stacks : Production Grade Compose
+** Stacks : Production Grade Compose
 - In 1.13 Docker adds a new layer of abstraction to swarm called stack
 - Stacks accept Compose files as their  declarative definition for services, networks, and volumes
 - We use docker stack deploy  rather then docker service create
 - Stacks manages all those obj for us, including overlay netwok per stack. Add stack name to start of their  name
 - New deplo : key in Compose file. Can't do build:
 
-* Kuberneteics(K8) [89]
+* TODO Swarm App LifeCycle
+* TODO Container Registries: Image Storage and Distribution
+* TODO Docker in Production
+* TODO Kuberneteics(K8) Why/What [89]
 - Kuberneteics : popular container orchestrator
 - Container Orchestration = make many servers act like one
 - Released by Google in 2015 , maintained by large community
@@ -1125,7 +1170,7 @@ docker servie create --name result --network backend -p 5001:80
 - many clouds provide it for you
 - many vendor make a "distribution" of it
 - 
-*  Kubernetics or Swarm
+** Kubernetics or Swarm
 -  Kubernetics and Swarm are both container orchestrators
 - Both are solid platform with vendor backing
 - Swarm: Easier to deploy/manage
@@ -1151,7 +1196,7 @@ Advangates of Kubernetics
 - "No one ever got fired for buying IBm"
 - Picking solution isn't 100% rational
 - Trendy, will benefit you career
-* Architecture Terminology 
+** Architecture Terminology 
 Kubernetes: The whole orchestation system
 Kubectl: CLI to configure Kubernetes and manage apps
   - Using "CUBE CONTROL" offical pronunciaton
@@ -1169,12 +1214,8 @@ Control Plane: Set of Containers that manages the cluster
        scheduler, 
        Controller manger,
        etcd, and 
-       more 
-
-
-
-
-* k8 local install
+       more
+** k8 local install
 - Kubernetes is a series of container,CLI and configrations
 - many ways to install, let focus on  easier for learning
 - Dokcer Destop : Enable in settings
@@ -1186,18 +1227,16 @@ Control Plane: Set of Containers that manages the cluster
 - Kubernetes in a browser
   https:katakoda.com
   https:play-with-k8.com
-
-
- 
-
-
-
-  
-* df 
+** df 
 k8s Container Abstraction
 kubectl Run, Create, Apply
 Our First Pod
 Scaling ReplicaSets
-Inspecting Objects
-
-  
+Inspecting Objects  
+* TODO Exposing Kubernetes Ports
+* TODO Kubernetes mangaement Techinques
+* TODO moving to Declaring Kubernetes Yaml
+* TODO Your Next Steps and Future of Kubernetes
+* TODO Docker Security Good Defauls and Tools
+* TODO Docker 19.03 New Features
+* TODO Dockerfile and Compose File  Review

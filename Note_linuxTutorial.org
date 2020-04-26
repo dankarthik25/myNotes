@@ -339,6 +339,7 @@ cut -c 1 sat
 
 #+END_SRC
 ** TODO Crontab
+For Crontab : Example visit https://crontab.guru/examples.html
 #+BEGIN_SRC sh
 
 #
@@ -358,9 +359,38 @@ cut -c 1 sat
 #execute the Full backup shell script (full-backup) on 10th June 08:30 AM.
 30 08 10 06 * /home/maverick/full-backup
 
+# 1,2,3,5,8,13,21,34 * * * * df - h 
+# Crontab will run Every Hour at 
+# xx:01:00 (hh:mm:ss)
+# xx:02:00
+# xx:03:00
+# xx:05:00
+# xx:08:00
+# xx:13:00
+# xx:21:00
+# xx:34:00
+
+
+# Crontab for every 15 mints
+0,15,30,45 * * * * dh -h
+#or
+*/15 * * * * df - h
+
 crontab -e # edit cron tabs
 crontab -l # list
 crontab -r # delete 
+
+#  *	        any value
+#  ,	        value list separator
+#  -	        range of values
+#  /         	  step values
+#  @yearly  	(non-standard)
+#  @annually	(non-standard)
+#  @monthly 	(non-standard)
+#  @weekly  	(non-standard)
+#  @daily   	(non-standard)
+#  @hourly	   (non-standard)
+#  @reboot  	(non-standard)
 #+END_SRC
 
 * Shell 
@@ -1958,6 +1988,11 @@ rm ${FILE} ${ERR_FILE} &> /dev/null
 
 #+END_SRC
 ** SSH (with password N with ssh-key)
+*** Permissions on private key in ssh folder 
+- Typically you want the permissions to be:
+ - .ssh directory: 700 (drwx------)
+ - public key (.pub file): 644 (-rw-r--r--)
+ - private key (id_rsa): 600 (-rw-------)
 *** Connect using SSH User Account - with Password 
 #+BEGIN_SRC sh
 ssh username@ip

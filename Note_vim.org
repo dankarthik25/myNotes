@@ -83,20 +83,21 @@ Edit/Manupulation Cmd
 |         | where 'word' is bounded by bounderay (ex space,dash.. |
 |         |                                                       |
 ** Edit cmd:
-| y          | copy                                  |
-| yy         | copy line                             |
-| c          | chagne(replace)                       |
-| C          | Change the rest fo the current line   |
-| d          | cut/del                               |
-| dd         | del line                              |
-| p/P        | paste below/above line                |
-| x          | del charater after cursor             |
-| X          | del char before cursor                |
-| /"text"    | search for text                       |
-| o/O        | insert \n at above/below current line |
-| earlier 2m | set the chagnes in text 2 min earlier |
-| u          | Undo                                  |
-| C+r        | redo                                  |
+| y              | copy                                  |
+| yy             | copy line                             |
+| c              | chagne(replace)                       |
+| C              | Change the rest fo the current line   |
+| d              | cut/del                               |
+| dd             | del line                              |
+| p/P            | paste below/above line                |
+| x              | del charater after cursor             |
+| X              | del char before cursor                |
+| /"text"        | search for text                       |
+| o/O            | insert \n at above/below current line |
+| earlier 2m     | set the chagnes in text 2 min earlier |
+| u              | Undo                                  |
+| C+r            | redo                                  |
+| %s/oldN/newN/g | replace                               |
 
 ** Visual Mode:
 *** Select Column	
@@ -108,15 +109,15 @@ Edit/Manupulation Cmd
 
 * Commbinational Commands:
 
-| Edit | cmd     | Cond           | cmd           | Nava | cmd  |
-|------+---------+----------------+---------------+------+------|
-| d    | cut/del | a              | all           | w    | word |
-| y    | copy    | i              | in            |      |      |
-| p    | paste   | t              | till          |      |      |
-| c    | change  | f              | find forwords |      |      |
-|      | F       | find backwords |               |      |      |
-|      |         |                |               |      |      |
-|      |         |                |               |      |      |
+| Edit | cmd     | Cond | cmd            | Nava | cmd        |
+|------+---------+------+----------------+------+------------|
+| d    | cut/del | a    | all            | w    | word       |
+| y    | copy    | i    | in             | s    | sentences  |
+| p    | paste   | t    | till           | p    | paragraphs |
+| c    | change  | f    | find forwords  | t    | tags       |
+|      |         | F    | find backwords |      |            |
+|      |         |      |                |      |            |
+|      |         |      |                |      |            |
 * Keystrocks:
 CMD		{ Number } { Text/Vis Cmd } { Cond cmd } { Navig cmd }
 
@@ -142,9 +143,18 @@ CMD		{ Number } { Text/Vis Cmd } { Cond cmd } { Navig cmd }
 
 *  Macrows
 ** syntax :
-	q"register name"
-	CMD's
-	q
+#+BEGIN_SRC sh
+g{resister}
+# do the things
+q
+eg:
+qw
+I # move to start of line
+del var space esc H # end of line
+q # stop recording
+# To run macro
+@w
+#+END_SRC
 
 ** paly macro:
 	@"register name"
@@ -174,6 +184,55 @@ site for packages :
 #+BEGIN_SRC sh
 tmux new-session -s "session name"
 #+END_SRC 
+
+split a pane horizontally Ctrl + b "
+split a pane vertically   Ctrl + b %
+
+switch between panes : Ctrl + b (left, right, up, down)
+kill pane : Ctrl + b x
+
+Here is a list of a few basic tmux commands:
+
+    Ctrl+b " — split pane horizontally.
+    Ctrl+b % — split pane vertically.
+    Ctrl+b arrow key — switch pane.
+    Hold Ctrl+b, don’t release it and hold one of the arrow keys — resize pane.
+    Ctrl+b c — (c)reate a new window.
+    Ctrl+b n — move to the (n)ext window.
+    Ctrl+b p — move to the (p)revious window.
+    z        -- zoom in/out  the pane
+    Ctrl+b x - kill the pane
+** Create and mange windows
+Create a new window     : Ctrl + b  c 
+move to previous window : Ctrl + b p
+
+Rename window: the pane : Ctrl + b ,
+** Session
+Disconnect your session : Ctrl + b + d
+reconnect to tmux : tmux attach
+Or open new session:
+tmux
+to see the tmux session 
+
+#+BEGIN_SRC sh
+# to see the tmux session 
+ps aux |grep tmux #or
+tmux list-sessions # tmux ls
+#0: 1 window (created mon Nov 11 18:55:28 2019) 
+#1: 1 window (created mon Nov 11 18:55:28 2019) (attached)
+tmux attach -t 1 # To second session
+#or
+tmux a -t 1
+#+END_SRC
+
+Rename the session : Ctrl + b $
+create a new session with name : tmux new -s "my project"
+Show list of session : Ctrl + b s
+
+** Customisation and tweek
+nano .tmux.conf # tmux is configuration file
+
+past the conf from https://pastebin.com/CDEVZTSC
 * Vimrc
 #+BEGIN_SRC sh
   call plug#begin()
@@ -214,3 +273,4 @@ switch btw tabs : gt
 switch btw tabs reverse :gT
 move window inside multi-window to tab from C-w T
 switch btw
+* Tmux 

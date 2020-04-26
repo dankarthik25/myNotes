@@ -24,6 +24,7 @@ https://askubuntu.com/questions/147277/sudo-apt-get-remove-does-not-remove-confi
 sudo apt-get remove <prg>
 sudo apt-get purge <program>
 #sudo apt-get remove --autoremove avidemux2.6-qt
+sudo apt-get autoremove # to remove unwanted lib
 #+END_SRC
 * Look
 ** Install GNOME tweaks tool
@@ -279,6 +280,27 @@ http://i.gzn.jp/img/2007/08/03/linux_command_cheat_sheet/linux.png
  |                   | ./    : To current dir                   |
  | mkdir 'dir1'      | create a dir of name 'dir1'              |
  | cd                |                                          |
+* Split Terminal
+#+BEGIN_SRC sh
+  sudo apt-get install screen
+  screen
+  # Split Horizontally : Ctr + a S
+  # Split Horizontally : Ctr + a :split
+  # Split Vertically : Ctr + a |
+  # Split Vertically : Ctr + a :split -v
+  # move cursor around tiles: Ctr + a <Tab>
+  # move cursor around tiles: Ctr + a :focus
+
+  # Open bash terminal in tiles : Ctr +a C
+  # Open bash terminal in tiles : Ctr +a :screen
+
+  # maxime tile : Ctr + a Q 
+  #  
+
+  # remove tile : Ctr + a X
+  # remove tile : Ctr + a :remove
+
+#+END_SRC
 * installation
 * git
 For creating a version control of local repository

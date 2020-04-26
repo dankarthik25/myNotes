@@ -40,177 +40,7 @@
 Course Source Code is Uploaded in Github Public
 https://github.com/anshulc55/Jenkins_Upgradev3
 [[file:~/karthik/VideoTutorials/udemy/continous-integration-jenkins-pipelines/01\ Course\ Introduction/001 Jenkins-Course-RoadMap.pdf]]
-* --------Sathish Anna Lec-----------------
-** Installation of Jenkins
-three types of instation
- - java
- - executable (windows,linux,macOS)
- - tomcat
-** First Job
-JOB is created by <Create New Jobs> or new items(left side of jenkinns)
-- Types of Jobs in Jenkins
-  - Freestyle Project
-  - Pipeline
-  - multi-configuration project
-  - Folder
-  - GitHub Organization
-  - multibranch Pipline
-We generall choices Freestyle Project
 
-- Inside Freestyle we have
-  - General
-  - Source Code management
-  - Build Triggers
-    - Build periodically    (schedule cron jobs * * * * *)build every 1 mintns
-  - Build Environment 
-  - Build
-    -  Execute shell        (command: ) 
-  - Post-build Actions 
-#+BEGIN_SRC sh
-cd dir
-javac HelloWorld.java
-java Hello
-
-#+END_SRC
-In Freestyle/Build/Execute/ give ERROR : can't write (permission denied)
-
-#+BEGIN_SRC sh BUG 
-# permission denied
-# Solution 1 : change mod of dir eg: chmod 777 -R JavaSample
-# Solution 2 : change jenkins setting : Granting jenkins sudo premissions
-sudo vi /etc/sudoers
-# Insert below lines
-# #   Jenkins Permission Grant
-# # jenkins ALL=(ALL) NOPASSWD: ALL
-
-
-#+END_SRC
-** Grant Permission
-#+BEGIN_SRC sh
-sudo vi /etc/sudoers
-
-# Grant Permission
-jenkins ALL=(ALL) NOPASSWD: ALL
-
-#+END_SRC
-** How to Trigger a remote build + Job chaining
-Build Trigger:
-Token : 1234
-
-Job chaining
-- 1st Job : Build or complie HelloWorld.java
-- 2nd Job : Run Hello
-  - build trigger :Build after other projects are build
-- 3rd Job : Hello World Sucess message
- 
-new item > Description : Build and 
-** Continuous Integration with Jenkins
-** Jenkins Integration with Git and GitHub 
-new items >> Freestyle Project >> Source Code management
- >> git rep (insert link)
- >> Build Triggers 
-(Poll SCm(When ever change in git repository the jenkins is trigger)at   )
- >> Build Environment 
-(Delete Workspace enable )['.' Jenkins Workspace : /var/lib/jenkins/Workspace/JavaHelloWorld ]is deleted before build is stared  less error
- >> Build shell 
-#+BEGIN_SRC sh
-javac HelloWorld.java
-java HelloWorld
-#+END_SRC
-
- ) 
-*** Build maven project
-#+BEGIN_SRC sh
-# Go to maven wrokspace
-cd /Workspace/Devops/maven/
-
-# create a maven project
-mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=my-app -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
-
-my-app/
-
-#Test mvn is working or no:  clean test
-mvn clean test
-#+END_SRC
-
-create empty repo(my-app) in git 
-send maven code to git 
-
-#+BEGIN_SRC sh
-cd /Workspace/Devops/maven/myapp
-git init
-git add .
-git commit -m "1st maven Jenkins project"
-git remote add origin "giturl"
-git push -u origin master
-#+END_SRC
-
-Create newitem 
->> General : 
-            GitHub project : github link
->> Source Code management : 
-            git : clone_link
->> Build Trigger :
-                 Github trigger for Gitscm polling: enable
->> Build :
-          Invoke top-level ven targets :
-             Goal: clean, test
-
-Save and run     
-
-*** Clean and Test Goals Using Jenkins
-**** move maven-code to github
-- move Code to Github
-  - create new repo(my-app) in github
-  - git init in my-app dir
-  - git push code 
-#+BEGIN_SRC sh
-cd /Workspace/Devops/maven/my-app
-git init
-git add .
-git commit -m "Moving Maven Project to Github"
-git remote add origin https://github.com/dankarthik25/my-app.git
-git push -u origin master
-#+END_SRC
-** How to create users in Jenkins
-During  jenkins creating we only have 1 user that is admin user 
-General in team we have different users and different roles like(team lead, dev, testors, operations)
-
-- Create users
- - Jenkins>>mange Jenkins >>manage user >> Create User
-
-admin has acess to view all job or projects
-
-** Jenkins plugins 
-Jenkins>> mange Jenins >> Plugins manger >>available 
-
-isntall Role based authoririezed 
-
-** Role-Based Authorization Strategy + Manage
-Manage Jenkins > Manage Global Security screen >> Role Based Strategy enable.
-Manage Jenkins > Manage and Assign Role.
-** master-slave based architectural 
-- master:
-  - Schedule Build Job
-  - Dispatches Build to slave for actual job execution.
-  - monitoring the slave and recording the build Results
-- Slave:
-  - Execute Builds Jobs dispactched by master.
-Jenkins Job:
-Job is refer to runnable tasks that are controlled and monitored by Jenkins
-
-Slave/Node :
-Slave are computers that are setup to build Projects for a master
-
-Jenkins Run Seprate Program called "Slave Agents " on Slaves.
-
-When Slaves are registered  to a master, a master starts distributing the load to Slaves.
-
-Node is used to refer all machines that are part of Jenkins grid, slave and master.
-*** Executor
-Executor is seprate Stream of Build to be run on a single Node in Parallel
-*** Plugins
- 
 * ----    UDEmY   ----
 * Introduction of Continous Integration[05] 
 ** What is Continous Integration
@@ -288,12 +118,12 @@ Why Jeninks for CI
 - Jenkins Support Docker Container, you can containerize Jenkins Service
 
 ** Alterantive
-Drone CI
-TeamCity(JetBrains)
-Wercher
-CircleCI
-CodeShip
-SemaPhoreCI
+- Drone CI
+- TeamCity(JetBrains)
+- Wercher
+- CircleCI
+- CodeShip
+- SemaPhoreCI
 
 ** Install Jenkins [07]
 - Jenkins can be install in 3 ways
@@ -386,23 +216,26 @@ vi /etc/default/jenkins
 Jenkins menu
 
 |-------------------+-------------------------------------|
-| New Item          | Create a job or project             |
+| New Item          |# Create a job or project            |
 |-------------------+-------------------------------------|
-| People            | User which are connected to Jenkins |
+| People            | #User which are connected to Jenkins |
 |-------------------+-------------------------------------|
-| Build History     | Build                               |
+| Build History     | #Build                              |
 |-------------------+-------------------------------------|
-| manage Jenkins    | manage                              |
+| manage Jenkins    | # manage                            |
 |-------------------+-------------------------------------|
 | my views          |                                     |
 |-------------------+-------------------------------------|
 | lockable resource |                                     |
 |-------------------+-------------------------------------|
-| credentials       | Create Credentials                  |
+| credentials       | #Create Credentials                 |
 |-------------------+-------------------------------------|
 | new view          |                                     |
 |-------------------+-------------------------------------|
 
+
+
+#+BEGIN_QUOTE
 (menu)Jenkins > New Items : _Enter item/Job name_
                 FreeStyles(ok)
 
@@ -431,12 +264,11 @@ Jenkins menu
    - Build after other project are build :
 
    - Build Periodically 
-#+BEGIN_SRC sh
-# * * * * * 
-#+END_SRC  
+               -  # * * * * * 
+
     - Github hook for GIT_SCm Polling
     - Poll SCm
-     
+        - # * * * * * # Chanage in code very 1 minint
 - Build Environment
   - Delete Workspace before build starts (discard old build result and start fresh build)
   - Use secret text or file
@@ -454,8 +286,10 @@ Jenkins menu
   - Git Publisher
   - Set Github commit status
   - Delete workspace when build is done
- 
 
+#+END_QUOTE
+
+ 
 
 Build a job
 Double Click Project > Build Now
@@ -468,19 +302,23 @@ git sample project : https://github.com/anshulc55/Jenkins_Upgradev3/tree/master/
 We take maven project as example for git integration
 
 
+#+BEGIN_QUOTE
 - Steps : 
    - Install git in localhost:apt-get install git
    - mange jenkins : 
-            manage plugins:
-              Install Github Integration: in jenkins
+           - manage plugins:
+              - Install Github Integration: in jenkins
 
+#+END_QUOTE
 ** Configre Jenkins to  Work with maven
-mangae jenkins > Global Tool Configuration > 
-   Add jkd installation
-   Add 
-   Add Git
-  Add maven
+#+BEGIN_QUOTE
+ mangae jenkins > 
+    - Global Tool Configuration > 
+         - Add jkd installation
+         - Add Git
+         - Add maven
 
+#+END_QUOTE
 ** Create maven project with Jenkins
 *** Install maven on Host machine [17]
 #+BEGIN_SRC sh
@@ -488,6 +326,7 @@ sudo apt-get install maven
 maven --version
 #+END_SRC
 *** Configure Jenkins with Git maven in Jenkins[19]
+#+BEGIN_QUOTE
 - Steps:
   - Search for maven path
     - Form teminal install : 'echo $MAVEN_HOME'
@@ -506,8 +345,10 @@ maven --version
        -  MAVEN installation:
                   - Name       : local-maven
                   - MAVEN_HOME : _search-path_
+#+END_QUOTE
 
 *** Create First Maven Job[20]
+#+BEGIN_QUOTE
 - New item:
    -item Name : _First_maven_prj_ 
      - Freestyle Project
@@ -526,6 +367,7 @@ Configurtion:
 
      Save and build 
 
+#+END_QUOTE
 ** Source Code Polling in Jenkins[22]
 - Contionous Integration flow in not  for manual work
 - Auto build 
@@ -593,7 +435,6 @@ Click Project:
  
 ** Install & Configure Tomcat (Staging Env) [26] 
 - Tomcat is an _application web-server_ form Apache Software Foundation that executes _Java servlet_ and renders Web pages that include _Java Server Pages code_
-
 - Url for Tomcat Project :
  https://github.com/anshulc55/Jenkins_Upgradev3/tree/master/java-tomcat-sample
 
@@ -802,6 +643,7 @@ Post-build Action
 
 
 ** Build Pipeline Plugin[30] :
+#+BEGIN_QUOTE
 Step 1: Install Build Pipline :
 Step 2: Create a New View
 Step 3: Build Pipeline View
@@ -811,6 +653,7 @@ Step 3: Build Pipeline View
                Upstream /Downstream Config
                Select  Initial Job :   _Package_Application_ (From How to Delpoy git code to tomcat server ) 
          Save       
+#+END_QUOTE
 ** Deploy Application in Production [Udemy 031]
 Till Now we have 
  - Package Build Code : create artifacts
@@ -833,7 +676,7 @@ sh apache-tomcat-9.0.31-prod/bin/startup.sh
 
 #+END_SRC
 *** Step2: Create a Job <Deploy_Application_Prod_Env> to Deploy From Stage Evn to Production Env 
-#+BEGIN_QUOTE
+#+BEGIN_SRC 
 New item 
          Name : _Deploy_Application_Prod_Env_
          FreeStyle
@@ -856,7 +699,8 @@ Post-build Action
              Username : tomcat
              Password : tomcat (For configuration we set)
     Tomcat Url : _Same page url_ eg:https://67.205.146.248:9091(9091 : tomcat manual config)
-#+END_QUOTE
+#+END_SRC
+
 The above job Depoly Application Staging Env is not auto-trigger because it need the approvial of authority (manual triggger from Stagging Env Job)
 
 #+BEGIN_QUOTE

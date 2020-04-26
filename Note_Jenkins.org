@@ -235,7 +235,7 @@ Jenkins menu
 
 
 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 (menu)Jenkins > New Items : _Enter item/Job name_
                 FreeStyles(ok)
 
@@ -287,7 +287,7 @@ Jenkins menu
   - Set Github commit status
   - Delete workspace when build is done
 
-#+END_QUOTE
+#+END_SRC
 
  
 
@@ -302,23 +302,23 @@ git sample project : https://github.com/anshulc55/Jenkins_Upgradev3/tree/master/
 We take maven project as example for git integration
 
 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 - Steps : 
    - Install git in localhost:apt-get install git
    - mange jenkins : 
            - manage plugins:
               - Install Github Integration: in jenkins
 
-#+END_QUOTE
+#+END_SRC
 ** Configre Jenkins to  Work with maven
-#+BEGIN_QUOTE
+#+BEGIN_SRC
  mangae jenkins > 
     - Global Tool Configuration > 
          - Add jkd installation
          - Add Git
          - Add maven
 
-#+END_QUOTE
+#+END_SRC
 ** Create maven project with Jenkins
 *** Install maven on Host machine [17]
 #+BEGIN_SRC sh
@@ -326,7 +326,7 @@ sudo apt-get install maven
 maven --version
 #+END_SRC
 *** Configure Jenkins with Git maven in Jenkins[19]
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 - Steps:
   - Search for maven path
     - Form teminal install : 'echo $MAVEN_HOME'
@@ -345,10 +345,10 @@ maven --version
        -  MAVEN installation:
                   - Name       : local-maven
                   - MAVEN_HOME : _search-path_
-#+END_QUOTE
+#+END_SRC
 
 *** Create First Maven Job[20]
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 - New item:
    -item Name : _First_maven_prj_ 
      - Freestyle Project
@@ -367,7 +367,7 @@ Configurtion:
 
      Save and build 
 
-#+END_QUOTE
+#+END_SRC
 ** Source Code Polling in Jenkins[22]
 - Contionous Integration flow in not  for manual work
 - Auto build 
@@ -410,16 +410,16 @@ Eg:
       - If you want get the older file, you need  archive it
 
 *** artifact's path: 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 Click Project:
     Console Output: 
 
 # Here we can see the there is jar file which is created in 
 # [ [1;34mINFO [m] Building jar :/var/lib/jenkins/workspace/.Job-name.../... .jar
-#+END_QUOTE
+#+END_SRC
 
 *** For Archive Job
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 - Config Job
   - Post-build Actions 
           -  *Archive the articats*  ( select in dropdown menu)
@@ -431,7 +431,7 @@ Click Project:
 # - Click Project
 #   - Console Output:
 ## [ [1# [ [1;34mINFO [m] Archiving artifats
-#+END_QUOTE
+#+END_SRC
  
 ** Install & Configure Tomcat (Staging Env) [26] 
 - Tomcat is an _application web-server_ form Apache Software Foundation that executes _Java servlet_ and renders Web pages that include _Java Server Pages code_
@@ -575,7 +575,7 @@ cd /opt/tomcat/conf
 
 #+END_SRC
 *** Create Job to Produce Tomcat Deployable Artifacts
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 Create a view : 
     View Name : _TomcatDeploy_View_
     List View : ok
@@ -610,10 +610,11 @@ Build:
           Trigger only if build is stable : Ok
 
 Save Job
-#+END_QUOTE
+#+END_SRC
+
 
 *** Create Job to Deploy Artifacts to Tomcat server or(Staging Env)
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 #Step 1:  Install "Copy Artifact" & "Deploy to Containers" Plugins
 #Step 2:
 New item 
@@ -638,12 +639,12 @@ Post-build Action
              Username : tomcat
              Password : tomcat (For configuration we set)
     Tomcat Url : _Same page url_ eg:https://67.205.146.248:9090(9090 : tomcat manual config)
-#+END_QUOTE
+#+END_SRC
        
 
 
 ** Build Pipeline Plugin[30] :
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 Step 1: Install Build Pipline :
 Step 2: Create a New View
 Step 3: Build Pipeline View
@@ -653,7 +654,7 @@ Step 3: Build Pipeline View
                Upstream /Downstream Config
                Select  Initial Job :   _Package_Application_ (From How to Delpoy git code to tomcat server ) 
          Save       
-#+END_QUOTE
+#+END_SRC
 ** Deploy Application in Production [Udemy 031]
 Till Now we have 
  - Package Build Code : create artifacts
@@ -703,7 +704,7 @@ Post-build Action
 
 The above job Depoly Application Staging Env is not auto-trigger because it need the approvial of authority (manual triggger from Stagging Env Job)
 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 #         Name : _Depoly Application Staging Env_
 
 Genreal:
@@ -732,7 +733,7 @@ Post-build Action
     Build other projects(manual step):
         Downstream Project Names : _Deploy_Application_Prod_Env_
 
-#+END_QUOTE
+#+END_SRC
 
 
 * Infrastructure as Code(DSL)[33] 
@@ -796,7 +797,7 @@ or https://jenkinsci.github.io/job-dsl-plugin/
 *** Push DSL file to github
 Push groovy file in git hub 
 *** Create Job using github groovy file
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 new item 
         Name : _maven_Seed_Job_ 
        Free Style
@@ -810,14 +811,14 @@ Build :
            DSL Scripts :: _MavenProjectDSL.groovy_ # file name of DSL FILE
                                               # groovy path in github          
 
-#+END_QUOTE
+#+END_SRC
 *** Approve DSL script
 Approve DSL script
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 manage Jenkins 
        In-process Script Approval
           Click : Approve
-#+END_QUOTE
+#+END_SRC
 * Jenkins as Code Pipeline 
 ** Code Pipeline Overview[037 Udemy]
 Jenkins Code Pipeline used DSL.
@@ -843,11 +844,11 @@ Having the build and deployment  Pipeline as Code (PaC)
     - There mush be at least one step  within a steps directive.
 
 *** Install <Build Pipeline Plugin>
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 manage Jenkins
        manage plugin
              Install : Build Pipeline Plugin
-#+END_QUOTE
+#+END_SRC
 
 *** Create Jenkinsfile and push in github
 #+BEGIN_SRC java
@@ -882,7 +883,7 @@ pipeline {
 
 #+END_SRC
 *** Create Job using Jenkinsfile
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 New item:
          Name: _SampleCodePipline_
          Pipeline 
@@ -900,10 +901,10 @@ Pipeline:
 
              Script Path  : _Jenkinsfile_
 
-#+END_QUOTE
+#+END_SRC
 ** Ex: Automate maven project [39]
 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 # Inside "TomcatDeploy_View" Create a New JOB   :
 New item
        Name _Package_Application_
@@ -934,7 +935,7 @@ Build:
           Trigger only if build is stable : Ok
 
 Save Job
-#+END_QUOTE
+#+END_SRC
 
 The Package Application Job : Is use to create artifact (**/*.war) and trigger Staging Project 
 
@@ -984,7 +985,7 @@ pipeline {
 #+END_SRC
 
 *** Create Job using Jenkinsfile
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 New item:
          Name: _PackageApplication Code Pipline_
          Pipeline 
@@ -1002,12 +1003,12 @@ Pipeline:
 
              Script Path  : _java-tomcat-sample/Jenkinsfile_
 
-#+END_QUOTE
+#+END_SRC
 
 *** Trigger Delopy to Staging and Production Env
 **** Deploy Stagging Env
 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 #Step 1:  Install "Copy Artifact" & "Deploy to Containers" Plugins
 #Step 2:
 New item 
@@ -1033,9 +1034,9 @@ Post-build Action
              Username : tomcat
              Password : tomcat (For configuration we set)
     Tomcat Url : _Same page url_ eg:https://67.205.146.248:9090(9090 : tomcat manual config)
-#+END_QUOTE
+#+END_SRC
 **** Deploy Production
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 New item 
          Name : _Deploy_Application_Prod_Env_
          FreeStyle
@@ -1059,7 +1060,7 @@ Post-build Action
              Username : tomcat
              Password : tomcat (For configuration we set)
     Tomcat Url : _Same page url_ eg:https://67.205.146.248:9091(9091 : tomcat manual config)
-#+END_QUOTE
+#+END_SRC
 * Distributated Build in Jenkins
 ** Distributed Builds Concept [41] 
 We are using Jenkins master Node to Execute the Build and package the Application.
@@ -1091,7 +1092,7 @@ The characteristics of slave are :
  
 ** Create and Configure Jenkins[42]
 *** Create and Connect Node(Slave-servet) in AWS(SSH- AWS Private key) 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 manage Jenkins 
      mange Node(Slave) 
         New Node  
@@ -1123,7 +1124,7 @@ Toot Locations :
 BUG : if java, maven are not present then 
 Jenkins > mangae Jenkins > Global Tool Configuratoin > JDK (Add JDK) , maver(Add maven)
 manage jenkins > mange nodes
-#+END_QUOTE
+#+END_SRC
 
 *** TODO Create and Connect Node(Slave-servet) in Droplet(By account cmd) (Ubuntu)
 *** Jenkins Executor
@@ -1176,7 +1177,7 @@ pipeline {
 #+END_SRC
 
 *** Create Jenkins Job 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 New item:
          Name: _Build_Tomcat_Docker_Image_
          Pipeline 
@@ -1194,7 +1195,7 @@ Pipeline:
 
              Script Path     : _Jenkinsfile_
 
-#+END_QUOTE
+#+END_SRC
 
 Note: Due to security resons like permission
 then 
@@ -1217,7 +1218,7 @@ Ceate a script in path : /opt/softaware/scripts/test.sh
 echo "$1 is a good boy and $2 is a innocent guy"
 #+END_SRC
 *** String Parameter[56]
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 Genral
 This project is parameterised :
                String  Parameter : 
@@ -1232,9 +1233,9 @@ Build
         Execute shell
              command : sh /opt/softaware/scripts/test.sh $param1 @param2
 
-#+END_QUOTE
+#+END_SRC
 *** Choices Parameter[57]
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 new item > free style  name: parameterijenkns
 
 Genral
@@ -1248,18 +1249,18 @@ This project is parameterised :
 Build 
         Execute shell
              command : sh /opt/softaware/scripts/test.sh $param
-#+END_QUOTE
+#+END_SRC
 
 * Jenkins Security Aspect
 ** Enable Disable Login [59]
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 manage jenkins
       Configure Global Security
               Enable security : Disable
 
-#+END_QUOTE
+#+END_SRC
 *** Enable Security
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 manage jenkins
       Configure Global Security
               Enable security : Enable
@@ -1270,24 +1271,24 @@ manage jenkins
                             Allow anaoymous read access : Enable
    
 
-#+END_QUOTE
+#+END_SRC
 ** Allow User to Sign-Up [60]
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 manage jenkins
       Configure Global Security
               Access Control :
                     Security Realm:
                              Allow users to sign up
 
-#+END_QUOTE
+#+END_SRC
 Note: This dummy user can change job which is not desireable
 
 ** TODO Install Powerful Security Plugin 
-#+BEGIN_QUOTE
+#+BEGIN_SRC
 mangae jenkins
       manage plugin 
                 Role based authorization Strategy  
-#+END_QUOTE
+#+END_SRC
 * AWS Delivery Code Pipeline:
 
 * Introduction to AWS Code Deploy & Code Pipeline

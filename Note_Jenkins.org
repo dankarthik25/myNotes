@@ -40,8 +40,6 @@
 Course Source Code is Uploaded in Github Public
 https://github.com/anshulc55/Jenkins_Upgradev3
 [[file:~/karthik/VideoTutorials/udemy/continous-integration-jenkins-pipelines/01\ Course\ Introduction/001 Jenkins-Course-RoadMap.pdf]]
-
-* ----    UDEmY   ----
 * Introduction of Continous Integration[05] 
 ** What is Continous Integration
 Continous Integration (CI) : 
@@ -236,8 +234,9 @@ Jenkins menu
 
 
 #+BEGIN_SRC
-(menu)Jenkins > New Items : _Enter item/Job name_
-                FreeStyles(ok)
+(menu)Jenkins 
+            New Items : _Enter item/Job name_
+            FreeStyles(ok)
 
 - General 
   - Description
@@ -325,7 +324,7 @@ We take maven project as example for git integration
 sudo apt-get install maven
 maven --version
 #+END_SRC
-*** Configure Jenkins with Git maven in Jenkins[19]
+*** Configure Jenkins with Git, maven in Jenkins[19]
 #+BEGIN_SRC
 - Steps:
   - Search for maven path
@@ -568,8 +567,11 @@ cd /opt/tomcat/conf
 #  <user username="tomcat" password="tomcat" roles="manager-script,manager-gui" />
 #</tomcat-users>
 
+vi /tomcat/conf/server.xml
+# <Connector port="9090" protocol="HTTP/1.1"
 
 # Restart the tomcat server
+
 /opt/tomcat/bin/shutdown.sh
 /opt/tomcat/bin/startup.sh
 
@@ -638,14 +640,18 @@ Post-build Action
     Credentials : Add credentials 
              Username : tomcat
              Password : tomcat (For configuration we set)
-    Tomcat Url : _Same page url_ eg:https://67.205.146.248:9090(9090 : tomcat manual config)
+    Tomcat Url : _Same page url_ eg:http://67.205.146.248:9090(9090 : tomcat manual config)
+
 #+END_SRC
        
 
 
 ** Build Pipeline Plugin[30] :
+- Step 1: Install *Build Pipline* :
+- Step 2: Create a New View
+- Step 3: Build Pipeline View
 #+BEGIN_SRC
-Step 1: Install Build Pipline :
+Step 1: Install *Build Pipline* :
 Step 2: Create a New View
 Step 3: Build Pipeline View
             Build Pipeline View Title : Deploy Application Stagging Env
@@ -662,15 +668,21 @@ Till Now we have
  - Deploy in Production [Now : Tomcat 9091] [Need Approvial from Authority]
 
 *** Step1: Run another tomcat-server at port: 9091 
-
+https://www.youtube.com/watch?v=n9l8WHHp_30 [Run multiple tomcat instance]
 #+BEGIN_SRC sh
 ls
 # apache-tomcat-9.0.31 # for QA environment
 cp -r apache-tomcat-9.0.31/ apache-tomcat-9.0.31-prod/
 vi apache-tomcat-9.0.31-prod/conf/server.xml  # change the port 
+
 #<Connector port="9091" protocol="HTTP/1.1"
 #               connectionTimeout="20000"
 #               redirectPort="8443" />
+
+# change the server port, connector port(hhtp, ajp), 
+#export CATALINA_BASE=/home/jayradhe/Workspace/Devops/tomcat1
+#export CATALINA_HOME = $CATALINA_BASE
+#sh {$CATALINA_HOME}/bin/startup.sh  
 
 sh apache-tomcat-9.0.31-prod/bin/startup.sh
 
@@ -725,7 +737,7 @@ Post-build Action
     Credentials : Add credentials 
              Username : tomcat
              Password : tomcat (For configuration we set)
-    Tomcat Url : _Same page url_ eg:https://67.205.146.248:9090(9090 : tomcat manual config)
+    Tomcat Url : _Same page url_ eg:http://67.205.146.248:9090(9090 : tomcat manual config)
 
 
 ################################################################
@@ -734,8 +746,6 @@ Post-build Action
         Downstream Project Names : _Deploy_Application_Prod_Env_
 
 #+END_SRC
-
-
 * Infrastructure as Code(DSL)[33] 
 Jenkins Allow User to manage the Jenkins Job  via UI Parameter
 
@@ -1135,17 +1145,8 @@ manage jenkins > mange nodes
 - This parallel jobs are depends on No.of Executor (2 build per core cpu) 
 ** TODO Concurrent Build , Label Nodes[44]
 ** TODO Assign particular job to particualar Slave-Node 
-* ----------------------------------
 * Jenkins Integration with Docker
 ** Create Docker File of Jenkins File[50]
-*** Create Docker File 
-#+BEGIN_SRC sh
-# Dockerfile
-FROM tomcat:8.0
-ADD **/*.war /usr/local/tomcat/webapps/
-EXPOSE 8080
-CMD ["catalina.sh", "run"]
-#+END_SRC
 *** Create Jenkinsfile
 #+BEGIN_SRC java
 // #Jenkinsfile
@@ -1175,7 +1176,19 @@ pipeline {
     }
 }
 #+END_SRC
-
+*** Create Docker File 
+#+BEGIN_SRC sh
+# Dockerfile
+FROM tomcat:8.0
+ADD **/*.war /usr/local/tomcat/webapps/
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
+#+END_SRC
+*** Docker config
+https://www.digitalocean.com/community/questions/how-to-fix-docker-got-permission-denied-while-trying-to-connect-to-the-docker-daemon-socket
+#+BEGIN_SRC sh
+sudo groupadd docker
+#+END_SRC
 *** Create Jenkins Job 
 #+BEGIN_SRC
 New item:
@@ -1210,7 +1223,6 @@ docker images
 
 docker run -p 9090:8080 tomcatsamplewebapp:3
 #+END_SRC
-
 * Parameterized Jenkins Jobs
 Ceate a script in path : /opt/softaware/scripts/test.sh
 #+BEGIN_SRC sh
@@ -1250,7 +1262,6 @@ Build
         Execute shell
              command : sh /opt/softaware/scripts/test.sh $param
 #+END_SRC
-
 * Jenkins Security Aspect
 ** Enable Disable Login [59]
 #+BEGIN_SRC
@@ -1289,6 +1300,7 @@ mangae jenkins
       manage plugin 
                 Role based authorization Strategy  
 #+END_SRC
+* ----------------------------------
 * AWS Delivery Code Pipeline:
 
 * Introduction to AWS Code Deploy & Code Pipeline

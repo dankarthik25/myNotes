@@ -115,6 +115,7 @@ There are Three Stages
   git init                                  # Inicialize or Create a version control 
   git status                                # View the Stagging Area
   git add <file>                            # Add files to stagging Area
+  git add -A
   git rim --cached <file>                   # Remove files in Stagging Area
   touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
   git commit -m "fist commit"               # Save-Commit  to Local Repo
@@ -335,9 +336,65 @@ git chekchout master
 Consist of < commit id, Author, Date, Comment on commit > 
  mode on your branch
 #+BEGIN_SRC sh 
-git log 
+git log  # give <git id,author, date, commit message>
 
-git log --online # give short version only < commit id, comment >
+git log --online # give short version only < commit id, comment- message >
+
+#commit 874357761ce77a9a925c1066d9cef6e81a5881a5
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Fri Apr 10 06:56:16 2020 +0530
+
+ #   Revised Docker
+
+#commit 7432654c56923fe3bc18b19d7ac69e70300d86f4
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Thu Apr 9 07:16:05 2020 +0530
+
+ #   Seperate Docker_Kubernetics
+
+#commit e981603cb4f9774128dd799da2da698baa1d7b9e
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Thu Apr 9 07:15:34 2020 +0530
+
+ #   Seperate Ansible
+
+#commit abb9dee1c46fb48f1356df2fdc3c92a7bc95de34
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Thu Apr 9 07:14:15 2020 +0530
+
+#    last commit
+
+#commit 9ab9c9adb3d6c49fdbb1d4dbbf1a627fc66f1200
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Wed Apr 1 12:30:06 2020 +0530
+#
+ #   Added Ansible and Docker, Kubernetic files
+
+#commit c39821d63c5c500a54c1865f63ec7fbf6a3e165a
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sat Mar 21 15:45:12 2020 +0530
+
+ #   my Notes
+
+#commit 370fca2e1a5ff68aecfcb41f4f1468c9b90ff6ed
+#Author: dankarthk25 <dankarthik25@gmail.com>
+#Date:   Tue Sep 18 03:58:25 2018 +0530
+
+#    my Notes on Prog
+git log --oneline
+# 70da939 (HEAD -> master, origin/master) New Change
+# 53dd0ee New Change
+# f537b27 New Change
+# 432784e New Change
+# 546bc17 Link and Compose added
+# 8743577 Revised Docker
+# 7432654 Seperate Docker_Kubernetics
+# e981603 Seperate Ansible
+# abb9dee last commit
+# 9ab9c9a Added Ansible and Docker, Kubernetic files
+# c39821d my Notes
+# 370fca2 my Notes on Prog
+
 #+END_SRC
 *** revert :
 when code is pushed to remote but you want changes back from remote > local 
@@ -374,7 +431,7 @@ git merge
 
  
 # pull
-git pull origin <branch-name>
+git pull origin <branch-name> # git fetch and git merge
 
 #+END_SRC
 ** reset vs revert
@@ -385,14 +442,76 @@ git reset : is used go backworkd for local to staging
 
 reset : local repo to  stageing  to working copy
 - reset are   3 types
-  - git reset --soft 
-  - git reset --mixed
-  - git reset --hard
+  - git reset --soft  # keep all changes in stagging area
+  - git reset --mixed # keep all changes in working area(default)
+  - git reset --hard  # removes all changes and remove files in  working area 
+
+
+
+In the simplest terms:
+
+    --soft: uncommit changes, changes are left staged (index/stagging area).
+    --mixed (default): uncommit + unstage changes, changes are left in working tree.
+    --hard: uncommit + unstage + delete changes, nothing left.
+
+*** revert
+# delete file in local and remote repo
+
+# To remove file for remote to  
+git revert commitid 
+git commit - m "remove from remote"
+
 #+BEGIN_SRC sh
-git reset --hard 77592f3
-git reset --soft 77592f3
-git reset --mixed 77592f3
+git log
+got log --oneline
+
+#commit id : 1
+#commit id : 2
+#commit id : 3
+#commit id : 4
+#commit id : 5
+git reset --soft 2 # keep the commit after 2 (3,4,5) 
+#commit id : 3
+#commit id : 4
+#commit id : 5
+
+
+git reset --hard 77592f3  # 
+git reset --soft 77592f3  # local repo to stagging 
+git reset --mixed 77592f3 #  local repo to work - dir
+
+git log --oneline
+# beef857 Revert "created test3 file"
+# 77592f3 created test3 file
+# 1c08f78 created test2 file
+# 78b777d created test1 file
+# a7968c1 Created hh
+# 4b30445 Created bb
+# 2e435ca Created gg file to intall git
+
+git revert 1c08f78
+git push origin master 
+
+# 
+
+
+
 #+END_SRC
+** Git branching for devops
+https://nvie.com/posts/a-successful-git-branching-model/
+
+the main branches in git are
+- master
+- develop
+- Supporting branches
+  - feature (branch from developer and merges in developer branch)
+  - release branch 
+  - hotfix
+Supporting branches :
+ paralle development team members
+ ease tracking of features
+ prepare for production release
+
 ** merge vs rebase vs cherrypick 
 For merge : new <commit id>  will be create and add <branch> <commit id > to which branch it is prescent
 For rebase : it chaganes history(log file) or add history
@@ -409,6 +528,9 @@ git rebase master
 #+END_SRC
 
 *** cheery pik
+Not all commit id in branch are merged in main branch
+but selected commit id are merged in main branch
+
 #+BEGIN_SRC sh
 git checkout -b future
 touch ww
@@ -429,6 +551,12 @@ touch wwwww | git add .
 git commit -m "create wwwww file"
 
 git log --online 
+# c459d7a created wwwwww file
+# b866590 created wwwww file
+# b510fa6 created www file
+# b6b5153 created ww file
+# 9d75eb8 created aaa file in master
+# 7fb9174 created file called mm
 
 # Q) merge only www file from future brach to master
 git log --online # to get the <commit -id> of www file : b877590
@@ -436,6 +564,10 @@ git log --online # to get the <commit -id> of www file : b877590
 git checkout master
 
 git cherry-pick b877590
+git log --online 
+# b866590 created wwwww file
+# 9d75eb8 created aaa file in master
+# 7fb9174 created file called mm
 
 #+END_SRC
 ** conflicts
@@ -469,13 +601,50 @@ vi ww
 ** Interview Qusestion
 - Q)If branch and merge, and pull and push  are done my devops then what is role of devops 
 - Ans) devops role is to create hotfix branch and and set a maile to devops  
+*** what is use of git 
+- to  track all changes in file or directory in VCS [Version Control System]
+- can not lose data -delete -revert
+- all users can access and send data
+*** Different type of vcs
+- cenrtal vcs 
+- distributed vs : github or bitbucket
+
 ** stash
 
 * Github
 version control 
 sharing code
 * maven
-maven is a java based build tool and it is use to create artifacts like jar, war,ear
+- maven 
+      - is a software management  tool based on concept of Project Object model(POm) which can  manage 
+          - project build
+          - reporting and 
+          - documentation for central piece of information
+  
+      - is a java based build tool, use to create artifacts like jar, war,ear
+All build system are essentailly same:
+ - Compile Source Code 
+ - Copy Resources 
+ - Compile and Run Tests
+ - Package Project
+ - Deploy Project
+ - Cleanup
+
+Developers of maven wanted 
+  - a standard way to build  the project
+  - a clear defination of what  the project consisted of 
+  -  an easy way to publish project infor and a 
+  - way to share/deploy JAR across serveral  projects
+  
+- What is POm.xml
+  - Contains information about project and configuration details used by maven to build project
+ 
+Pom consits of 
+  - Description
+  - Name and Version, Artifact Type, Source Code Location, Dependencies
+  - Plugins
+  - Profiles
+
 
 Build server: 
 Build server job is take the code from git and build artifact
@@ -496,15 +665,14 @@ Each of these build lifecycles is defined by a different list of build phases, w
 
 For example, the default lifecycle comprises of the following phases (for a complete list of the lifecycle phases, refer to the Lifecycle Reference):
 
-- validate : validate the project is correct and all necessary information is available
-- compile  : compile the source code of the project
-- test     : test the compiled source code using a suitable unit testing framework. These tests should not require the code be packaged or deployed
-- package  : take the compiled code and package it in its distributable format, such as a JAR.
-- verify   : run any checks on results of integration tests to ensure quality criteria are met
-- install  : install the package into the local repository, for use as a dependency in other projects locally
-- deploy   : done in the build environment, copies the final package to the remote repository for sharing with other developers and projects.
-
-These lifecycle phases (plus the other lifecycle phases not shown here) are executed sequentially to complete the default lifecycle. Given the lifecycle phases above, this means that when the default lifecycle is used, Maven will first validate the project, then will try to compile the sources, run those against the tests, package the binaries (e.g. jar), run integration tests against that package, verify the integration tests, install the verified package to the local repository, then deploy the installed package to a remote 
+- validate   : all necessary information is available and validate the project is correct.
+- compile    : compile the source.
+- test       : test the compiled source using  unit testing framework. 
+- package    : take the compiled code and package it in its distributable format, such as a JAR,war
+- intergration test :
+- verify     : run any checks on results of integration tests to ensure quality criteria are met
+- install    : install the package into the local repository, for use as a dependency in other projects locally
+- deploy     : copies the final package to the remote repository for sharing with other developers and projects.
 
 ** using wget and extracting and install
 #+BEGIN_SRC sh
@@ -579,13 +747,23 @@ maven is a project management tool and we need 3 argument: group Id, Artifact Id
 Q)For running maven cmd (compile,package,install,deploy)  why it should present in the same directory where pom.xml is present
 
 ** TODO maven life cycle [Need to visit : javatpoint.com maven-life-cycle: 8items=> validate,test,clean  ]
+clean   : 
 compile : want to compile
 package : want to create a package
 install : copy to local repos (.m2)   # create a .war file
-deploy  : deploy to (remote repo) 
+deploy  : deploy to (remote repo)
 
 #+BEGIN_SRC sh
 # hello.java 
+mvn clean # clean of 
+mvn complie     
+mvn test-compile
+mvn test
+mvn package
+mvn install 
+mvn deploy 
+
+
 hello.class -compile -mvn compile #
 # TO create a package 
 mvn package
@@ -612,7 +790,42 @@ Q) What is maven archtype:generate ?
 It is a maven plugin use to generate src and pom.xml file
 
 
+Q) how to ignore test cases in maven ?
+mvn install -DskipTests
 
+Q) how to create multi module project 
+parent pom - superpom
+       child pom
+
+
+parent pom.xml file
+sbi/pom.xml
+├── India/pom.xml
+├── AP/pom.xml
+└── Hyderabad/pom.xml
+
+#+BEGIN_SRC xml
+<packaging>pom </packaging>
+<modules>
+<module>India/pom.xml</module>
+<module>AP/pom.xml</module>
+<module>Hyderabad/pom.xml</module>
+ </modules>
+
+#+END_SRC
+
+Q)how to use profiles
+A) to set of configuration file
+profile
+dev/application
+sit
+pre production
+production
+
+tomcat jboss weblogics
+war     ear     cluster :dev1 dev2 dev3
+
+jar micro-servies 
 *** Step in how to build artifact in organisation
 
 - Step 1: OPS : Create git repo and send to all dev
@@ -3734,6 +3947,373 @@ kubeadm join 172.31.85.184:6443 --token jba6u7.rjkwcd9diiw33x7u / --discovery-to
 kubectl get nodes
 
 #+END_SRC
+* 25th Sonarqube -quality tool 
+https://www.swtestacademy.com/sonarqube-tutorial/ 
+- Duplicate
+- Code Covarage
+- Bugs
+
+What is Code Quality ?
+Code quality is a indiactor about how quickly developers can add  business to software system.
+
+Alterative gerrit, github,gitlab...etc
+
+- Sonarqube:port-9000
+
+** How to check quality Rules(Bugs, Vulnerabilities,Code Smell)
+Bugs            : 
+Vulnerabilities : 
+Code Smells     : 
+Coverage        :
+Duplicates      :
+
+https://224926-685269-raikfcquaxqncofqfm.stackpathdns.com/wp-content/uploads/2015/10/sonar_CI_2016-01-26_21-33-42.png
+
+Sonarqube CI (Stages or CI )
+ - Developers (Write Code and push on SCm(git,svm, ))
+ - Automatic Build(Jenkins, Bamboo or TeamCity) + Code Analysis
+ - Code (Analysis)
+   - Publish Analysis Report to SQ
+ - SQ Supports languages: Java, C/C++, Objective-C, C#, PHP, Flex, Groovy, JavaScript, Python, PL/SQL, COBOL, etc. (note that some of them are commercial)
+    - manage Issues : Report to Developers
+    - Sonar Qube Database 
+         - Oracle
+         - mysql
+Supports languages: Java, C/C++, Objective-C, C#, PHP, Flex, Groovy, JavaScript, Python, PL/SQL, COBOL, etc. (note that some of them are commercial) 
+** Install
+
+- Prerequirement 
+  - SonarQube to show GUI
+  - Sonar scanner , sonar runner
+  - JDK
+
+
+#+BEGIN_SRC sh
+# configure sonar scanner
+cd sonar-scanner/conf
+cat sonar-scanner.properties
+#sonar.host.url=http://localhost:9090
+
+sonar.login=data
+sonar.password=admin
+sonar.projectKey=devoproject
+#sonar.projectName= carona
+sonar.projectVersion=1.0
+sonar.source=D:/spark/sparkjava-war-example/src/main/java
+
+
+
+#+END_SRC
+** How to Intgerate sonar with mvn
+- Step1: Go to maven mvn installed
+- Step2: Open setting.xml under conf
+- Step3: Sonar plugin group and sonar profile and added in setting.xml file
+- Step4: run following cmd
+          mvn package sonar:sonar
+
+#+BEGIN_SRC xml
+<plugin>
+.......
+</plugin>
+<profile> 
+........
+</profile>
+
+
+#+END_SRC
+
+#+BEGIN_SRC sh
+mvn package sonar:sonar
+#+END_SRC
+** TODO How to Intgrate  sonar with Jenkins
+** What is work of a devops
+- Setup sonar
+- install sonar and sonar scanner 
+- Soar scanner and env variable also configured
+- 
+** Q and Ans
+
+Q)Do you know sonar  ? 
+It is a quality
+
+Q) What you do in sonar ?
+Setup sonarq
+sonar-scanner: 
+    sonar.conf: to to add user.., 
+* 26th maven Q-Ans session
+- how to ignore test cases
+  - mvn install -DskipTests
+- how to create multi module project
+- how to use profile
+- what is snapshot and version
+- diff ant and mvn
+** ignore Test case
+#+BEGIN_SRC sh
+mvn archetype:generate  -DgroupId=apr -DartifactId=sunday -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+tree -L 1
+#|- sunday/
+#|     |-  src/
+#|     |-  pom.xml
+cd sunday
+mvn install # by default test is running
+mvn clean install -DskipTests
+#+END_SRC
+** how to create multi module project
+parent pom : super pom
+ - child pom : 
+
+Q) how to create multi module project 
+parent pom - superpom
+       child pom
+
+
+parent pom.xml file
+india sbi
+├── deposit/pom.xml  # child pom file
+├── credit/pom.xml   # child pom file
+├── loan/pom.xml     # child pom file
+└── pom.xml          #  parent pom file
+#+BEGIN_SRC sh
+mvn archetype:generate  -DgroupId=india -DartifactId=sbi -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+rm src 
+
+mvn archetype:generate  -DgroupId=india -DartifactId=deposit -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+
+mvn archetype:generate  -DgroupId=india -DartifactId=credit -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+mvn archetype:generate  -DgroupId=india -DartifactId=loan -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+#+END_SRC
+
+#+BEGIN_SRC xml
+<-- cat pom.xml  --># remove build and plugins 
+<packaging>pom</packaging>  
+
+<modules>
+<module>deposit</module>
+<module>credit</module>
+<module>loan</module>
+ </modules>
+
+mvn package
+#+END_SRC
+
+** profiles
+Q)why do we use profile ?
+A) - to set of configuration file
+   - Using profile
+      - you can customize build for diff enviroment.
+https://books.sonatype.com/mvnref-book/reference/profiles-sect-maven-profiles.html
+
+sunprofile
+├──dev/application.property 
+├──sit/application.property
+├──pre production/application.property
+└──production/application.property
+
+tomcat  - is consist of war file 
+jboss   - is consist of ear file
+weblogics - is cluster ( :dev1 dev2 dev3)
+
+profile consist of # jar micro-servies
+*** create a profile  
+#+BEGIN_SRC sh
+mvn archetype:generate  -DgroupId=aprprofile -DartifactId=sunprofile -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false
+
+#├── pom.xml
+#└── src
+#    ├── main
+#    │    └── java
+#    │         └── app.java
+#    └── test
+cd src/main/
+mkdir profiles
+cd profiles/
+mkdir dev sit preprod prod
+echo -e  "env=dev\nurl=https:10.9.68.7:8080/dev\nusername=dev\npasswd=dev@123" > dev/application.property
+echo -e  "env=sit\n\nurl=https:10.9.68.7:8080/dev\username=sit\npasswd=sit@123" > sit/application.property
+echo -e  "env=preprod\n\nurl=https:10.9.68.7:8080/dev\username=preprod\npasswd=preprod@123" > preprod/application.property
+echo -e  "env=prod\nurl=https:10.9.68.7:8080/\ndev\username=prod\npasswd=prod@123" > prod/application.property
+#├── pom.xml
+#└── src
+#    ├── main
+#    │   ├── java
+#    │   │   └── app.java
+#    │   └── profile
+#    │       ├── dev
+#    │       │   └── application.property
+#    │       ├── preprod
+#    │       │   └── application.property
+#    │       ├── prod
+#    │       │   └── application.property
+#    │       └── sit
+#    │           └── application.property
+#    └── test
+
+# add profile dev,sit,preprod,prod in pom.xml
+
+#+END_SRC
+*** edit pom.xml file
+#+BEGIN_SRC xml
+<profiles>
+    <profile>
+        <id>dev</id> 
+        <properties>  
+               <build.profile.id>dev</build.profile.id> 
+        </properties>  
+               <build>
+                   <resources>
+                       <resource> 
+                           <directory>src/main/profiles/dev</directory>
+                       </resource> 
+                   </resources>
+               </build>
+        <id>sit</id> 
+        <properties>  
+               <build.profile.id>sit</build.profile.id> 
+        </properties>  
+               <build>
+                   <resources>
+                       <resource> 
+                           <directory>src/main/profiles/sit</directory>
+                       </resource> 
+                   </resources>
+               </build>
+        <id>preprod</id> 
+        <properties>  
+               <build.profile.id>preprod</build.profile.id> 
+        </properties>  
+               <build>
+                   <resources>
+                       <resource> 
+                           <directory>src/main/profiles/preprod</directory>
+                       </resource> 
+                   </resources>
+               </build>
+        <id>prod</id> 
+        <properties>  
+               <build.profile.id>prod</build.profile.id> 
+        </properties>  
+               <build>
+                   <resources>
+                       <resource> 
+                           <directory>src/main/profiles/prod</directory>
+                       </resource> 
+                   </resources>
+               </build>
+   </profile>
+</profiles>
+
+#+END_SRC
+
+*** pacakge with profile
+#+BEGIN_SRC sh
+mvn package -Pdev
+mvn package -Psit
+mvn package -Ppreprod
+mvn package -Pprod
+# to see the package 
+cd sunprofile
+cd target
+ls 
+# sunprofile-1.0-SNAPSHOT.jar     JAR-File 
+
+# we deploy the .jar files to tomcat server
+
+if [-f credi.jar]then;
+service credit start
+service credit status
+service credit stop
+service credit restart
+
+if [all]
+credit.jar
+deposit.jar
+
+#+END_SRC
+* Sonar 
+** Install sonarqube
+*** create the sonarqube user:
+#+BEGIN_SRC sh
+sudo adduser --system --no-create-home --group --disabled-login sonarqube
+sudo apt-get install unzip
+
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.5.zip
+sudo unzip sonarqube-7.5.zip
+sudo rm sonarqube-7.5.zip
+sudo chown -R sonarqube:sonarqube /opt/sonarqube
+
+
+#+END_SRC
+
+*** Database setup
+#+BEGIN_SRC sh
+mysql> CREATE USER sonarqube@'localhost' IDENTIFIED BY 'Dev@1234';
+GRANT ALL ON sonarqube.* to sonarqube@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+#+END_SRC
+
+*** Configure the sonar
+#+BEGIN_SRC sh
+sudo nano sonarqube-7.5/conf/sonar.properties
+
+# SonarQube wil use to access the database to the username and password you created for MySQL:
+
+#sonar.jdbc.username=sonarqube
+#sonar.jdbc.password=Dev@1234
+
+# SonarQube to use MySQL as the database driver:
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+# # # Tell SonarQube to use MySQL as the database driver:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+nano /opt/sonarqube/sonarqube-7.5/conf/sonar.properties
+#sonar.jdbc.url=jdbc:mysql://localhost:3306/sonarqube?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+# # # Nginx will handle the communication between the SonarQube clients and your server, so you will tell SonarQube to only listen to the local address.
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  
+nano /opt/sonarqube/sonarqube-7.5/conf/sonar.properties
+# sonar.web.javaAdditionalOpts=-server
+# sonar.web.host=127.0.0.1
+
+# you will use Systemd to configure SonarQube to run as a service so that it will start automatically upon a reboot.
+# sudo nano /etc/systemd/system/sonarqube.service
+
+
+
+#
+# start sonarqube service 
+#
+service sonarqube start
+service sonarqube status
+
+
+#+END_SRC
+
+*** install sonar scanner 
+#+BEGIN_SRC sh
+mkdir /opt/sonarscanner
+cd /opt/sonar/scanner
+
+sudo wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
+
+sudo unzip sonar-scanner-cli-3.2.0.1227-linux.zip
+sudo rm sonar-scanner-cli-3.2.0.1227-linux.zip
+sudo nano sonar-scanner-3.2.0.1227-linux/conf/sonar-scanner.properties
+vi /opt/sonarscanner/sonar-scanner-3.2.0.1277-linux
+# sonar.host.url=https://sonarqube.example.com
+sudo chmod +x sonar-scanner-3.2.0.1277-linux/bin/sonar-scanner
+
+sudo ln -s /opt/sonarscanner/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner /usr/local/bin/sonar-scanner
+
+
+#+END_SRC
+** Integrate maven with sonar
+https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-maven/
 
 
 * Next Topics to covered
@@ -3771,3 +4351,4 @@ uat -9 servers (performance is also tested)
 pre-production (16 -servers)
 production (20-servers)
 
+`

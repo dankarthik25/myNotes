@@ -1,37 +1,47 @@
- Linux Tutorial
 
+Linux Tutorial
+* Linux Cmd 
 ** Linux File System
 #+BEGIN_SRC 
 (/)root
-├── bin
-├── boot
+├── bin           #  
+├── boot          # boot prg are present 
 ├── cdrom
 ├── core
-├── dev
-├── etc            # all configuration files (/etc/passwd)
-├── home           # (like c: drive os-users) cd ~ or cd <Enter>   
+├── dev           # devices: in linux: Has file system  "EVERY THING IS A FILE "
+|                 # CONSsist of hardware, partions(sda,sda1,...,nvdia,web-cam)
+|
+├── etc           # all configuration files (/etc/passwd)
+|
+├── home          # (like c: drive os-users) cd ~ or cd <Enter>   
+|
 ├── initrd.img
 ├── initrd.img.old
-├── lib
+|
+├── lib           # libray which are used to perform varies function
 ├── lib32
 ├── lib64
+|
 ├── lost+found
-├── media
+|
+├── media         # mount and media 
 ├── mnt
-├── opt            # user space for exectue or store
-├── proc
+|
+├── opt           # optional folder:  user space for exectue or store
+├── proc          # sudo file : information of sys process and resources
 ├── root
-├── run
-├── sbin
-├── snap
-├── srv
+├── run           # temp fs : Used for process which is boot early
+├── sbin          # sys binary and standard users are not acess
+├── snap          # snap packages are stored
+├── srv           # service directory: If you run servers  the file are stored  
 ├── swapfile
-├── sys
+├── sys           # way to interact with kernel
 ├── timeshift
 ├── tmp           # temparay folder 
-├── usr           # 
+├── usr           # user app space 
 ├── var           # all logs files are 
 └── vmlinuz
+
 #+END_SRC
 ** Linux BASIC cmd
 #+BEGIN_SRC sh
@@ -112,7 +122,8 @@
   mv orig_file.txt SubDir1/        # move  to SubDir1 
   mv orig_file.txt SubDir1/rename_file.txt # move and remane 
   rm orig_file.txt   # Delete a file
-
+  rm -R SubDir1      # Delete folder(dir) and inside files RECURSIVELY
+  rm -rf subdir1
   ## ##########################################################
   #Other file commands 
   ## ##########################################################
@@ -148,7 +159,7 @@
   # Examples 
   touch phani kar sanjay sathish
   find /devops -type f -name kar # search "kar" file
-
+  find /devops -type f -name "*.txt"
   mkdir india pakistan austriala asia china japan
   find /devops -type d -name asia               # search asia
 
@@ -161,7 +172,7 @@
   ##                   zip and un-zip         
   ## ########################################################## 
 
-  tar -cvzf india.tar india            # c : craete v: verboz, z: zip file
+  tar -cvzf india.tar india            # c : craete v: verboz, z: zip   f:file
   tar -xvzf india.tar                  # x: extrach 
 
 
@@ -187,16 +198,16 @@
   6: rw-
   7: rwx
 
-  chmod 777 sat          # drwx rwx rwx   file
-  chmod -R 777 phani     # dir and inside files
-  chmod +x <file_name>  
-  chmod 755 sat         # drwx r-x r-x 
-  chmod 400 aws_key.pem # -r-- --- --- 
+chmod 777 sat          # drwx rwx rwx   file
+chmod -R 777 phani     # dir and inside files
+chmod +x <file_name>  
+chmod 755 sat         # drwx r-x r-x 
+chmod 400 aws_key.pem # -r-- --- --- 
 
 -rwx  rwx   rwx        1 root  root  1156 Mar 24 08:36 hosts
 -rw   -r--  r--        1 root  root     0 Mar 24 14:17 ansible.txt
 owner-group-user        owner  group
-################################################################333
+################################################################
 [root@ansible-master ansible]# chown -R ansible:ansible ansible.txt 
 
 -rwxrwxrwx  1 root    root     1156 Mar 24 08:36 hosts
@@ -229,14 +240,6 @@ chown ec2-user:ec2-user <file/dir>
   ls -latr 
 
 
-  ## ##########################################################
-  #         Network Cmd
-  ## ########################################################## 
-  ping google.com          # Network commands
-  nslookup google.com      # find ip address of URL
-  telnet google.com 23     # check port 
-  ifconfig
-  # GET ip
 
   ## ##########################################################
   #    SSH
@@ -269,6 +272,7 @@ chown ec2-user:ec2-user <file/dir>
 
   # histor
   ls -latr | grep test.sh | rm -rf
+# disk size or disk free
   df - h # 
 
   ## ##########################################################
@@ -276,31 +280,131 @@ chown ec2-user:ec2-user <file/dir>
   ## ########################################################## 
   top # user id, user, cup, mem, swap, process name , process id # Ctrl-C
   #
-  # diskspace
+  # diskspace or disk free (used available, % used) 
   #
   df -h # Or
-  df -aPh
+
+#Filesystem      Size  Used Avail Use% Mounted on
+#udev            3.8G     0  3.8G   0% /dev
+#tmpfs           776M  1.6M  775M   1% /run
+#/dev/sda1       916G  550G  320G  64% /
+#tmpfs           3.8G  212M  3.6G   6% /dev/shm
+#tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+#tmpfs           3.8G     0  3.8G   0% /sys/fs/cgroup
+#/dev/loop0      185M  185M     0 100% /snap/eclipse/40
+#/dev/loop1       63M   63M     0 100% /snap/gtk-common-t
+
+  df -aPh # -a :all, P: Portable, h: human read able
 
   # directory size:  du -sh <dir_name> 
-  du -sh asia
+  # disk  usage : 
+  du -sh asia  # -s : summarize , # -h : human readable
   du -sh sat
   du -sh * # size in current directory
   du -sh *.jpg # size of all jpg formate
+# du -h Gitabase
+# 378M	Gitabase
 
   # RAm size
   free -m
 
 
+## ##########################################################
+# process running 
+## ##########################################################
+ps -ef | grep <process-name>
+ps -ef| grep tomcat
+# UID        PID  PPID  C STIME TTY          TIME CMD
+# jayradhe 23909  7504  0 13:38 pts/0    00:00:00 grep --color=auto tomcat
+
+# UID: USER iD
+# PID : Process Id
+# PPID: Parent Process Id
+# $ kill -kill <PID>  # to kill process
+# $ kill -term <PID>  # to kill process
+
+# $ kill -l 
+
+# 1) SIGHUP	        2) SIGINT	 3) SIGQUIT	 4) SIGILL	 5) SIGTRAP
+# 6) SIGABRT	7) SIGBUS	 8) SIGFPE	 9) SIGKILL	10) SIGUSR1
+#11) SIGSEGV  	12) SIGUSR2	13) SIGPIPE	14) SIGALRM	15) SIGTERM
+#16) SIGSTKFLT	17) SIGCHLD	18) SIGCONT	19) SIGSTOP	20) SIGTSTP
+#21) SIGTTIN  	22) SIGTTOU	23) SIGURG	24) SIGXCPU	25) SIGXFSZ
+#26) SIGVTALRM	27) SIGPROF	28) SIGWINCH	29) SIGIO	30) SIGPWR
+#31) SIGSYS  	34) SIGRTMIN	35) SIGRTMIN+1	36) SIGRTMIN+2	37) SIGRTMIN+3
+#38) SIGRTMIN+4	39) SIGRTMIN+5	40) SIGRTMIN+6	41) SIGRTMIN+7	42) SIGRTMIN+8
+#43) SIGRTMIN+9	44) SIGRTMIN+10	45) SIGRTMIN+11	46) SIGRTMIN+12	47) SIGRTMIN+13
+#48) SIGRTMIN+14	49) SIGRTMIN+15	50) SIGRTMAX-14	51) SIGRTMAX-13	52) SIGRTMAX-12
+#53) SIGRTMAX-11	54) SIGRTMAX-10	55) SIGRTMAX-9	56) SIGRTMAX-8	57) SIGRTMAX-7
+#58) SIGRTMAX-6	59) SIGRTMAX-5	60) SIGRTMAX-4	61) SIGRTMAX-3	62) SIGRTMAX-2
+#63) SIGRTMAX-1	64) SIGRTMAX	
+
+kill -9 23909 
+
+kill -9
+
   ## ##########################################################
-  # process running 
-  ## ##########################################################
-  ps -ef | grep <process-name>
+  #         Network Cmd
+  ## ########################################################## 
+  ping google.com          # ping ip/dns/
+  nslookup google.com      # for querying the Domain Name System to obtain domain name or IP address mapping, or other DNS records.
+  telnet google.com 23     # check port 
+  ifconfig
+  netstat                  # (network statistics) displays network connections: Ip,port PID 
+                           #  # Proto,  Recv-Q, Send-Q, Local Address(Port)           Foreign Address         State       PID/Program name
+  # GET ip
+ping google.com
+#PING google.com (172.217.163.46) 56(84) bytes of data.
+# 64 bytes from maa05s01-in-f14.1e100.net (172.217.163.46): icmp_seq=1 ttl=55 time=16.5 ms
+# 64 bytes from maa05s01-in-f14.1e100.net (172.217.163.46): icmp_seq=2 ttl=55 time=17.1 ms
+# 64 bytes from maa05s01-in-f14.1e100.net (172.217.163.46): icmp_seq=3 ttl=55 time=20.2 ms
+# 64 bytes from maa05s01-in-f14.1e100.net (172.217.163.46): icmp_seq=4 ttl=55 time=88.2 ms
+ 
+nslookup google.com      # for querying the Domain Name System to obtain domain name or IP address mapping, or other DNS records.
+
+# Server:		127.0.0.53
+# Address:	127.0.0.53#53
+
+# Non-authoritative answer:
+# Name:	google.com
+# Address: 172.217.163.46
+# Name:	google.com
+# Address: 2404:6800:4007:80b::200e
+
 
   # check ports is running
-  netstat -anp | grep <ports-no>
+netstat -anp | grep <ports-no> # all  p: PID , n: doesnot resolve name
+# Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+# tcp        0      0 0.0.0.0:8888            0.0.0.0:*               LISTEN      -                   
+# tcp        0      0 192.168.0.105:37756     52.40.23.85:443         ESTABLISHED 11770/firefox       
+# tcp        0     32 192.168.0.105:52374     34.195.246.183:443      LAST_ACK    -                   
 
-  uptime  # find out how long system is active. 
- 
+# Active UNIX domain sockets (servers and established)
+# Proto RefCnt Flags       Type       State         I-Node   PID/Program name     Path
+# unix  2      [ ACC ]     STREAM     LISTENING     34772    2332/systemd         /run/user/1000/systemd/private
+# unix  2      [ ACC ]     STREAM     LISTENING     31708    -                    /run/user/123/systemd/private
+# unix  2      [ ACC ]     STREAM     LISTENING     34776    2332/systemd         /run/user/1000/snapd-session-agent.socket
+# unix  2      [ ACC ]     STREAM     LISTENING     31712    -                    /run/user/123/gnupg/S.dirmngr
+# unix  3      [ ]         STREAM     CONNECTED     3237440  11770/firefox        
+# unix  3      [ ]         STREAM     CONNECTED     3233405  7229/firefox         
+# unix  3      [ ]         STREAM     CONNECTED     2101124  3731/vlc             
+# unix  3      [ ]         STREAM     CONNECTED     830211   2389/dbus-daemon     /run/user/1000/bus
+# unix  3      [ ]         STREAM     CONNECTED     38761    2712/blueberry-obex  
+# unix  3      [ ]         STREAM     CONNECTED     38294    -                    /var/run/dbus/system_bus_socket
+# unix  3      [ ]         STREAM     CONNECTED     37112    -                    /var/run/dbus/system_bus_socket
+# unix  3      [ ]         STREAM     CONNECTED     31184    -                    /var/run/dbus/system_bus_socket
+# unix  3      [ ]         STREAM     CONNECTED     37567    2813/cinnamon-scree  
+# unix  3      [ ]         STREAM     CONNECTED     24609    -                    
+# unix  3      [ ]         STREAM     CONNECTED     2099806  3731/vlc             
+# unix  3      [ ]         STREAM     CONNECTED     37262    2489/csd-color       
+# unix  3      [ ]         STREAM     CONNECTED     23321    -                    /var/run/dbus/system_bus_socket
+# unix  3      [ ]         STREAM     CONNECTED     2529413  11770/firefox        
+# unix  3      [ ]         STREAM     CONNECTED     2022448  11770/firefox        
+# unix  3      [ ]         STREAM     CONNECTED     833750   3244/gvfsd-trash     @/dbus-vfs-daemon/socket-6kJqXg56
+# unix  3      [ ]         STREAM     CONNECTED     38987    -                    /var/run/dbus/system_bus_socket
+
+uptime  # find out how long system is active.
+#Display the time since the last boot
 
 #  
 #   Run levels https://www.liquidweb.com/kb/linux-runlevels-explained/
@@ -345,7 +449,8 @@ For Crontab : Example visit https://crontab.guru/examples.html
 #
 #    Crontab  
 # 
-# * * * * * 
+# *  *  *   *   * 
+# mm hh dd mon wek
 # 1 * - minutes(0-59)
 # 2 * - hours(0-23)
 # 3 * - days(1-31)
@@ -355,7 +460,7 @@ For Crontab : Example visit https://crontab.guru/examples.html
 # https://www.geeksforgeeks.org/crontab-in-linux-with-examples/
 
 # Every 6.30am check diskspace  
-3- 6 * * *  df - h
+30 6 * * *  df - h
 #execute the Full backup shell script (full-backup) on 10th June 08:30 AM.
 30 08 10 06 * /home/maverick/full-backup
 
@@ -376,14 +481,27 @@ For Crontab : Example visit https://crontab.guru/examples.html
 #or
 */15 * * * * df - h
 
+# Every 2 hours
+0 */2 * * * 
+
+# Every 3 hours
+0 */3 * * * 
+
 crontab -e # edit cron tabs
 crontab -l # list
 crontab -r # delete 
 
 #  *	        any value
 #  ,	        value list separator
-#  -	        range of values
+0,15,30,45 * * * * dh -h
+
 #  /         	  step values
+0 */2 * * * # every 2 hours
+0 */3 * * * # every 3 hours  
+
+#  -	        range of values
+Say I have a crontab which runs every 20 minutes and I have a hour range which can vary so lets say 5-23, which in one example could look like
+*/20 5-23 * * * dh -h
 #  @yearly  	(non-standard)
 #  @annually	(non-standard)
 #  @monthly 	(non-standard)
@@ -391,16 +509,9 @@ crontab -r # delete
 #  @daily   	(non-standard)
 #  @hourly	   (non-standard)
 #  @reboot  	(non-standard)
-#+END_SRC
 
-* Shell 
-** Shabang
-#+BEGIN_SRC sh
-  #! /bin/bash
-  #! /bin/sh     # #! :shabang
-  echo "print in termnal"
 #+END_SRC
-** run shell 
+** run 
 #+BEGIN_SRC sh
   # 
   # run shell scripts 
@@ -410,6 +521,13 @@ crontab -r # delete
   sh name.sh
   source name.sh
 
+#+END_SRC
+* Shell 
+** Shabang
+#+BEGIN_SRC sh
+  #! /bin/bash
+  #! /bin/sh     # #! :shabang
+  echo "print in termnal"
 #+END_SRC
 ** Variable
 #+BEGIN_SRC sh
@@ -421,7 +539,7 @@ crontab -r # delete
   # variable should consist of (a-z,A-Z,0-9, _ ) NO special symbol, variable should not start with number
 
   #EG:
-  a= 10
+  a=10
   b=15
   salary=10000
   name=sathish
@@ -461,6 +579,16 @@ crontab -r # delete
   # */1 * * * * sh /opt/clone.sh  
 
 #+END_SRC
+
+** Diff btw " and ' 
+single quotes (') preserves the literal value of each character within the quotes. 
+Enclosing characters in double quotes (") preserves the literal value of all characters within the quotes, with the exception of $, `, \,
+
+#+BEGIN_SRC sh
+echo "${name}"       # sathis
+echo '$name'         # $name
+#+END_SRC
+
 ** Special Variable
 #+BEGIN_SRC sh
 #!/bin/bash
@@ -474,6 +602,8 @@ crontab -r # delete
 
 # Display the UID
 echo "Your UID is ${UID}"    # UID special preset variable 
+## >>> Your UID is 1000
+
 # TO more about uid 
 # man bash
 # # vi key binding
@@ -514,42 +644,6 @@ man whoami
 
 #+END_SRC
 
-** Argument in shell
-#+BEGIN_SRC sh
-  # passing prameter in shell 
-  # sh  tesh.sh 45 yes 25k shathish
-  #then $0 is test.sh
-  # ${0} is file name
-  # ${1} is 45
-  # ${2} is yes
-  # ${3} is 25k
-  # ${4} is shatish
-  # $#   is No.Of parameter in command line or ${#}
-  # $? : Exist Status of  previous cmd executed sucessfull : true / false(not exectued sucessfull)
-  # "${@} : all parameter starting from 1 or ${1}${2}${3}${4}"
-#+END_SRC
-*** Argument Examples
-#+BEGIN_SRC sh
-
-echo "You executeed in this command :${0}"
-
-echo "You used $(dirname ${0}) as the path to $(basename ${0}) script"
-
-NoOfParameter= "${#}"
-echo "You supplied ${NoOfParameters} arguments(s) on the command line."
-
-if [[ "${NoOfParameters}" -lt 1]]
-then 
-    echo "Usage : ${0} USER_NAmE [USER_NAmE]]"
-    exit 1
-fi
-
-# Generate and display a password for each parameter
-do
-  PASSWORD=$(date +%s%N | sha256sum | head -c48)
-  echo "${USER_NAME}: ${PASSWORD}"
-done
-#+END_SRC
 ** PATH variable,  basename N dirname variable
 
 The search path for commands.  
@@ -583,6 +677,126 @@ then
     exit 1
 fi
 
+#+END_SRC
+
+** IF statment 
+#+BEGIN_SRC sh
+  #
+  # Decision making
+  #
+
+  #syntax:
+  #if [condition]
+  #then
+  #
+  #
+  #else
+  #
+  #fi
+
+  # relation operators
+  # == eq ,>= ge ,<= le ,=! ne , < gt , > lt 
+
+  #Ex
+
+  age=20
+  if [$age>=18] # or [ $age -ge 18]
+  then
+  echo "aligible for diving license"
+  else
+  echo "not aligible"
+  fi
+
+
+
+  #Ex : if file(calender.war) exist then backback
+  src= /opt/calender.war
+  dest=/opt/backup
+  mkdir -p $dest
+
+  if [-f $src]
+     then
+       mv $src $dest
+       echo "file is existing"
+       
+  else
+     cp /tmp/Calender.war $dest
+     if [$? ==0]
+        then 
+          echo "deployment is done successfull"
+     fi
+  fi
+
+
+
+
+  # Ex: Tell weather deployment is sucessfull or failure 
+  sh deploy.sh
+
+  if[ $? ==0]
+  then
+  echo "deployment is done sucessfull"
+  else 
+  echo "not success"
+  if
+
+# Ex : check if disk space of /dev/xvda1 is more the 3GB then clean the space
+
+thershold=3
+disc= `df-h |grep /dev/xvda1 | awk '{print 4}'| cut -c 1`
+echo "$disc"
+
+if [$disk -gt $threshold]
+then 
+   echo"clean the space"
+else
+   echo"disc space is ok"
+fi
+
+
+#+END_SRC
+
+** Argument in shell
+#+BEGIN_SRC sh
+  # passing prameter in shell 
+  # sh  tesh.sh 45 yes 25k shathish
+  #then $0 is test.sh
+  # ${0} is file name
+  # ${1} is 45
+  # ${2} is yes
+  # ${3} is 25k
+  # ${4} is shatish
+  # $#   is No.Of parameter in command line or ${#}
+  # $? : Exist Status of  previous cmd executed sucessfull : true / false(not exectued sucessfull)
+  # "${@} : all parameter starting from 1 or ${1}${2}${3}${4}"
+#+END_SRC
+*** Argument Examples
+#+BEGIN_SRC sh
+
+echo "You executeed in this command :${0}"
+
+echo "You used $(dirname ${0}) as the path to $(basename ${0}) script"
+# dirname /home/jayradhe
+## >>/home
+
+# basename /home/jayrade
+## >> jayradae
+
+
+NoOfParameter= "${#}"
+echo "You supplied ${NoOfParameters} arguments(s) on the command line."
+
+if [[ "${NoOfParameters}" -lt 1]]
+then 
+    echo "Usage : ${0} USER_NAmE [USER_NAmE]]"
+    exit 1
+fi
+
+# Generate and display a password for each parameter
+do
+ PASSWORD=$(date +%s%N | sha256sum | head -c48)
+  echo "${USER_NAME}: ${PASSWORD}"
+done
 #+END_SRC
 
 ** READ 
@@ -690,83 +904,6 @@ do
 done
 #+END_SRC
 
-** IF statment 
-#+BEGIN_SRC sh
-  #
-  # Decision making
-  #
-
-  #syntax:
-  #if [condition]
-  #then
-  #
-  #
-  #else
-  #
-  #fi
-
-  # relation operators
-  # == eq ,>= ge ,<= le ,=! ne , < gt , > lt 
-
-  #Ex
-
-  age=20
-  if [$age>=18] # or [ $age -ge 18]
-  then
-  echo "aligible for diving license"
-  else
-  echo "not aligible"
-  fi
-
-
-
-  #Ex : if file(calender.war) exist then backback
-  src= /opt/calender.war
-  dest=/opt/backup
-  mkdir -p $dest
-
-  if [-f $src]
-     then
-       mv $src $dest
-       echo "file is existing"
-       
-  else
-     cp /tmp/Calender.war $dest
-     if [$? ==0]
-        then 
-          echo "deployment is done successfull"
-     fi
-  fi
-
-
-
-
-  # Ex: Tell weather deployment is sucessfull or failure 
-  sh deploy.sh
-
-  if[ $? ==0]
-  then
-  echo "deployment is done sucessfull"
-  else 
-  echo "not success"
-  if
-
-# Ex : check if disk space of /dev/xvda1 is more the 3GB then clean the space
-
-thershold=3
-disc= `df-h |grep /dev/xvda1 | awk '{print 4}'| cut -c 1`
-echo "$disc"
-
-if [$disk -gt $threshold]
-then 
-   echo"clean the space"
-else
-   echo"disc space is ok"
-fi
-
-
-#+END_SRC
-
 ** Example 
 deployment process:
 - step 1:
@@ -796,20 +933,20 @@ To production
 #! /bin/sh
 #FILEName : deployment.sh
 env = $1
-if ['dev' == $env ] &&[/opt/Calender.war]
+if ['dev' = $env ] &&[/opt/Calender.war]
 then 
 cp /tem/*.war /opt/dev
 fi
 
-if ['sit' == $env ]
+if ['sit' = $env ]
 then 
 cp /tem/*.war /opt/sit
 fi
-if ['preprod' == $env ]
+if ['preprod' = $env ]
 then 
 cp /tem/*.war /opt/preprod
 fi
-if ['prod' == $env ]
+if ['prod' = $env ]
 then 
 cp /tem/*.war /opt/prod
 fi
@@ -961,7 +1098,7 @@ esac
 
 
 #+END_SRC
-** Switch Statment II
+**  Switch Statment II
 #+BEGIN_SRC sh
 # Here is a compact version of the case statement.
 case "${1}" in
@@ -1131,6 +1268,7 @@ if evn == prod
 then 
 deploy dev 192.145.67.8
 fi 
+
 #+END_SRC
 
 #+BEGIN_SRC sh
@@ -1292,9 +1430,10 @@ echo -e "0324-241-341" |grep -oP '[0-9]{3}'
 # 032
 # 241
 # 341
-grep -n ^'work' GNULicense.txt
-grep -n 'work'$ GNULicense.txt
-grep -n 'th..' GNULicense.txt
+
+grep -n ^'work' GNULicense.txt # line starting with work
+grep -n 'work'$ GNULicense.txt # line ending with work
+grep -n 'th..' GNULicense.txt 
 #the that this....etc
 #Exception want to search for []
 grep -n '\[\]' GNULicense.txt
@@ -1307,63 +1446,49 @@ grep -n '\<work\>' GNULicense.txt # search for word "work" with no starting and 
 
 ** cut and Awk
 #+BEGIN_SRC sh
-#type -c 1 <file_name>
-type -a cut # cut is not a shell build in but stand alone property
-man cut 
+#type -c 1 <file_name> type -a cut # cut is not a shell build in but
+stand alone property man cut
 
-cut -c 1 /etc/passwd
-cut -c 4-7 /etc/passwd
-cut -c 4- /etc/passwd
-cut -c 1,3,5,9 /etc/passwd
-cut -c 1 /etc/passwd
-echo "aefdadsfa\tasfadfad"     #>>> aefdadsfa\tasfadfad
-echo -e "aefdadsfa\tasfadfad"  #>>>  aefdadsfa    asfadfad
-echo -e "aefdadsfa\nasfadfad"  #>>>  aefdadsfa	
-                                      #asfadfad
-
-echo -e 'one\ttwo\tthree'| cut -f 1 # f : field
-echo -e 'one\ttwo\tthree'| cut -f 2 # f : field
+cut -c 1 /etc/passwd 
+cut -c 4-7 /etc/passwd 
+cut -c 4- /etc/passwd 
+cut -c 1,3,5,9 /etc/passwd 
+cut -c 1 /etc/passwd 
+echo "aefdadsfa\tasfadfad"  #>>> aefdadsfa\tasfadfad 
+echo -e "aefdadsfa\tasfadfad" #>>> aefdadsfaasfadfad 
+echo -e "aefdadsfa\nasfadfad" #>>> aefdadsfa #asfadfad
+echo -e 'one\ttwo\tthree'| cut -f 1 # f : field 
+echo -e  'one\ttwo\tthree'| cut -f 2 # f : field 
 echo -e 'one\ttwo\tthree'| cut -f 3 # f : field
+ 
+echo 'one,two,three' |cut -d ',' -f 1 # correct way to do 
+echo  'one,two,three' |cut -d , 2 # Error 
+echo 'one,two,three' |cut -d, 3 #  Error 
+echo 'one\two\three' |cut -d \ 3 #ERROR : 
+echo 'one\two\three'  |cut -d '\' -f 3 #Correct way
 
-echo  'one,two,three' |cut -d ',' -f 1   # correct way to do 
-echo 'one,two,three' |cut -d , 2 # Error
-echo 'one,two,three' |cut -d, 3 # Error
-echo 'one\two\three' |cut -d \ 3  #ERROR : 
-echo 'one\two\three' |cut -d '\' -f 3  #Correct way 
-
-# print the uid of password in/etc/passwrd
-cut -d ':' -f 1,3 /etc/passwd
-echo 'first,last' > people.csv
-echo 'John,Smitt' >>people.csv
-echo 'firstly,masdfaf' >>people.csv
-echo 'mr.john,sim' >>people.csv
-cat peopel.csv
+  # print the uid of password in/etc/passwrd 
+cut -d ':' -f 1,3  /etc/passwd 
+echo 'first,last' > people.csv 
+echo 'John,Smitt'>>people.csv 
+echo 'firstly,masdfaf' >>people.csv 
+echo 'mr.john,sim'  >>people.csv 
+cat peopel.csv 
 cut -d ',' -f 1 people.csv
-
-#
-#   grep 
-# 
-grep first people.csv
+grep 'first' people.csv 
 grep 'first,last' people.csv
-grep '^first' people.csv           # start with first
-grep 't$' people.csv               # end with t
-grep -v '^first,last' peopel.csv   # doesn't match  w
+grep '^first' people.csv # start with first 
+grep 't$' people.csv# end  #   with t 
+grep -v '^first,last' peopel.csv # doesn't match w
+grep -v '^first,last' peopel.csv |cut -d ',' -f1 John firstlylsmr.firstly
 
-grep -v '^first,last' peopel.csv |cut  -d ',' -f1
-John
-firstlyls
-mr.firstly
+  #or cut -d ',' -f people | grep -v '^first$' # regexp are be used on
+  grep command
 
-#or
-cut -d ',' -f people | grep -v '^first$'
- # regexp are be used on grep command
-
-cat people_data.csv
-Data: firstData:last
-Data: JohnData:Smitt
-Data: firstlyData:mclasty
-Data: mr.firstlyData:mclasty
-cut -d ':' -f 2 people_data.csv  # above peopel_data we can't seperate it only by using cut but we can do it by awk command
+  cat people_data.csv Data: firstData:last Data: JohnData:Smitt Data:
+  firstlyData:mclasty Data: mr.firstlyData:mclasty 
+cut -d ':' -f 2 people_data.csv # above peopel_data we can't seperate it only by using
+cut but we can do it by awk command
 
 awk -F {Data:} '{print $2}' people_data.csv
 
@@ -1387,35 +1512,35 @@ awk -F ':' '{print "UID: " $3 "LOGIN:" $1}' /etc/passwd
 awk -F ':' '{print $NF}' /etc/passwd
 awk -F ':' '{print $(NF-1)}' /etc/passwd
 
-#
-# Example : 
-#
-history > sqlcommands
-sed 's/^[ ]*[0-9]*[ ]//' sqlcommands > sqlcommands2 
-#
-#
-history | cut -c 8-
-history | awk '{$1="";print substr($0,2)}'
-history | sed 's/^[ ]*[0-9]\+[ ]*//'
-history | awk '{$1="";print}'
-history | awk '{$1="";print $0 }'
+  #
+  # Example : 
+  #
+  history > sqlcommands
+  sed 's/^[ ]*[0-9]*[ ]//' sqlcommands > sqlcommands2 
+  #
+  #
+  history | cut -c 8-
+  history | awk '{$1="";print substr($0,2)}'
+  history | sed 's/^[ ]*[0-9]\+[ ]*//'
+  history | awk '{$1="";print}'
+  history | awk '{$1="";print $0 }'
 
-# alias history="history | sed 's/^[ ]*[0-9]\+[ ]*//'"
-
-
+  # alias history="history | sed 's/^[ ]*[0-9]\+[ ]*//'"
 
 
-#
-#  Irregular or improper arrangement of to data
-#
-echo 'L1C1     L1C2' > lines
-echo '    L2C1 L2C2   '>> lines
-echo '  L3C1    L3C2 '  >>lines
-echo -e 'L4C1\tl4c2'  >>lines
 
-cat lines
 
-awk '{print $1,$2}' lines 
+  #
+  #  Irregular or improper arrangement of to data
+  #
+  echo 'L1C1     L1C2' > lines
+  echo '    L2C1 L2C2   '>> lines
+  echo '  L3C1    L3C2 '  >>lines
+  echo -e 'L4C1\tl4c2'  >>lines
+
+  cat lines
+
+  awk '{print $1,$2}' lines 
 #+END_SRC
 
 *** Exampel : Find all Network pork using Awk 
@@ -2137,6 +2262,10 @@ ssh devops@3.15.169.84 sh /opt/delete.sh
 #+BEGIN_SRC sh
 scp -i key.pem /path/to/myfile.txt ec2-user@IPAddressOfEC2:/ 
 #+END_SRC
+** bel
+#+BEGIN_SRC sh
+( speaker-test -t sine -f 1000 )& pid=$! ; sleep 1s ; kill -9 $pid
+#+END_SRC
 * Vagrant
 ** Vagrant Virtualization (Creating virtual meachine Environment)
 *** Introduction Why Virtualization 
@@ -2376,3 +2505,47 @@ passwd # set passwd for  dougstamper
 
 
 #+END_SRC
+* Linux Interview Question
+** 36) What are environmental variables?
+
+Environmental variables are global settings that control the shell's function as well as that of other Linux programs. Another common term for environmental variables is global shell variables.
+
+** 39) What is redirection?
+
+Redirection is the process of directing data from one output to another. It can also be used to direct an output as an input to another process.
+
+** 40) What is grep command?
+
+grep a search command that makes use of pattern-based searching. It makes use of options and parameters that are specified along with the command line and applies this pattern in searching the required file output. 
+
+** 43) How do you terminate an ongoing process?
+
+Every process in the system is identified by a unique process id or pid. Use the kill command followed by the pid to terminate that process. To terminate all process at once, use kill 0. 
+** 46) How do you execute more than one command or program from a single command line entry?
+
+You can combine several commands by separating each command or program using a semicolon symbol. For example, you can issue such a series of commands in a single entry: 
+** 47) Write a command that will look for files with an extension "c", and has the occurrence of the string "apple" in it.
+
+Answer:
+
+ Find ./ -name "*.c" | xargs grep –i "apple"
+
+** 48) Write a command that will display all .txt files, including its individual permission.
+
+Answer:
+
+ls -al *.txt
+** more questions
+https://www.edureka.co/blog/interview-questions/linux-interview-questions-for-beginners/
+
+** 28. What are the Process states in Linux?
+
+Ans:  Five process states in Linux. They are
+
+   -  New/ Ready: A new process is created and ready to run.
+   -  Running: The process is being executed.
+   -  Blocked/ Wait: The process is waiting for input from the user. 
+   -  Terminated/ Completed: The process completed the execution or terminated by the operating system. 
+   -  Zombie: The process is deleted, but still the information regarding the process exists in the process table.
+
+Linux Process states

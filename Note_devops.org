@@ -616,7 +616,8 @@ version control
 sharing code
 * maven
 - maven 
-      - is a software management  tool based on concept of Project Object model(POm) which can  manage 
+      - *java base build tool* whihc create *artifacts* (jar,war,ear)
+      - is a *project management  tool* based on concept of Project Object model(POm) which can  manage 
           - project build
           - reporting and 
           - documentation for central piece of information
@@ -630,7 +631,7 @@ All build system are essentailly same:
  - Deploy Project
  - Cleanup
 
-Developers of maven wanted 
+Developers using maven wanted 
   - a standard way to build  the project
   - a clear defination of what  the project consisted of 
   -  an easy way to publish project infor and a 
@@ -658,23 +659,9 @@ Requirement: java  is required  since maven is java complied
 #+BEGIN_SRC sh
 mvn archetype:generate # Need 3 input : group Id, version, artifact Id
 #+END_SRC
-
-** TODO A Build Lifecycle is Made Up of Phases
-
-Each of these build lifecycles is defined by a different list of build phases, wherein a build phase represents a stage in the lifecycle.
-
-For example, the default lifecycle comprises of the following phases (for a complete list of the lifecycle phases, refer to the Lifecycle Reference):
-
-- validate   : all necessary information is available and validate the project is correct.
-- compile    : compile the source.
-- test       : test the compiled source using  unit testing framework. 
-- package    : take the compiled code and package it in its distributable format, such as a JAR,war
-- intergration test :
-- verify     : run any checks on results of integration tests to ensure quality criteria are met
-- install    : install the package into the local repository, for use as a dependency in other projects locally
-- deploy     : copies the final package to the remote repository for sharing with other developers and projects.
-
-** using wget and extracting and install
+  
+** Install of maven
+*** extract maven
 #+BEGIN_SRC sh
 # Download maven in /temp using wget
 wget https://www-us.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz -P /tmp
@@ -706,6 +693,21 @@ source /etc/profile.d/maven.sh
 # verify the installation
 mvn -version
 #+END_SRC
+
+** TODO A Build Lifecycle is Made Up of Phases
+
+Each of these build lifecycles is defined by a different list of build phases, wherein a build phase represents a stage in the lifecycle.
+
+For example, the default lifecycle comprises of the following phases (for a complete list of the lifecycle phases, refer to the Lifecycle Reference):
+
+- validate   : all necessary information is available and validate the project is correct.
+- compile    : compile the source.
+- test       : test the compiled source using  unit testing framework. 
+- package    : take the compiled code and package it in its distributable format, such as a JAR,war
+- intergration test :
+- verify     : run any checks on results of integration tests to ensure quality criteria are met
+- install    : install the package into the local repository, for use as a dependency in other projects locally
+- deploy     : copies the final package to the remote repository for sharing with other developers and projects.
 
 ** Create maven project
 #+BEGIN_SRC sh
@@ -769,63 +771,6 @@ hello.class -compile -mvn compile #
 mvn package
 #+END_SRC
 
-*** Question and Answers
-Q) Why it is called maven life cycle ?
-Ex if we need to run install : we need to go step by step like compile, package, install
-
-Q) What is difference between Snapshot and Version ?
-Snapshot : For every realased snapshot is increased or updated.
-But version is different it not updated or increased for every deployment but for final-deployment Version is updated.
-
-
-Q) What is actually pom.xml  file
-- Consist of 
-   group Id, 
-   artifact Id, 
-   version
-   dependency-links
-- Link to remote repository 
-
-Q) What is maven archtype:generate ?
-It is a maven plugin use to generate src and pom.xml file
-
-
-Q) how to ignore test cases in maven ?
-mvn install -DskipTests
-
-Q) how to create multi module project 
-parent pom - superpom
-       child pom
-
-
-parent pom.xml file
-sbi/pom.xml
-├── India/pom.xml
-├── AP/pom.xml
-└── Hyderabad/pom.xml
-
-#+BEGIN_SRC xml
-<packaging>pom </packaging>
-<modules>
-<module>India/pom.xml</module>
-<module>AP/pom.xml</module>
-<module>Hyderabad/pom.xml</module>
- </modules>
-
-#+END_SRC
-
-Q)how to use profiles
-A) to set of configuration file
-profile
-dev/application
-sit
-pre production
-production
-
-tomcat jboss weblogics
-war     ear     cluster :dev1 dev2 dev3
-
-jar micro-servies 
 *** Step in how to build artifact in organisation
 
 - Step 1: OPS : Create git repo and send to all dev
@@ -905,8 +850,69 @@ fi
 # Remote repo is custome repo like personal details (salary, bank  balance,how much loan taken ....etc)
 # remote repo consist of custome (war,jar) file we store in remote repo
 
+** Question and Answer
+Q)why we use build tool 
+Ex) To build artifacts(jar,ear,war)(java artive,web archive, enterpashilp archive)
+
+Q) Why it is called maven life cycle ?
+Ex if we need to run install : we need to go step by step like compile, package, install
+
+Q) What is difference between Snapshot and Version ?
+Snapshot : For every realased snapshot is increased or updated.
+But version is different it not updated or increased for every deployment but for final-deployment Version is updated.
+
+
+Q) What is actually pom.xml  file
+- Consist of 
+   group Id, 
+   artifact Id, 
+   version
+   dependency-links
+- Link to remote repository 
+
+Q) What is maven archtype:generate ?
+It is a maven plugin use to generate src and pom.xml file
+
+
+Q) how to ignore test cases in maven ?
+mvn install -DskipTests
+
+Q) how to create multi module project 
+parent pom - superpom
+       child pom
+
+
+parent pom.xml file
+sbi/pom.xml
+├── India/pom.xml
+├── AP/pom.xml
+└── Hyderabad/pom.xml
+
+#+BEGIN_SRC xml
+<packaging>pom </packaging>
+<modules>
+<module>India/pom.xml</module>
+<module>AP/pom.xml</module>
+<module>Hyderabad/pom.xml</module>
+ </modules>
+
+#+END_SRC
+
+Q)how to use profiles
+A) to set of configuration file
+profile
+dev/application
+sit
+pre production
+production
+
+tomcat jboss weblogics
+war     ear     cluster :dev1 dev2 dev3
+
+jar micro-servies 
 
 * Servers (Tomcat) 
+** Introduction
 Server contains: 
   - Start and shutdown programs (irctc ticket booking at night 12am)
   - Can be supported to run war or ear files continously
@@ -929,7 +935,14 @@ Type of Servers
 # After starting if there is some error then check log file
 
 we are using tomcat 9 server there is 10 but 10 is alpha and 9 is stable version
-
+** Deployment process
+Deployment Process
+- Stop the server process
+- take required backups sbi.war-> sbi.war'data'.zip
+- Deploy sbi.war(build server (scp * .war $user@$ip :opt/apache-tomcat-9.0.16/webapps/*.war )
+  - Deployed to dev,sat,uat,pre-production,production ((development, sit (System Integration and Testing),uat (User Acceptance Testing),prod))
+- start the server
+- check it in web browser
 
 ** installation
 https://www.youtube.com/watch?v=Feui5F42bII
@@ -1009,16 +1022,6 @@ sudo status tomcat9
 sudo service tomcat9 stop
 sudo status tomcat9
 #+END_SRC
-
-** Deployment process
-
-Deployment Process
-- Stop the server process
-- take required backups sbi.war-> sbi.war'data'.zip
-- Deploy sbi.war(build server (scp * .war $user@$ip :opt/apache-tomcat-9.0.16/webapps/*.war )
-  - Deployed to dev,sat,uat,pre-production,production ((development, sit (System Integration and Testing),uat (User Acceptance Testing),prod))
-- start the server
-- check it in web browser
 
 ** Example 
 SampleWebApp.war file
@@ -1119,9 +1122,7 @@ Post-build Action
     Credentials : Add credentials 
              Username : tomcat
              Password : tomcat (For configuration we set)
-    Tomcat Url : Same page url.
-       
-    
+    Tomcat Url : Same page url.    
 * Jenkins 
 - Jenkins 
   - installation
@@ -3454,7 +3455,7 @@ docker ps -a    #by default the command is bash
 #          /bin/bash
 #          /bin/bash
 #+END_SRC
-*  [8th April] Link N Docker-Compose
+* [8th April] Link N Docker-Compose
 
 ** Link
 Link  : two or more contianers

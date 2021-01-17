@@ -1485,7 +1485,7 @@ grep -v '^first,last' peopel.csv |cut -d ',' -f1 John firstlylsmr.firstly
   #or cut -d ',' -f people | grep -v '^first$' # regexp are be used on
   grep command
 
-  cat people_data.csv Data: firstData:last Data: JohnData:Smitt Data:
+cat people_data.csv Data: firstData:last Data: JohnData:Smitt Data:
   firstlyData:mclasty Data: mr.firstlyData:mclasty 
 cut -d ':' -f 2 people_data.csv # above peopel_data we can't seperate it only by using
 cut but we can do it by awk command

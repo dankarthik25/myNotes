@@ -1,5 +1,6 @@
 
 
+
 * Ubuntu Installation
 ** Setting Fastest Repository Mirro
 Software & Updates > Ubuntu Software > Download from > other > Best
@@ -21,8 +22,8 @@ sudo apt install ubuntu-restricted-extras
 https://askubuntu.com/questions/147277/sudo-apt-get-remove-does-not-remove-config-files
 
 #+BEGIN_SRC sh
-sudo apt-get remove <prg>
-sudo apt-get purge <program>
+sudo apt-get remove <prg>     # does not remove config files
+sudo apt-get purge <program>  # to remove config files
 #sudo apt-get remove --autoremove avidemux2.6-qt
 sudo apt-get autoremove # to remove unwanted lib
 #+END_SRC
@@ -99,8 +100,9 @@ https://askubuntu.com/questions/486297/how-to-select-video-quality-from-youtube-
 
 *** Download Playlist and change name
 #+BEGIN_SRC sh
-   cd Documents/
-   youtube-dl -i -f mp4 --yes-playlist 'https://www.youtube.com/playlist?list=PLRAV69dS1uWTSu9cVg8jjXW8jndOYYJPP'
+   cd Documents/ 
+youtube-dl -i -f mp4 --autonumber-start 1 --yes-playlist 'https://www.youtube.com/playlist?list=PLTgNKd4RxFTY_rhPBYyFJ-qVwMHNgebJe'
+   youtube-dl -i -f mp4 --autonumber-start 1 --yes-playlist 'https://www.youtube.com/playlist?list=PLRAV69dS1uWTSu9cVg8jjXW8jndOYYJPP'
    'https://www.youtube.com/playlist?list='
 
    ls -ltcr >> list # c : ctime: last modification of file status

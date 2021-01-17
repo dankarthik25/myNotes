@@ -49,9 +49,11 @@ Drink more water for every 1-2 hours
    -  : rosted peanuts
    -  : sweet corn (with no sweet,butter, salts, cream,chat masala) 
    -  : baked potato
-   -  : weight-loss tea (
-   -            : ginger lemon tea (9am - 4-5 pm)) 
-   -            : ginger lemon tea (after 6 pm) [note: if your stomact no stomach upset]
+   -  : weight-loss tea ()
+      -    : ginger lemon tea (9am - 4-5 pm)) 
+      -    : ginger lemon tea (after 6 pm) [note: if your stomact no stomach upset]
+      -    : cinnoman tea
+      -    : ajwain tea(night before bed time)
 
 
 
@@ -60,7 +62,7 @@ Drink more water for every 1-2 hours
 - Dinner :
   - soup:
   - No-rice
-  - roti + potato curry
+  - roti + sabji
   - before sleep: eat pinch of (ajawan)
 
  
@@ -72,7 +74,8 @@ Drink more water for every 1-2 hours
 ** Vegetable which help in reducing weight :
 - make subji or curry with below veg (note don't fry veg but boil veg )
 
-  - ginger+ lemon + corrinder (combo increase )
+  - ginger+ lemon + corrinder (combo increase ) at morning drink
+
 - green leafy vegetables:
   - mint
   - corriandor
@@ -107,6 +110,9 @@ Drink more water for every 1-2 hours
   - cloves 
   - cardamon (ellachi) 
   - mustard seed
+
+** Drinks 
+
 
   
 

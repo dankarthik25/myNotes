@@ -250,7 +250,7 @@ chown ec2-user:ec2-user <file/dir>
   # passwd enter
 
   # copy for other user to current user
-  scp <source-file-path> username@ip: <dest-path>
+  scp <file-name> username@ip: /opt
   scp -i key.pem /path/to/myfile.txt ec2-user@IPAddressOfEC2:/ 
 
   ## ##########################################################

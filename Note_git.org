@@ -1,0 +1,438 @@
+* git
+For creating a version control of local repository
+
+We need to Create a version contol file (=.git=) it create by =git init=
+There are Three Stages
+
+** short tutorial
+Repository : Project or/ file/floder where you keep your project
+Git : is version control
+Github: A website to host your repository
+
+#+BEGIN_SRC sh
+  git init                                  # Inicialize or Create a version control 
+  git status                                # View the Stagging Area
+  git add <file>                            # Add files to stagging Area
+  git rim --cached <file>                   # Remove files in Stagging Area
+  touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
+  git commit -m "fist commit"               # Save-Commit  to Local Repo
+  git commit -m "commit-name"  -m "Commit Description  or purpose"              # Save-Commit  to Local Repo
+  git commit -am "append and message"   # only for already existing commit file
+  git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
+  git push origin master                    # Upload Local Repo to Remote Repo
+  git pull                                  # Update Local Repo
+  # Clone repo from remote-ip
+  git clone https://github.com/...          # clone to current dir                    # Clone
+  git diff                                  # diff : View changes in files
+  ## Create and VC a branch :
+  mkdir test                                # create local repository "test"
+  cd test                                   # move to test folder
+  git init                                  # create a new instance
+  git branch <branch-name>                  #
+  git branch --list                # list of branch 
+  git push orign <branch-name>              # git Upload branch
+  # git delete a branch in local repository 
+  git branch -D devop
+  # delete branch at remote repositort
+  git push origin --delete <branch name>
+
+  # Switch one branch to other
+  git checkout <branch-name>
+  # Merge
+
+  # to go to destination (master)
+  git chekout master
+
+
+  # merge brach to existing git
+  git merge <branch-name>
+
+  # rebase
+
+#+END_SRC
+** Intro 
+*** Intro_ Version Control System
+We can save multiple version is a single repository this  is centralised version where it set is stored in server or local host. 
+
+- Distributed vcs
+Each programmer will have there  local repository 
+eg: git 
+
+ 
+- architecture
+- fork and clone
+collaborations
+branch, merge and rebase
+commands 
+
+*** Intro_ Overview Creating a local Repository  
+Consider 'Working-Dir' is need to Version Control 
+
+- Git has three main states that your files can reside in: Working-Dir, Stagging Area, Commited: 
+  - =Working-Dir=      File but have not have =Version Control= (committed)
+    - Tell git  this dir need to (VC) it is done by =git init= which create =.git= file in dir 
+    - Add Files         to Stagging area =git add file-name=
+    - Remove Files from Stagging Area =git reset=
+    - Ignore Files      to Stagging ara  =write (list of file that are to ignored) in  .gitignore= 
+  - =Stagging Area=    Marked a modified file  which are to be commit.
+    - Note :            All files in Working-Dir should be either add/ignore then only it can be commited
+    - Commit File      =git commit=
+  - =Committed=      Current files are commented/safed in local Repository =.git directory=.
+    - The files are in VC are Know are Local Repository
+  - =Remote Repository= 
+    - To make a Remote Repository
+      - Connet Local Repository to Remote Repository( =url=)
+        - =git remote add origin url=
+      - Push Local Repositoru to Remote Repository =git push= 
+       - =git push origin master=
+      - Pull Remote Repository to Local Repository =git pull=
+** Installation and Configuration Cmd
+#+BEGIN_SRC  sh
+# installation
+
+## setup
+
+# version
+git --version
+# >> git version 2.3.2
+
+# Configuration 
+git config --global user.name "Dankarthik25"
+git config -global user.email "dankarthik25@gmail.com"
+
+# help
+git help config
+git config --help
+
+#+END_SRC
+
+
+** How to Commit files ? 
+*** initialize  the file or local-repository  (git init):()
+Create a version control folder or =initialize= or track (changes or versions) we have to initialize the folder 
+#+BEGIN_SRC sh
+# go the directory (Local-Repositore) that has to be version control 
+git init
+#+END_SRC
+
+This will create a =.git= file in the current directory  which consist of all the change that are to be done
+*** Adding files to git (git add file)
+files which are uncommited are changed to =staged= 
+#+BEGIN_SRC sh
+git add <file>             # add files to git
+git add -A                     # add all file
+git status                     # show <file> or all file are change to commited area
+#+END_SRC
+**** Example:
+#+BEGIN_SRC sh
+git add .gitignore
+git add .emacs
+git add .vimrc
+#+END_SRC
+ =.gitignore=  which was in untracked () is changed to staging area or committed
+*** Removing files from git (git reset file)
+#+BEGIN_SRC sh
+git reset <file>                     # remove  files from stating area( committed)
+git reset                                  # remove all files
+#+END_SRC
+*** .gitignore
+hidden file =.gitignore=  contain the list of the all the file and folder that ignore by git for version control
+#+BEGIN_SRC sh
+touch .gitignore
+ls -a >> .gitigonre	# and remove the files need to be VC
+#+END_SRC
+**** Example
+in file add the file or folders that are to ignored by git
+#+BEGIN_SRC sh
+# file that are to ignore
+.DS_Store
+.project
+*.pyc
+#+END_SRC
+*** Commit files (git commit)
+Note : All files are need to to add/ignored then only we can commit files
+#+BEGIN_SRC sh
+  git add -A
+  git commit -m "Initial Commit"                        # file are commited 
+  git status                                                                  # show nothing to commit , working directoru clean    
+#+END_SRC
+*** Undo last commit
+#+begin_src sh
+git reset HEAD~1 # Undo the last commit and
+# move last commit files form commited area to stagging area
+
+# If we want to undo last 3-4 commit how can we do  ?
+# we use < log>  and load the respective commited-repo
+
+
+
+#+end_src
+
+** Connect Local Repository to Remote Repository
+  #+BEGIN_SRC sh
+git remote add origin url    # eg: git remote add origin https://github.com/dankarthik25/pythonUdemyTutorial  
+  #+END_SRC
+** Push Local Repository to Remote Repository (git push)
+#+BEGIN_SRC sh
+git push origin master
+# git push origin master -f     # Force if cmd not works
+#+END_SRC
+** Git Pull vs fetch
+fetch : it's hold the data  and it is merged  in repo
+
+pull : = git fetch + git merge
+** TODO Pull Remote Repository to Local Repository
+update local repo for any changes in remote repo
+#+BEGIN_SRC sh
+# Inside local repo
+  git pull
+#+END_SRC
+** Creating a Branch (git branch <branch-name>)
+*** Intro
+Techinically there are three type branching
+- branching
+  - Master Branch :
+    Orignal code or main branch is present
+  - Feature Branch:
+    Adding new feature without editing main-code by creating a branch
+  - Host Fix Branch:
+    In main branch(or)feature branch if there is bug (or)error then hot fix branch is create to fix the bug as soon as possible
+         
+#+BEGIN_SRC sh
+    # list of all branch including main branch
+    git branch
+    git branch UncleDaveEmacs-rust_code # Create a branch
+    git checkout -b  UncleDaveEmacs_rust_code # Create a branch
+
+    git branch   # list of all branchs and * for current branch
+    # * Uncledaveemacs_rust_code
+    #   master
+
+    #  Switch branchs 
+    git checkout UncleDaveEmacs        # If you move to different branch then you Current Dir will change to files that contain Branch Files
+
+
+
+    # save branch in local and remote repo 
+    git status                         # check status  and add,ignore that are need to be done
+    git commit -m 'Emacs Configuration of Uncle Dave '
+    # save branch in remote repo  
+    git push -u origin UncleDavesEmacs_rust_code  # git ask for pull request 
+
+    # diff in files
+    git diff Uncledaveemacs_rust_code
+
+
+  # Merge : can be done in two ways  :
+    # merge in locally and uploade to remote repositore  
+    # upload branch (push branch) and ask pull-request(merge)  (for pr) 
+
+
+
+
+
+
+
+    # git delete a branch in local repository 
+    git branch -D devop
+    # delete branch at remote repositort
+    git push origin --delete <branch name>
+
+
+
+#+END_SRC
+
+*** Pullrequest (pr)
+What is Pull request : request for code to pulled into another-branch
+#+begin_src sh
+  git push -u origin master
+  git push -u origin UncleDavesEmacs_rust_code  # git ask for pull request
+
+#+end_src
+we want to pull feature-branch into master branch
+So Pullrequest (pr) from feature-branch to master-branch
+After PR : in github any one-can review and comment on ask for chagens and updaetes, reslove merge-conflicts with base(main) braanch
+
+Once PR is merged generall we delete feature-branch and switch back to main branch
+
+*** Merge Conflits
+If there is conflict
+if two branch which are going to merge has a same file but has diff code then there will going to be conflit during mergeing
+#+begin_src sh
+  git checkout -b quick-test
+  touch index.html
+  echo "1.quick-test \n2.quick-test2" >> index.html
+  git commit -am "added world"
+
+  git checkout master
+  touch index.html
+  echo "1.quick-test \n2.quick-run1" >> index.html
+  git commit -am "added run file"
+
+  git checkout quick-test
+  git diff master
+
+
+  git merge master
+#CONFLICT (content ): Merge conflicts
+   # resolve merge conflicts manuall
+#+end_src
+
+
+** log
+Suppose if we wanted to undo last more than 1 last commits then we can do by log 
+List of comments mode on your branch
+#+BEGIN_SRC sh 
+git log
+#commit 78b2c6c7ecd3960fb6f1d02fe8913ad37c2fd994 (HEAD -> master, origin/master)
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:55:50 2021 +0530
+
+#    Created Weight loss Notes-Iii
+
+#commit ff4764bf0f40b2c480c5bf5a3d21e8eda76d0800
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:47:45 2021 +0530
+
+#    Created Weight loss Notes-Ii
+
+#commit 60659627bc3ffc64a3548bbd8abbe8f29b469391
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:40:54 2021 +0530
+
+#    Created Weight loss Notes-I
+
+#commit e0f341e30804a328a5824bb4bf8c1a43f2f1714d
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:28:46 2021 +0530
+
+#    Created Weight loss Notes
+#:...skipping...
+# commit 78b2c6c7ecd3960fb6f1d02fe8913ad37c2fd994 (HEAD -> master, origin/master)
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:55:50 2021 +0530
+
+#    Created Weight loss Notes-Iii
+
+#commit ff4764bf0f40b2c480c5bf5a3d21e8eda76d0800
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:47:45 2021 +0530
+
+#    Created Weight loss Notes-Ii
+
+#commit 60659627bc3ffc64a3548bbd8abbe8f29b469391
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:40:54 2021 +0530
+
+#    Created Weight loss Notes-I
+
+#commit e0f341e30804a328a5824bb4bf8c1a43f2f1714d
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:28:46 2021 +0530
+
+#    Created Weight loss Notes
+
+#commit 431af2b4d0f1910dc358029a737ec49d351cc5b9
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sat May 30 10:24:39 2020 +0530
+
+#    adfd
+
+#commit 70da9391d194db5af466da5a281a7c9dc9f75342
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Apr 26 10:59:40 2020 +0530
+
+#    New Change
+
+#commit 53dd0ee2c781ee4d04179b99823ffb8b2c328345
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+
+#+END_SRC
+
+*** REST BY LOG or (Undo more that 1 commit
+#+begin_src sh
+#
+#
+#
+#
+
+#commit e0f341e30804a328a5824bb4bf8c1a43f2f1714d
+#Author: Dankarthik25 <dankarthik25@gmail.com>
+#Date:   Sun Jan 17 23:28:46 2021 +0530
+
+#    Created Weight loss Notes
+#
+#
+#
+#
+
+git RESET --soft e0f341e30804a328a5824bb4bf8c1a43f2f1714d
+git RESET --mixed e0f341e30804a328a5824bb4bf8c1a43f2f1714d # default
+git RESET --reset e0f341e30804a328a5824bb4bf8c1a43f2f1714d
+#+end_src
+
+there are 3 stagge in repository in git
+working area > staging area   > local (commited area) > remote (github)
+
+git reset : is used go backworkd for local to staging 
+
+reset : local repo to  stageing  to working copy
+- reset are   3 types
+  - git reset --soft  # keep all changes in stagging area
+  - git reset --mixed # keep all changes in working area(default)
+  - git reset --hard  # removes all changes and remove files in  working area 
+
+
+
+In the simplest terms:
+
+    --soft: uncommit changes, changes are left staged (index/stagging area).
+    --mixed (default): uncommit + unstage changes, changes are left in working tree.
+    --hard: uncommit + unstage + delete changes, nothing left.
+
+** Clonning a repository
+#+BEGIN_SRC sh
+git clone <url> <path- which dir>
+git clone ../remote_repo.git .
+git clone <url> .                        # . means current direcory
+#+END_SRC
+* Github
+
+version control 
+sharing code 
+
+
+** connect local meachine (git) to remote meachine (github)
+#+begin_src bash
+  ssh-keygen -t rsa -b 4096 -C "<email-address.com>"
+# Enter file in which to save the key : test_key
+ls | grep test_key
+test_key      # private key  # can't be shared 
+test_key.pub  # public key  can be shared 
+cat test_key.pub
+#+end_src
+
+In github setting >> SSH and GPG Keys >> New SSH Key
+Title : Key name
+Key : past test_key.pub
+
+*** tell git about ssh key that we generated
+Visit Github about :
+Generating a new SSH key and adding it to the ssh-agent
+
+#+begin_src sh
+  git push origin master # no hhtp address required and no github email_id and password is required as we done ssh connection
+#+end_src
+
+
+
+*** push locally create repo (local-repo)
+create a empty repo in github with same name in local-repo
+copy http link of github repo <http:github_repo>
+#+begin_src sh
+    # Inside local-repo
+  git remote add origin <http:github_repo>
+git push -u origin master
+#+end_src
+git push origin master
+

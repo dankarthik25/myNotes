@@ -152,20 +152,10 @@ ansible all -a "ls -l /opt"
 #+END_SRC
 
 #+BEGIN_SRC sh
-
-
-
-
-
-
-
-
-
-
 ansible-doc -l | wc
 ansible-doc -s module-name
-
 #+END_SRC
+
 *** modules : Adhoc cmd are converted in module for simple and easy use
 There different types of module  [[https://docs.ansible.com/ansible/latest/user_guide/modules_intro.html][Introduction to module]]
 
@@ -1063,6 +1053,7 @@ ansible-vault view inventory.txt
 ansible-vault create inventory.txt
 
 #+END_SRC
+
 ** Dynamic Inventory
 
 #+BEGIN_SRC python

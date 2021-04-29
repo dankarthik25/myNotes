@@ -102,6 +102,14 @@ Tools Used:
 * Linux and Shell
 Visit : Linux Tutorial for both Linux and Shell
 
+What is different btw normal user and root user
+
+#+BEGIN_SRC sh
+ sudo su -
+ ls -latr
+ 
+#+END_SRC
+
 * Vi Editor Tutorial
 Visit : vim tutorial
 * git

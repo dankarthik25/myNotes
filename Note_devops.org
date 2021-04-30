@@ -36,12 +36,30 @@ At last, comes the *Maintenance phase*. In this phase, the application is monito
 
 ** Agile Methodology
 https://www.hashminds.com/wp-content/uploads/2018/01/agile3-e1516054093712.jpg
-Agile Methodology is an iterative based software development approach where the software project is broken down into various iterations or sprints. Each iteration has phases like the waterfall model such as Requirements Gathering, Design, Development, Testing, and Maintenance. The duration of each iteration is generally 2-8 weeks.
+Agile Methodology is a people-focused, results-focused approach to software development that respects our rapidly changing world.
+It’s centered around adaptive planning, self-organization, and short delivery times. It’s flexible, fast, and aims for continuous improvements in quality
+Agile Methodology is an iterative based software development approach where the software project is broken down into various iterations or sprints.
+Each iteration has phases like the waterfall model such as Requirements Gathering, Design, Development, Testing, and Maintenance.
+The duration of each iteration is generally (2-8)(1-4) weeks or (1-2 months).
+
+*** Agile Methodology Overview
+
+- It abandons the risk of spending months or years on a process that ultimately fails because of some small mistake in an early phase.
+  It relies instead on trusting employees and teams to work directly with customers to understand the goals and provide solutions in a fast and incremental way.
+  - Faster, smaller. Traditional software development relied on phases like outlining the requirements, planning, design, building, testing, and delivery.
+    Agile methodology, by contrast, looks to deploy the first increment in a couple weeks and the entire piece of software in a couple months.
+  - Communication. Agile teams within the business work together daily at every stage of the project through face-to-face meetings. This collaboration and communication ensure the process stays on track even as conditions change.
+  - Feedback. Rather than waiting until the delivery phase to gauge success, teams leveraging Agile methodology track the success and speed of the development process regularly. Velocity is measured after the delivery of each increment.
+  - Trust. Agile teams and employees are self-organizing. Rather than following a manifesto of rules from management intended to produce the desired result, they understand the goals and create their own path to reach them.
+  - Adjust. Participants tune and adjust the process continually, following the KIS or Keep It Simple principle.
 *** model Agile Process
 - In Agile, a company releases the application with some high priority features in the first iteration.
 - After its release, the end-users or the customers give you feedback about the performance of the application.
 - Then you make the necessary changes into the application along with some new features and the application is again released which is the second iteration.
 - You repeat this entire procedure until you achieve the desired software quality.
+  Benefits of Agile Methodology
+
+
 **** Advantages of Agile Model
 - It adaptively responds to requirement changes favorably
 - Fixing errors early in the development process makes this process more cost-effective
@@ -49,19 +67,44 @@ Agile Methodology is an iterative based software development approach where the 
 - Allows for direct communication between people involved in software project
 - Highly suitable for large & long-term projects
 - Minimum resource requirements & very easy to manage
-
+The benefits of Agile are tied directly to its faster, lighter, more engaged mindset. The process, in a nutshell, delivers what the customer wants, when the customer wants it. There’s much less wasted time spent developing in the wrong direction, and the entire system is quicker to respond to changes. For a more comprehensive list of benefits, see this post.
+- Faster. Speed is one of the biggest benefits of Agile Methodology. A faster software development life cycle means less time between paying and getting paid. That, in turn, means a more profitable business.
+- Increased customer satisfaction. With Agile, customers don’t wait for months or years, only to get exactly what they didn’t want. Instead, they get iterations of something very close to what they want, very fast. The system adjusts quickly to refine the successful customer solution, adapting as it goes to changes in the overall environment.
+- Values employees. Employees whose ideas are valued are vastly more productive than those who are ordered to follow a set of rules. The Agile Methodology respects employees by giving them the goal, then trusting them to reach it. Since they’re the ones with their hands on the controls and the ones who see the obstacles that crop up every day, employees are in the best position to respond to challenges and meet the goals at hand.
+- Eliminates rework. By involving the customer at more than just the phases of requirements and delivery, the project remains on-task and in-tune with customer needs at every step. This means less backtracking and less “out on a limb” time between the time we do the work and the time the customer suggests revisions.
 **** Disadvantages of Agile Model
 - Highly dependent on clear customer requirements
 - Quite Difficult to predict time and effort for larger projects
 - Not suitable for complex projects
 - Lacks documentation efficiency
 - Increased maintainability risks
+**** The advantages of the Agile Model are as follows −
+- Is a very realistic approach to software development.
+- Promotes teamwork and cross training.
+- Functionality can be developed rapidly and demonstrated.
+- Resource requirements are minimum.
+- Suitable for fixed or changing requirements
+- Delivers early partial working solutions.
+- Good model for environments that change steadily.
+- Minimal rules, documentation easily employed.
+- Enables concurrent development and delivery within an overall planned context.
+- Little or no planning required.
+- Easy to manage.
+- Gives flexibility to developers.
 
-Now let us move on and discuss the DevOps stages and tools.
+**** The disadvantages of the Agile Model are as follows −
+- Not suitable for handling complex dependencies.
+- More risk of sustainability, maintainability and extensibility.
+- An overall plan, an agile leader and agile PM practice is a must without which it will not work.
+- Strict delivery management dictates the scope, functionality to be delivered, and adjustments to meet the deadlines.
+- Depends heavily on customer interaction, so if customer is not clear, team can be driven in the wrong direction.
+- There is a very high individual dependency, since there is minimum documentation generated.
+- Transfer of technology to new team members may be quite challenging due to lack of documentation.
+  
 *** Diagram 
 agile.png
 ** DevOps Stages and Tools
-source : good explaination  https://dzone.com/articles/how-to-orchestrate-devops-tools-together-to-solve
+source : good explaination  https://dzone.com/articles/how-to-orc0hestrate-devops-tools-together-to-solve
 As mentioned earlier, the various stages such as 
  - continuous development, 
  - continuous testing,

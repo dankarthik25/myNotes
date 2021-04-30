@@ -103,7 +103,14 @@ The benefits of Agile are tied directly to its faster, lighter, more engaged min
   
 *** Diagram 
 agile.png
-** DevOps Stages and Tools
+** DevOps
+https://www.ibm.com/cloud/learn/devops-a-complete-guide
+DevOps is a set of practices that combines software development (Dev) and IT operations (Ops).
+It aims to shorten the systems development life cycle and provide continuous delivery with high software quality.
+DevOps is complementary with Agile software development; several DevOps aspects came from the Agile methodology. 
+
+By definition, DevOps outlines a software development process and an organizational culture shift that speeds the delivery of higher quality software by automating and integrating the efforts of development and IT operations teams – two groups that traditionally practiced separately from each other, or in silos.
+*** Stages and Tools
 source : good explaination  https://dzone.com/articles/how-to-orc0hestrate-devops-tools-together-to-solve
 As mentioned earlier, the various stages such as 
  - continuous development, 
@@ -113,10 +120,12 @@ As mentioned earlier, the various stages such as
  - continuous monitoring 
 constitute the DevOps Life cycle [[img] [https://d1jnx9ba8s6j9r.cloudfront.net/blog/wp-content/uploads/2017/10/devops-explanation.png]]. Now let us have a look at each of the stages of DevOps life cycle one by one.
 
-*** Stage – 1: Continuous Development
+
+*** Stage – 1: Continuous Development [ Planning(Requirement Gathering & Analysis + Design) + Coding]
 - Tools Used: Git, SVN, Mercurial, CVS and JIRA
 - Process Flow: https://i.stack.imgur.com/UvZ0M.png
-- This is the phase that involves ‘planning‘ and ‘coding‘ of the software. You decide the project vision during the planning phase and the developers begin developing the code for the application.
+- This is the phase that involves ‘planning‘ and ‘coding‘ of the software.
+  You decide the project vision during the planning phase and the developers begin developing the code for the application.
 - There are no DevOps tools that are required for planning, but there are a number of tools for maintaining the code.
 - The code can be in any language, but you maintain it by using Version Control tools. This process of maintaining the code is known as Source Code Management.
 - After the code is developed, then you move to the Continuous Integration phase.
@@ -129,7 +138,7 @@ constitute the DevOps Life cycle [[img] [https://d1jnx9ba8s6j9r.cloudfront.net/b
 - The code supporting new functionality is continuously integrated with the existing code. Since there is a continuous development of software, you need to integrate the updated code continuously as well as smoothly with the systems to reflect changes to the end-users.
 - In this stage, you use the tools for building/ packaging the code into an executable file so that you can forward it to the next phases.
 
-*** Stage – 3: Continuous Testing
+*** Stage – 3: Continuous Testing [Build Code + Testing (Test performacne + Test functional + SIT + UAT + Preproduction + Production )]
 
 - Tools: Jenkins, Selenium TestNG, JUnit
 - Process Flow:

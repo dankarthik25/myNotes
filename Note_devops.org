@@ -102,6 +102,13 @@ The benefits of Agile are tied directly to its faster, lighter, more engaged min
   
 *** Diagram 
 agile.png
+Real time there are 5 environment
+- dev env
+- sit env or (SIT:System Integration Test or, QA) 
+- uat env or (UAT: User Acceptanec Test)
+- pre production : 
+- production :
+(development, sit (System Integration and Testing),uat (User Acceptance Testing),prod)
 ** DevOps
 https://www.ibm.com/cloud/learn/devops-a-complete-guide
 DevOps is a set of practices that combines software development (Dev) and IT operations (Ops).It aims to shorten the systems development life cycle and provide continuous delivery with high software quality.
@@ -658,8 +665,8 @@ Developers using maven because it provide
   
 ** maven repository
 - Maven has three repos
-  - Local Repo (dir by name .m2 )
-  - Central Repo (Internet)
+  - Local Repo (dir by name .m2 local os where maven is installed )
+  - Central Repo (Internet): Created and maintained by apache maven community 
   - Remote Repo (In general for  custome repository  jfrog artifactory is used)
 ** Why we need maven repo ?
 When we run =mvn archetype:generate= it serach for all dependencies in local,central,remote repo and then move them to local repo for next execution
@@ -743,8 +750,6 @@ maven install
 maven deploy
 
 #+END_SRC
-
-
 ** Maven Lifecycle and 8  Phases
 In general maven lifecycle has 8 phases: [Need to visit : javatpoint.com maven-life-cycle: 8items=> validate,test,clean  ]
 - validate          : all necessary information is available and validate the project is correct.
@@ -771,14 +776,11 @@ hello.class -compile -mvn compile #
 mvn package  
 #+END_SRC
 
-*** Step in how to build artifact in organisation
-
+** Integrate Maven with git
 - Step 1: OPS : Create git repo and send to all dev
-- Step 2: DEV : clone the repo
-- Step 3: DEV : create (src, pom.xml) and  push code into github 
-- Step 4: OPS : clone the repo
-- Step 5: OPS : Build artifacts (war file: mvn package)
-- Step 6: OPS : push(scp) war file  to dev,sit,preproduct, prod servers
+- Step 2: DEV : clone the repo,create (src, pom.xml) and  push code into github 
+- Step 3: OPS : clone the repo,Build artifacts (war file: mvn package)
+- Step 4: OPS : push(scp) war file  to dev,sit,preproduct, prod servers
 
 #+BEGIN_QUOTE
 - Developers will create maven file and in src file they will uploade developer code and push code to github
@@ -916,6 +918,14 @@ Type of Servers
 
 we are using tomcat 9 server there is 10 but 10 is alpha and 9 is stable version
 ** Deployment process
+
+tomcat9/ 
+├── bin                  # start and shutdow files 
+├── config               # default port:8080
+|       └── server.xml   # to change port Number
+├── log                  # If server is not working check logs
+└── webapps              # all jar,war files are moved from maven
+
 Deployment Process
 - Stop the server process
 - take required backups sbi.war-> sbi.war'data'.zip
@@ -1057,6 +1067,7 @@ cd /opt/tomcat/conf
 
 #+END_SRC
 *** Create Job to Produce Tomcat Deployable Artifacts
+#+begin_quote
 Create a view :
 View Name : _TomcatDeploy_View_
 List View : select
@@ -1081,7 +1092,10 @@ Post-build Action : _Build Other Project_
     Project to build : _Depoly Application Staging Env_ (Below Stage Job Name)
     Trigger only if build is stable : Ok
 Save Job
+#+end_quote
+
 *** Create Job to Deploy Artifacts to Tomcat server or(Staging Env)
+#+begin_quote
 Step 1:  Install "Copy Artifact" & "Deploy to Containers" Plugins
 Step 2:
 New item > Name : _Depoly Application Staging Env_
@@ -1102,7 +1116,8 @@ Post-build Action
     Credentials : Add credentials 
              Username : tomcat
              Password : tomcat (For configuration we set)
-    Tomcat Url : Same page url.    
+    Tomcat Url : Same page url.
+#+end_quote    
 * Jenkins 
 - Jenkins 
   - installation
@@ -1123,13 +1138,15 @@ Post-build Action
   - backup
   - build triggers (poll SCm)
     
-** [02nd march]-installation
+** TODO [02nd march]-installation
 - Jenkins can be install in 3 ways
   - 1. using executal file (unzip and install)
   - 2. using java    (java -jar jenkins.war)
   - 3. inside tomcat (jenkins.war files) 
     - install tomcat then copy jenkins.war to tomcat/webapps
     - run tomcat start and open https://localhost:8080/jenkins
+  - 4.Install inside VM : Vagrant
+  - 5. Install inside docker      
 *** Using zip file
 #+BEGIN_SRC sh
 # Install java(jenkins is java 8 app) so install openjdk

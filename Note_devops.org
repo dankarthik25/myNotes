@@ -44,8 +44,7 @@ The duration of each iteration is generally (2-8)(1-4) weeks or (1-2 months).
 
 *** Agile Methodology Overview
 
-- It abandons the risk of spending months or years on a process that ultimately fails because of some small mistake in an early phase.
-  It relies instead on trusting employees and teams to work directly with customers to understand the goals and provide solutions in a fast and incremental way.
+- It abandons the risk of spending months or years on a process that ultimately fails because of some small mistake in an early phase.It relies instead on trusting employees and teams to work directly with customers to understand the goals and provide solutions in a fast and incremental way.
   - Faster, smaller. Traditional software development relied on phases like outlining the requirements, planning, design, building, testing, and delivery.
     Agile methodology, by contrast, looks to deploy the first increment in a couple weeks and the entire piece of software in a couple months.
   - Communication. Agile teams within the business work together daily at every stage of the project through face-to-face meetings. This collaboration and communication ensure the process stays on track even as conditions change.
@@ -105,8 +104,7 @@ The benefits of Agile are tied directly to its faster, lighter, more engaged min
 agile.png
 ** DevOps
 https://www.ibm.com/cloud/learn/devops-a-complete-guide
-DevOps is a set of practices that combines software development (Dev) and IT operations (Ops).
-It aims to shorten the systems development life cycle and provide continuous delivery with high software quality.
+DevOps is a set of practices that combines software development (Dev) and IT operations (Ops).It aims to shorten the systems development life cycle and provide continuous delivery with high software quality.
 DevOps is complementary with Agile software development; several DevOps aspects came from the Agile methodology. 
 
 By definition, DevOps outlines a software development process and an organizational culture shift that speeds the delivery of higher quality software by automating and integrating the efforts of development and IT operations teams – two groups that traditionally practiced separately from each other, or in silos.
@@ -165,108 +163,95 @@ What is different btw normal user and root user
 * Vi Editor Tutorial
 Visit : vim tutorial
 * git
-For creating a version control of local repository
+** What is git
+- git is free and opensouce VCS (Version Control System) created by linux torvaldss in 2015. Version Control System  mean which is used to track all change in project
+- Using git
+  -  No data is lost and undo previous data using his
+  -  all users can access and share the project
+  -  security: outsiders can access and edit the project
+  -  git has (distributed repo )
 
-We need to Create a version contol file (=.git=) it create by =git init=
+*** TODO Q) git Vs SVN (Subversion)
+SVN is centralised VCS , Git is distributed VCS
+SVN is still used because of its performance with large files won't be satisfied with Git.
+
+
+
 There are Three Stages
 
 ** short tutorial
+- Creating a version control of local repository
+  - We need to Create a version contol file (=.git=) it create by =git init=
+    
 #+BEGIN_SRC sh
-  git init                                  # Inicialize or Create a version control 
-  git status                                # View the Stagging Area
-  git add <file>                            # Add files to stagging Area
-  git add -A
-  git rim --cached <file>                   # Remove files in Stagging Area
-  touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
-  git commit -m "fist commit"               # Save-Commit  to Local Repo
-  git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
-  git push origin master                    # Upload Local Repo to Remote Repo
-  git pull                                  # Update Local Repo
-  git clone https://github.com/...          # clone to current dir                    # Clone
-  git diff                                  # diff : View changes in fiels
+    git init                                  # Inicialize or Create a version control 
+    git status                                # View the Stagging Area
+    git add <file>                            # Add files to stagging Area
+    git add -A
+    git rim --cached <file>                   # Remove files in Stagging Area
+    touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
+    git commit -m "fist commit"               # Save-Commit  to Local Repo
+    git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
+    git push origin master                    # Upload Local Repo to Remote Repo
+    git pull                                  # Update Local Repo
+    git clone https://github.com/..git        # clone to current dir   # Clone
+    git diff  <commit id> <commit id>         # diff : View changes in fiels
 
-  ## Create and VC a branch :
-  mkdir test                                # create local repository "test"
-  cd test                                   # move to test folder
-  git init                                  # create a new instance
-  git branch <branch-name>                  #
-  git branch --list                # list of branch 
-  git push orign <branch-name>              # git Upload branch
-  # git delete a branch in local repository 
-  git branch -D devop
-  # delete branch at remote repositort
-  git push origin --delete <branch name>
+    ## Creat Branch ,push, delete:
+    git branch <branch-name>                  # create a new branch
+    git branch UncleDaveEmacs       # Create a branch
+    git branch                      # list of branch
+    git branch --list               # list of branch
+    git checkout UncleDaveEmacs     # Switch one branch to other
+    git chechout -b <branchname>    # to create and moveing to the <branch-name>
+    git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
+    git branch -D UncleDaveEmacs  # delete a branch
+    git push orign <branch-name>     # push branch to remote repo
+    git branch -D devop     # git delete a branch in local repository
+    git push origin --delete <branch name>     # delete branch at remote repositort
+    git push origin --delete UncleDaveEmacs # delete a branch in remote repository
 
-  # Switch one branch to other
-  git checkout <branch-name>
     # Merge
-  # to go to destination (master)
-  git chekout master
+    git chekout master # to go to destination (master)
+    git merge <branch-name>     # merge brach to master git
 
-
-  # merge brach to existing git
- git merge <branch-name>
- 
-# rebase
+  # rebase
 
 
 #+END_SRC
-** Version Control System
-We can save multiple version is a single repository this  is centralised version where it set is stored in server or local host. 
-
-- Distributed vcs
-Each programmer will have there  local repository 
-eg: git 
-
- 
-- architecture
-- fork and clone
-collaborations
-branch, merge and rebase
-commands 
-
+** TODO Q) fork and clone
 ** Installation and Configuration Cmd
 #+BEGIN_SRC  sh
-# installation
+  # version
+  git --version
+  # >> git version 2.3.2
 
-## setup
+  # Configuration 
+  git config --global user.name "Dankarthik25"
+  git config -global user.email "dankarthik25@gmail.com"
 
-# version
-git --version
-# >> git version 2.3.2
+  # help
+  git help config
+  git config --help
 
-# Configuration 
-git config --global user.name "Dankarthik25"
-git config -global user.email "dankarthik25@gmail.com"
-
-# help
-git help config
-git config --help
-
+  #
+  cat ~/.gitconfig
+  #[user]
+  #        email = dankarthik25@gmail.com
+  #        name = Dankarthik25
+  #[log]
+  #  date = relative
+  #[format]
+  #  pretty = format:%C(auto,yellow)%h%C(auto,magenta)% G? %C(auto,blue)%>(12,trunc)%ad %C(auto,green)%<(7,trunc)%aN%C(auto,reset)%s%C(auto,red)% gD% D
 #+END_SRC
 
-** Version contol of program or local-repositore
-*** Overview Creating a local Repository  
-Consider 'Working-Dir' is need to Version Control 
-
-- Git has three main states that your files can reside in: Working-Dir, Stagging Area, Commited: 
+** TODO Q)three main states in git 
+- Git has three main states that your files can reside in:
+  - Working-Dir, Stagging Area, Local repo, Remote repo 
   - =Working-Dir=      File but have not have =Version Control= (committed)
-    - Tell git  this dir need to (VC) it is done by =git init= which create =.git= file in dir 
-    - Add Files         to Stagging area =git add file-name=
-    - Remove Files from Stagging Area =git reset=
-    - Ignore Files      to Stagging ara  =write (list of file that are to ignored) in  .gitignore= 
-  - =Stagging Area=    Marked a modified file  which are to be commit.
-    - Note :            All files in Working-Dir should be either add/ignore then only it can be commited
-    - Commit File      =git commit=
+  - =Stagging Area=    Marked a modified file  which are to be commit
   - =Committed=      Current files are commented/safed in local Repository =.git directory=.
-    - The files are in VC are Know are Local Repository
-  - =Remote Repository= 
-    - To make a Remote Repository
-      - Connet Local Repository to Remote Repository( =url=)
-        - =git remote add origin url=
-      - Push Local Repositoru to Remote Repository =git push= 
-       - =git push origin master=
-      - Pull Remote Repository to Local Repository =git pull=
+  - =Remote Repository=
 *** How to Commit files ? 
 **** initialize  the file or local-repository  (git init):()
 Create a version control folder or =initialize= or track (changes or versions) we have to initialize the folder 
@@ -332,52 +317,24 @@ git pull
 *** Creating a Branch (git branch <branch-name>)
 source : https://nvie.com/posts/a-successful-git-branching-model/ 
 #+BEGIN_SRC sh
-git branch UncleDaveEmacs       # Create a branch
-git checkout UncleDaveEmacs        # If you move to different branch then you Current Dir will change to files that contain Branch Files
-
-# to create and moveing to the <branch-name>
-git chechout -b <branchname>
-
-
-# Do the changes in Working Dir 
-git status                         # check status  and add,ignore that are need to be done
-git commit -m 'Emacs Configuration of Uncle Dave '
-git push -u origin UncleDavesEmacs
-
-# show branchs
-git branch
-git branch --list
-
-# delete a branch 
-git branch -D UncleDaveEmacs
-
-# delete a branch in remote repository
-git push origin --delete UncleDaveEmacs
-
-#+END_SRC
-
-**** Example for branching
-#+BEGIN_SRC sh
-git pull  # synchronize with remote repo
-
-git branch --list # list of branch
-git branch devop # cretae devop branch
-
-git chechout devop # move to devop branch
-
-touch kk
-git add .
-git commit -m "created kk file in devops"
-
-git push origin devops
+    ## Creat Branch ,push, delete:
+    git branch <branch-name>                  # create a new branch
+    git branch UncleDaveEmacs       # Create a branch
+    git branch                      # list of branch
+    git branch --list               # list of branch
+    git checkout UncleDaveEmacs     # Switch one branch to other
+    git chechout -b <branchname>    # to create and moveing to the <branch-name>
+    git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
+    git branch -D UncleDaveEmacs  # delete a branch
+    git push orign <branch-name>     # push branch to remote repo
+    git branch -D devop     # git delete a branch in local repository
+    git push origin --delete <branch name>     # delete branch at remote repositort
+    git push origin --delete UncleDaveEmacs # delete a branch in remote repository
 #+END_SRC
 *** merge
 #+BEGIN_SRC sh
-# to git <branch-name>
-git checkout master
-
-# git merge <other-branch-name>
-git merge devop
+git checkout master # to git <branch-name>
+git merge devop # git merge <other-branch-name>
 
 ##  Example 
 
@@ -412,33 +369,6 @@ git log --online # give short version only < commit id, comment- message >
 
  #   Seperate Docker_Kubernetics
 
-#commit e981603cb4f9774128dd799da2da698baa1d7b9e
-#Author: Dankarthik25 <dankarthik25@gmail.com>
-#Date:   Thu Apr 9 07:15:34 2020 +0530
-
- #   Seperate Ansible
-
-#commit abb9dee1c46fb48f1356df2fdc3c92a7bc95de34
-#Author: Dankarthik25 <dankarthik25@gmail.com>
-#Date:   Thu Apr 9 07:14:15 2020 +0530
-
-#    last commit
-
-#commit 9ab9c9adb3d6c49fdbb1d4dbbf1a627fc66f1200
-#Author: Dankarthik25 <dankarthik25@gmail.com>
-#Date:   Wed Apr 1 12:30:06 2020 +0530
-#
- #   Added Ansible and Docker, Kubernetic files
-
-#commit c39821d63c5c500a54c1865f63ec7fbf6a3e165a
-#Author: Dankarthik25 <dankarthik25@gmail.com>
-#Date:   Sat Mar 21 15:45:12 2020 +0530
-
- #   my Notes
-
-#commit 370fca2e1a5ff68aecfcb41f4f1468c9b90ff6ed
-#Author: dankarthk25 <dankarthik25@gmail.com>
-#Date:   Tue Sep 18 03:58:25 2018 +0530
 
 #    my Notes on Prog
 git log --oneline
@@ -477,105 +407,159 @@ git clone ../remote_repo.git .
 git clone <url> .                        # . means current direcory
 #+END_SRC
 
-** Pull vs fetch
-
-fetch : it's hold the data  and it need to  merged  in repo
-
-pull : = git fetch + git merg
+** TODO Q)Pull vs fetch
+- In the simplest terms, git pull does a git fetch followed by a git merge.
+- git fetch
+  - Update your remote-tracking branches under refs/remotes/<remote>/.
+  - No change in local repo/branch,Staging Area, Working Dir.
+- git pull
+  - Update your remote-tracking branches under refs/remotes/<remote>/.
+  - Change local branch and Working Dir
+    - Note: All the Untracked data will be lost in Working Dir
+    - Note: merge only current branch wich it is pulled
+      
 #+BEGIN_SRC sh
 # fetch hold data(fetch data from remote  repository to local repository)  r  but not merges with current reposiotory
 git fetch
+git merge # it merges local repository to current repository 
 
-# it merges local repository to current repository 
-git merge
-
- 
 # pull
 git pull origin <branch-name> # git fetch and git merge
-
 #+END_SRC
+
 ** reset vs revert
-there are 3 stagge in repository in git
-working copy > staging  > local > remote
+*** Git reset
+The git reset command allows you to RESET your current head to a specified state. You can reset the state of specific files as well as an entire branch. This is useful if you haven't pushed your commit up to GitHub or another remote repository yet.
+*** Three types of reset 
+  |---------------+----------------------------------------------------------------------|
+  | Type of reset | Description                                                          |
+  |---------------+----------------------------------------------------------------------|
+  | soft          | keep all changes in stagging area, remove from local repo            |
+  | mixed         | keep all changes in workind dir, remove from stagging and local repo |
+  | hard          | removes all changes from local repo,stagging and local repo          |
+  |---------------+----------------------------------------------------------------------|
+ 
+- In the simplest terms:
+  
+| Type of reset | Workdir          | Stagging Area          | Local Repo | git log | Remote Repo |
+|---------------+------------------+------------------------+------------+---------+-------------|
+| soft          | Prescent         | moved to Stagging Area | Removed    | Removed | Prescent    |
+| mixed         | Moved to Workdir | Removed                | Removed    | Removed | Prescent    |
+| hard          | Removed          | Removed                | Removed    | Removed | Prescent    |
+|---------------+------------------+------------------------+------------+---------+-------------|
 
-git reset : is used go backworkd for local to staging 
+*** TODO revert (Need to check if revert altering history of commits)
+Both the git revert and git reset commands undo previous commits. But if you've already pushed your commit to a remote repository, it is recommended that you do not use git reset since it rewrites the history of commits. This can make working on a repository with other developers and maintaining a consistent history of commits very difficult.
 
-reset : local repo to  stageing  to working copy
-- reset are   3 types
-  - git reset --soft  # keep all changes in stagging area
-  - git reset --mixed # keep all changes in working area(default)
-  - git reset --hard  # removes all changes and remove files in  working area 
+Instead, it is better to use git revert, which undoes the changes made by a previous commit by creating an entirely new commit, all without altering the history of commits.
 
-
-
-In the simplest terms:
-
-    --soft: uncommit changes, changes are left staged (index/stagging area).
-    --mixed (default): uncommit + unstage changes, changes are left in working tree.
-    --hard: uncommit + unstage + delete changes, nothing left.
-
-*** revert
-# delete file in local and remote repo
-
-# To remove file for remote to  
-git revert commitid 
-git commit - m "remove from remote"
 
 #+BEGIN_SRC sh
-git log
-got log --oneline
+  # delete file in local and remote repo
 
-#commit id : 1
-#commit id : 2
-#commit id : 3
-#commit id : 4
-#commit id : 5
-git reset --soft 2 # keep the commit after 2 (3,4,5) 
-#commit id : 3
-#commit id : 4
-#commit id : 5
+  # To remove file for remote to  
+  git revert <commitid> 
+  git commit - m "remove from remote"
 
+  got log --oneline
 
-git reset --hard 77592f3  # 
-git reset --soft 77592f3  # local repo to stagging 
-git reset --mixed 77592f3 #  local repo to work - dir
-
-git log --oneline
-# beef857 Revert "created test3 file"
-# 77592f3 created test3 file
-# 1c08f78 created test2 file
-# 78b777d created test1 file
-# a7968c1 Created hh
-# 4b30445 Created bb
-# 2e435ca Created gg file to intall git
-
-git revert 1c08f78
-git push origin master 
-
-# 
+  #commit id : 1
+  #commit id : 2
+  #commit id : 3
+  #commit id : 4
+  #commit id : 5
+  git reset --soft 2 # keep the commit after 2 (3,4,5) 
+  #commit id : 3
+  #commit id : 4
+  #commit id : 5
 
 
+  git reset --hard 77592f3  # 
+  git reset --soft 77592f3  # local repo to stagging 
+  git reset --mixed 77592f3 #  local repo to work - dir
 
+  git log --oneline
+  # beef857 Revert "created test3 file"
+  # 77592f3 created test3 file
+  # 1c08f78 created test2 file
+  # 78b777d created test1 file
+  # a7968c1 Created hh
+  # 4b30445 Created bb
+  # 2e435ca Created gg file to intall git
+
+  git revert 1c08f78
+  git push origin master
 #+END_SRC
-** Git branching for devops
+** Git branching Modeling
+ If your team is doing continuous delivery then it is suggested to follow Git branch model. Here is a simple version of it
 https://nvie.com/posts/a-successful-git-branching-model/
 
-the main branches in git are
-- master
-- develop
-- Supporting branches
-  - feature (branch from developer and merges in developer branch)
-  - release branch 
-  - hotfix
-Supporting branches :
- paralle development team members
- ease tracking of features
- prepare for production release
+At the core, the development model is greatly inspired by existing models out there. The central repo holds two main branches(master(origin) , developer)
+with an *infinite lifetime*:
+- master :
+  We consider origin/master to be the main branch 
+- develop:
+  When the source code in the develop branch reaches a stable point and is ready to be released, all of the changes should be merged back into master somehow and then tagged with a release number.
 
-** merge vs rebase vs cherrypick 
-For merge : new <commit id>  will be create and add <branch> <commit id > to which branch it is prescent
-For rebase : it chaganes history(log file) or add history
-For cherry-pick add particular <commit -id>
+  Therefore, each time when changes are merged back into master, this is a new production release by definition. We tend to be very strict at this, so that theoretically, we could use a Git hook script to automatically build and roll-out our software to our production servers everytime there was a commit on master
+
+  Any feature branch from develop Must merge back into develop. feature branches are limited time branch which will eventually merged back to develop branch
+   
+- Supporting branches:
+  Development model uses a variety of supporting branches to aid
+  - parallel development between team members,
+  - ease tracking of features,
+  - prepare for production releases and to
+  - assist in quickly (bug)fixing live production problems.
+    
+  Unlike the main branches, these branches always have a *limited life time*, since they will be removed eventually.
+
+The different types of branches we may use are:
+  - feature
+    Any feature branch from develop Must merge back into develop. feature branches are limited time branch which will eventually merged back to develop branch 
+
+    naming convention:anything except master, develop, release-*, or hotfix-*
+     
+    Feature branches (topic branches) are used to develop new features for the upcoming or a distant future release.
+    When starting development of a feature, the target release in which this feature will be incorporated may well be unknown at that point. The essence of a feature branch is that it exists as long as the feature is in development, but will eventually be merged back into develop (to definitely add the new feature to the upcoming release) or discarded (in case of a disappointing experiment).
+    
+  - release branch
+    Any Release branches from develop and Must merge back into develop and master. naming convention(release-*)
+    - Release branches support preparation of a new production release.
+    - Allow for minor bug fixes and
+    - preparing meta-data for a release (version number, build dates, etc.).
+      
+    By doing all of this work on a release branch, the develop branch is cleared to receive features for the next big release.
+
+    The key moment off a new release branch when
+    - atleast all features that are targeted for the release-to-be-built must be merged in to develop at this point in time.
+    - All features targeted at future releases may not—they must wait until after the release branch is branched off.
+      
+  - hotfix(BUG-fix)
+    Any hotfix branch from master Must merge back into develop and master
+    naming convention:hotfix-* 
+
+    They arise from the necessity to
+     - act immediately upon an undesired state of a live production version.
+     - When a critical bug in a production version must be resolved immediately, a hotfix branch may be branched off from the corresponding tag on the master branch that marks the production version.
+
+     The essence is that team members (on the develop branch) can continue, while another person is preparing a quick production fix.
+     
+** TODO merge vs rebase vs cherrypick
+git merge :
+- Is a non-destructive operations
+- Existing branes are not change in any way
+- Create new <commit-id> in original(main) branch
+- Normal merge changes history and squash merge will not change history all original but new commit-id is created .
+
+git rebase:
+- Moves the entire 2nd branch to main branch
+- Re-writes the project history
+- We get much cleaner and linear project
+    
+git cherry-pick:
+- Add specific <commit -id>  to 1st branch 
+- For cherry-pick add particular <commit -id>
 #+BEGIN_SRC sh
 git checkout master
 touch aaa
@@ -583,8 +567,7 @@ git add aaa
 git commit -m "created aaa file in master"
 
 git checkhout -b "release-1.0"
-git rebase master 
-
+git rebase master
 #+END_SRC
 
 *** cheery pik
@@ -668,12 +651,6 @@ vi ww
 *** Different type of vcs
 - cenrtal vcs 
 - distributed vs : github or bitbucket
-
-** stash
-
-* Github
-version control 
-sharing code
 * maven
 - maven 
       - *java base build tool* whihc create *artifacts* (jar,war,ear)

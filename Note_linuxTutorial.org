@@ -4,8 +4,8 @@ Linux Tutorial
 ** Linux File System
 #+BEGIN_SRC 
 (/): Directory
-├── bin           #  
-├── boot          # boot prg are present 
+├── bin           # binary like ls,cat........ 
+├── boot          # boot loader and grub boot prg are present 
 ├── cdrom
 ├── core
 ├── dev           # devices: in linux: Has file system  "EVERY THING IS A FILE "
@@ -15,22 +15,20 @@ Linux Tutorial
 |
 ├── home          # (like c: drive os-users) cd ~ or cd <Enter>   
 |
-├── initrd.img
-├── initrd.img.old
 |
-├── lib           # libray which are used to perform varies function
-├── lib32
+├── lib           # libray which are used to perform varies function 
+├── lib32         # required by bin and sbin files 
 ├── lib64
 |
 ├── lost+found
 |
-├── media         # mount and media 
-├── mnt
+├── media         # media (external hard disk  ) fixed os manges
+├── mnt           # mount (usb,mobile,,,,,) removalble  
 |
 ├── opt           # optional folder:  user space for exectue or store
 ├── proc          # sudo file : information of sys process and resources
 ├── root
-├── run           # temp fs : Used for process which is boot early
+├── run           # temp flies(ram) : Used for process which is boot early
 ├── sbin          # sys binary and standard users are not acess
 ├── snap          # snap packages are stored
 ├── srv           # service directory: If you run servers  the file are stored  

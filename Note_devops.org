@@ -164,7 +164,7 @@ What is different btw normal user and root user
 Visit : vim tutorial
 * git
 ** What is git
-- git is free and opensouce VCS (Version Control System) created by linux torvaldss in 2015. Version Control System  mean which is used to track all change in project
+- git is free and opensouce VCS (Version Control System) created by linux torvaldss in 2005. Version Control System  mean which is used to track all change in project
 - Using git
   -  No data is lost and undo previous data using his
   -  all users can access and share the project
@@ -174,57 +174,44 @@ Visit : vim tutorial
 *** TODO Q) git Vs SVN (Subversion)
 SVN is centralised VCS , Git is distributed VCS
 SVN is still used because of its performance with large files won't be satisfied with Git.
-
-
-
-There are Three Stages
-
 ** short tutorial
 - Creating a version control of local repository
   - We need to Create a version contol file (=.git=) it create by =git init=
     
 #+BEGIN_SRC sh
-    git init                                  # Inicialize or Create a version control 
-    git status                                # View the Stagging Area
-    git add <file>                            # Add files to stagging Area
-    git add -A
-    git rim --cached <file>                   # Remove files in Stagging Area
-    touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
-    git commit -m "fist commit"               # Save-Commit  to Local Repo
-    git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
-    git push origin master                    # Upload Local Repo to Remote Repo
-    git pull                                  # Update Local Repo
-    git clone https://github.com/..git        # clone to current dir   # Clone
-    git diff  <commit id> <commit id>         # diff : View changes in fiels
+     git init                                  # Inicialize or Create a version control 
+     git status                                # View the Stagging Area
+     git add <file>                            # Add files to stagging Area
+     git add -A
+     git rim --cached <file>                   # Remove files in Stagging Area
+     touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
+     git commit -m "fist commit"               # Save-Commit  to Local Repo
+     git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
+     git push origin master                    # Upload Local Repo to Remote Repo
+     git pull                                  # Update Local Repo
+     git clone https://github.com/..git        # clone to current dir   # Clone
+     git diff  <commit id> <commit id>         # diff : View changes in fiels
 
-    ## Creat Branch ,push, delete:
-    git branch <branch-name>                  # create a new branch
-    git branch UncleDaveEmacs       # Create a branch
-    git branch                      # list of branch
-    git branch --list               # list of branch
-    git checkout UncleDaveEmacs     # Switch one branch to other
-    git chechout -b <branchname>    # to create and moveing to the <branch-name>
-    git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
-    git branch -D UncleDaveEmacs  # delete a branch
-    git push orign <branch-name>     # push branch to remote repo
-    git branch -D devop     # git delete a branch in local repository
-    git push origin --delete <branch name>     # delete branch at remote repositort
-    git push origin --delete UncleDaveEmacs # delete a branch in remote repository
+     ## Creat Branch ,push, delete:
+     git branch <branch-name>       # create a new branch
+     git chechout -b <branchname>    # to create and moveing to the   
+     git branch                      # list of branch
+     git branch --list               # list of branch
+     git checkout UncleDaveEmacs     # Switch one branch to other
+     git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
+     git branch -D UncleDaveEmacs  # delete a branch
+     git push orign <branch-name>     # push branch to remote repo
+     git branch -D devop     # git delete a branch in local repository
+     git push origin --delete <branch name>     # delete branch at remote repositort
+     git push origin --delete UncleDaveEmacs # delete a branch in remote repository
 
-    # Merge
-    git chekout master # to go to destination (master)
-    git merge <branch-name>     # merge brach to master git
-
-  # rebase
-
-
+     # Merge
+     git chekout master # to go to destination (master)
+     git merge <branch-name>     # merge brach to master git
 #+END_SRC
-** TODO Q) fork and clone
 ** Installation and Configuration Cmd
 #+BEGIN_SRC  sh
-  # version
-  git --version
-  # >> git version 2.3.2
+  git --version   # >> git version 2.3.2
 
   # Configuration 
   git config --global user.name "Dankarthik25"
@@ -314,7 +301,34 @@ git push origin master
 #+BEGIN_SRC sh
 git pull
 #+END_SRC
-*** Creating a Branch (git branch <branch-name>)
+** Clonning a repository
+#+BEGIN_SRC sh
+git clone <url> <path- which dir>
+git clone ../remote_repo.git .
+git clone <url> .                        # . means current direcory
+#+END_SRC
+
+** Q)Pull vs fetch
+- In the simplest terms, git pull does a git fetch followed by a git merge.
+- git fetch
+  - Update your remote-tracking branches under refs/remotes/<remote>/.
+  - No change in local repo/branch,Staging Area, Working Dir.
+- git pull
+  - Update your remote-tracking branches under refs/remotes/<remote>/.
+  - Change local branch and Working Dir
+    - Note: All the Untracked data will be lost in Working Dir
+    - Note: merge only current branch wich it is pulled
+      
+#+BEGIN_SRC sh
+# fetch hold data(fetch data from remote  repository to local repository)  r  but not merges with current reposiotory
+git fetch
+git merge # it merges local repository to current repository 
+
+# pull
+git pull origin <branch-name> # git fetch and git merge
+#+END_SRC
+
+** Creating a Branch (git branch <branch-name>)
 source : https://nvie.com/posts/a-successful-git-branching-model/ 
 #+BEGIN_SRC sh
     ## Creat Branch ,push, delete:
@@ -331,30 +345,11 @@ source : https://nvie.com/posts/a-successful-git-branching-model/
     git push origin --delete <branch name>     # delete branch at remote repositort
     git push origin --delete UncleDaveEmacs # delete a branch in remote repository
 #+END_SRC
-*** merge
-#+BEGIN_SRC sh
-git checkout master # to git <branch-name>
-git merge devop # git merge <other-branch-name>
-
-##  Example 
-
-# create nn file in "devop"  branch
-git checkout devop
-touch nn
-git add .
-git commit -m "created nn file"
-git push  origin devop
-
-# merge "devop" branch to  "master branch"
-git chekchout master
-
-#+END_SRC
-*** log
+** log
 Consist of < commit id, Author, Date, Comment on commit > 
  mode on your branch
 #+BEGIN_SRC sh 
 git log  # give <git id,author, date, commit message>
-
 git log --online # give short version only < commit id, comment- message >
 
 #commit 874357761ce77a9a925c1066d9cef6e81a5881a5
@@ -386,7 +381,7 @@ git log --oneline
 # 370fca2 my Notes on Prog
 
 #+END_SRC
-*** revert :
+** revert :
 when code is pushed to remote but you want changes back from remote > local 
 #+BEGIN_SRC sh
 git log --oneline # to get the commit id
@@ -398,33 +393,6 @@ git revert 77592f3   # to change code frome to remote to local repo
 git push origin master
 
 
-#+END_SRC
-
-*** Clonning a repository
-#+BEGIN_SRC sh
-git clone <url> <path- which dir>
-git clone ../remote_repo.git .
-git clone <url> .                        # . means current direcory
-#+END_SRC
-
-** TODO Q)Pull vs fetch
-- In the simplest terms, git pull does a git fetch followed by a git merge.
-- git fetch
-  - Update your remote-tracking branches under refs/remotes/<remote>/.
-  - No change in local repo/branch,Staging Area, Working Dir.
-- git pull
-  - Update your remote-tracking branches under refs/remotes/<remote>/.
-  - Change local branch and Working Dir
-    - Note: All the Untracked data will be lost in Working Dir
-    - Note: merge only current branch wich it is pulled
-      
-#+BEGIN_SRC sh
-# fetch hold data(fetch data from remote  repository to local repository)  r  but not merges with current reposiotory
-git fetch
-git merge # it merges local repository to current repository 
-
-# pull
-git pull origin <branch-name> # git fetch and git merge
 #+END_SRC
 
 ** reset vs revert
@@ -545,6 +513,24 @@ The different types of branches we may use are:
 
      The essence is that team members (on the develop branch) can continue, while another person is preparing a quick production fix.
      
+** merge
+#+BEGIN_SRC sh
+git checkout master # to git <branch-name>
+git merge devop # git merge <other-branch-name>
+
+##  Example 
+
+# create nn file in "devop"  branch
+git checkout devop
+touch nn
+git add .
+git commit -m "created nn file"
+git push  origin devop
+
+# merge "devop" branch to  "master branch"
+git chekchout master
+
+#+END_SRC
 ** TODO merge vs rebase vs cherrypick
 git merge :
 - Is a non-destructive operations
@@ -649,54 +635,42 @@ vi ww
 - can not lose data -delete -revert
 - all users can access and send data
 *** Different type of vcs
-- cenrtal vcs 
+- cenrtal vcs svn
 - distributed vs : github or bitbucket
+** TODO Q) fork and clone
 * maven
-- maven 
-      - *java base build tool* whihc create *artifacts* (jar,war,ear)
+** What is maven 
+      - *java base build tool* whihc create *artifacts* (jar, war, ear)
+         - jar java archive,
+         - war web archive ,
+         - ear enterprise archive     
       - is a *project management  tool* based on concept of Project Object model(POm) which can  manage 
           - project build
           - reporting and 
           - documentation for central piece of information
-  
-      - is a java based build tool, use to create artifacts like jar, war,ear
-All build system are essentailly same:
- - Compile Source Code 
- - Copy Resources 
- - Compile and Run Tests
- - Package Project
- - Deploy Project
- - Cleanup
-
-Developers using maven wanted 
+** TODO Difference btw jar war ear
+** Why developers use maven ?
+Developers using maven because it provide
   - a standard way to build  the project
   - a clear defination of what  the project consisted of 
   -  an easy way to publish project infor and a 
   - way to share/deploy JAR across serveral  projects
   
-- What is POm.xml
-  - Contains information about project and configuration details used by maven to build project
- 
-Pom consits of 
+** maven repository
+- Maven has three repos
+  - Local Repo (dir by name .m2 )
+  - Central Repo (Internet)
+  - Remote Repo (In general for  custome repository  jfrog artifactory is used)
+** Why we need maven repo ?
+When we run =mvn archetype:generate= it serach for all dependencies in local,central,remote repo and then move them to local repo for next execution
+** What is POm.xml
+- Contains information about dependencies,project and configuration details used by maven to build project 
+- Pom consits of 
   - Description
   - Name and Version, Artifact Type, Source Code Location, Dependencies
   - Plugins
   - Profiles
 
-
-Build server: 
-Build server job is take the code from git and build artifact
-(war web archive, 
- jar java archive, 
- ear enterprise ) 
-
-Requirement: java  is required  since maven is java complied
-
-
-#+BEGIN_SRC sh
-mvn archetype:generate # Need 3 input : group Id, version, artifact Id
-#+END_SRC
-  
 ** Install of maven
 *** extract maven
 #+BEGIN_SRC sh
@@ -731,21 +705,12 @@ source /etc/profile.d/maven.sh
 mvn -version
 #+END_SRC
 
-** TODO A Build Lifecycle is Made Up of Phases
-
-Each of these build lifecycles is defined by a different list of build phases, wherein a build phase represents a stage in the lifecycle.
-
-For example, the default lifecycle comprises of the following phases (for a complete list of the lifecycle phases, refer to the Lifecycle Reference):
-
-- validate   : all necessary information is available and validate the project is correct.
-- compile    : compile the source.
-- test       : test the compiled source using  unit testing framework. 
-- package    : take the compiled code and package it in its distributable format, such as a JAR,war
-- intergration test :
-- verify     : run any checks on results of integration tests to ensure quality criteria are met
-- install    : install the package into the local repository, for use as a dependency in other projects locally
-- deploy     : copies the final package to the remote repository for sharing with other developers and projects.
-
+** Build server: 
+Build server job is take the code from git and build artifact (jar,war, ear )
+#+BEGIN_SRC sh
+mvn archetype:generate # Need 3 input : group Id, version, artifact Id
+#+END_SRC
+  
 ** Create maven project
 #+BEGIN_SRC sh
 cd /Workspace/Devops # Directory for maven project here pom.xml file
@@ -779,40 +744,38 @@ maven deploy
 
 #+END_SRC
 
-Q)Who create src file and pom.xml file ?
-maven create src dir and pom.xml 
-maven is a project management tool and we need 3 argument: group Id, Artifact Id, Version
 
-Q)For running maven cmd (compile,package,install,deploy)  why it should present in the same directory where pom.xml is present
-
-** TODO maven life cycle [Need to visit : javatpoint.com maven-life-cycle: 8items=> validate,test,clean  ]
-clean   : 
-compile : want to compile
-package : want to create a package
-install : copy to local repos (.m2)   # create a .war file
-deploy  : deploy to (remote repo)
-
+** Maven Lifecycle and 8  Phases
+In general maven lifecycle has 8 phases: [Need to visit : javatpoint.com maven-life-cycle: 8items=> validate,test,clean  ]
+- validate          : all necessary information is available and validate the project is correct.
+- compile           : compile the source.
+- test              : test the compiled source using  unit testing framework. 
+- package           : take the compiled code and package it in its distributable format, such as a JAR,war
+- intergration test :
+- verify            : run any checks on results of integration tests to ensure quality criteria are met
+- install           : install the package into the local repository, for use as a dependency in other projects locally
+- deploy            : copies the final package to the remote repository for sharing with other developers and projects.
 #+BEGIN_SRC sh
 # hello.java 
 mvn clean # clean of 
-mvn complie     
+mvn complie  #  To compile     
 mvn test-compile
-mvn test
-mvn package
-mvn install 
-mvn deploy 
+mvn test 
+mvn package   # To create a package
+mvn install   # Copy Package to local repos (.m2) with dependency  # create a .war file
+mvn deploy    # deploy to (remote repo)
 
 
 hello.class -compile -mvn compile #
 # TO create a package 
-mvn package
+mvn package  
 #+END_SRC
 
 *** Step in how to build artifact in organisation
 
 - Step 1: OPS : Create git repo and send to all dev
 - Step 2: DEV : clone the repo
-- Step 3: DEV : push code into github (contain src and pom.xml in github)
+- Step 3: DEV : create (src, pom.xml) and  push code into github 
 - Step 4: OPS : clone the repo
 - Step 5: OPS : Build artifacts (war file: mvn package)
 - Step 6: OPS : push(scp) war file  to dev,sit,preproduct, prod servers
@@ -821,10 +784,7 @@ mvn package
 - Developers will create maven file and in src file they will uploade developer code and push code to github
 - OR
 - Developerss will 1st create a maven project and then it will write the code then they will version control (git) and upload them th remote repository (github)
-
-
 *Note* :For Continous Testing & Deployment:  We need to deploy the artifacts to different envirnoment (development, sit (System Integration and Testing),uat (User Acceptance Testing),prod)
-
 #+END_QUOTE
 
 #+BEGIN_SRC sh
@@ -874,56 +834,39 @@ then
 fi
 
 #+END_SRC
-** maven repository
-
-# maven has three repose
-# 1.Local Repo (dir by name .m2 )
-# 2.Central Repo (Internet)
-# 3.Remote Repo
-
-# Why we need repo ? we run 
-# mvn archetype:generate >>> it search for all dependency in local then central,last remote repo
-
-# Remote repo is custome repo like personal details (salary, bank  balance,how much loan taken ....etc)
-# remote repo consist of custome (war,jar) file we store in remote repo
-
 ** Question and Answer
-Q)why we use build tool 
-Ex) To build artifacts(jar,ear,war)(java artive,web archive, enterpashilp archive)
-
-Q) Why it is called maven life cycle ?
-Ex if we need to run install : we need to go step by step like compile, package, install
-
-Q) What is difference between Snapshot and Version ?
-Snapshot : For every realased snapshot is increased or updated.
-But version is different it not updated or increased for every deployment but for final-deployment Version is updated.
-
-
-Q) What is actually pom.xml  file
-- Consist of 
-   group Id, 
-   artifact Id, 
-   version
-   dependency-links
-- Link to remote repository 
-
-Q) What is maven archtype:generate ?
-It is a maven plugin use to generate src and pom.xml file
-
-
-Q) how to ignore test cases in maven ?
-mvn install -DskipTests
-
-Q) how to create multi module project 
-parent pom - superpom
-       child pom
+- Q)Who create src file and pom.xml file ?
+  - =mvn archetype:generate -DgroupId=world -DartifactId=india -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false= create src dir and pom.xml
+  - maven is a project management tool and we need 3 argument: group Id, Artifact Id, Version
+- Q) What is actually pom.xml  file
+  - Consist of 
+    - group Id, 
+    - artifact Id, 
+    - version
+    - dependency-links
+    - Link to remote repository 
+- Q)For running maven cmd (compile,package,install,deploy)  why it should present in the same directory where pom.xml is present
+- Q)why we use build tool 
+  - Ex) To build artifacts(jar,ear,war)(java artive,web archive, enterpashilp archive)
+- Q) Why it is called maven life cycle ?
+  - Ex if we need to run install : we need to go step by step like compile, package, install
+- Q) What is difference between Snapshot and Version ?
+  - Snapshot : For every realased snapshot is increased or updated.
+  - But version is different it not updated or increased for every deployment but for final-deployment Version is updated.
+- Q) What is =maven archtype:generate= ?
+  - It is a maven plugin use to generate src and pom.xml file
+- Q) how to ignore test cases in maven ?
+  - mvn install -DskipTests
+** Q) how to create multi module project 
+  - parent pom - superpom
+  -     child pom
 
 
 parent pom.xml file
-sbi/pom.xml
-├── India/pom.xml
-├── AP/pom.xml
-└── Hyderabad/pom.xml
+sbi/pom.xml           # super pom
+├── India/pom.xml     # child pom
+├── AP/pom.xml        # child pom 
+└── Hyderabad/pom.xml # child pom
 
 #+BEGIN_SRC xml
 <packaging>pom </packaging>
@@ -935,7 +878,7 @@ sbi/pom.xml
 
 #+END_SRC
 
-Q)how to use profiles
+** Q)how to use profiles
 A) to set of configuration file
 profile
 dev/application

@@ -1,4 +1,5 @@
 * Introduction
+
  Getting Requirements
  Image Basics
  Docker Newtorking
@@ -8,9 +9,21 @@
  Docker Swarm
  Kubernetes
  Swarm Vs K8s
+** Intro
+Onframe : We have own serves (eg: bsnl or own data center)
+- High maintainacne:Provide  servers,hard-disk, electricity,ac,network, system-operators(administrator):Create OS,VM for 24*7
+- Slow Process : If we want one server:assign disk space,dependencecy drives, create users, connect network if will take 3-4 days
+- Dynamic Start servers based on online-users increase or decrease is not possilbe
 
+Why docker
+Simple
 
 ** Container Basics
+*** Containers Vs Mini-VM
+- They are process with local host kernel
+- Limited to what resources they can access
+- Exit when process stops
+    
 *** Difference btw images vs containers
 Image : binary, lib, src  that make a application 
 Container: is an instance of image running process

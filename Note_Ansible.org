@@ -1,12 +1,15 @@
 ** Why Ansible:
-Provisioning
-Configuration management
-Continous Delivery
-Application Deployment
-Security Compliance
-Simple
-Powerful
-Agentless
+For Sys Administator usually do lot of repetative task
+- Provisioning  : Sizing or Creating new host or VM 
+- Configuration management : Fine Configuration 
+- Continous Delivery       :
+- Application Deployment   : Deploy build files(jar,war,ear) to sit,uat,preroduction,
+- Security Compliance :
+
+Ansible provies
+- Simple
+- Powerful
+- Agentless
 
 ** SSH-Key connection between master and all slave 
 *** Prerequirement-I : Create a common user with root privillage and ssh-key base authentication

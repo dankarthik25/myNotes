@@ -647,10 +647,14 @@ vi ww
 ** TODO Q) fork and clone
 * maven
 ** What is maven 
-      - *java base build tool* whihc create *artifacts* (jar, war, ear)
+      - Maven is a *java base build tool* which help developers to build (Projects) or  create *artifacts* (jar, war, ear)
          - jar java archive,
          - war web archive ,
-         - ear enterprise archive     
+         - ear enterprise archive
+      - A built tool is used to automate everything related to building the software project.
+      - Why Maven ?
+        -  Maven comes with POM, most of prj has to use 3rd patry library which also updates with time for this we need our team to share  dependencecy  info(documentation) and all developer need to maually config Prj with this dependencies. But with POM all the dependencecy automate so developers need not spend time conf and documenting 3rd parties or dependencecy.
+                    
       - is a *project management  tool* based on concept of Project Object model(POm) which can  manage 
           - project build
           - reporting and 
@@ -682,7 +686,7 @@ When we run =mvn archetype:generate= it serach for all dependencies in local,cen
 *** extract maven
 #+BEGIN_SRC sh
 # Download maven in /temp using wget
-wget https://www-us.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz -P /tmp
+wget wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -P /tmp
 # extract the archive to /opt directory
 sudo tar xf /tmp/apache-maven-*.tar.gz -C /opt
 #  more control over maven version and update we will create a symbolic link<maven> that will point to maven installation directory
@@ -937,49 +941,51 @@ Deployment Process
 ** installation
 https://www.youtube.com/watch?v=Feui5F42bII
 #+BEGIN_SRC sh
-# cd Workspace/Devops/tomcat # directory where tomcat is install 
-# get link for tomcat 9 tar file
-wget https://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.31/bin/apache-tomcat-9.0.31.tar.gz
+  # cd Workspace/Devops/tomcat # directory where tomcat is install 
+  # get link for tomcat 9 tar file
+  wget https://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.31/bin/apache-tomcat-9.0.31.tar.gz
 
 
-# extract tar file
-tar -xvzf apache-tomcat-9.0.31.tar.gz
+  # extract tar file
+  tar -xvzf apache-tomcat-9.0.31.tar.gz
 
-# install java file # /software/jdk1.8.0_131
-vi ~/.bashrc
+  # install java file # /software/jdk1.8.0_131
+  vi ~/.bashrc
 
-# insert below text
-# JAVA ENVIRONmENT VARIABLES
-export CATALINA_HOME=/Workspace/Devops/tomcat
-# export JAVA_HOME=/Workspace/Devops/tomcat/bin
+  # insert below text
+  # JAVA ENVIRONmENT VARIABLES
+  export CATALINA_HOME=~/Workspace/Devops/tomcat
+  export JAVA_HOME=/usr/lib/jvm/default-java
+  # cd /usr/lib/jvm ;ls -l # choose any one from it  
+  # run bash
+  source ~/.bash_profile
 
-# run bash
-source ~/.bash_profile
+  cd Workspace/Devops/tomcat
+  sh startup.sh
 
-cd Workspace/Devops/tomcat
-sh startup.sh
+  # Run tomcat server
+  sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/startup.sh
 
-# Run tomcat server
-sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/startup.sh
-
-# Stop tomcat server
-sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/shutdown.sh
-
-
-## Create symbolic link 
-#ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/startup.sh /usr/local/bin/tomcatup
-#ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/shutdown.sh /usr/local/bin/tomcatdown
-
-## To start tomcat as root anywhere in shell
-#tomcatup
-## To stop tomcat
-#tomcatdown
+  # Stop tomcat server
+  sh /home/jayradhe/Workspace/Devops/apache-tomcat-9.0.31/bin/shutdown.sh
 
 
-firefox localhost:8080 # By default tomcat server is 8080 
-# We can change server in conf/server.xml - conncetor port
-# After starting if there is some error then check log file
+  ## Create symbolic link 
+  #ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/startup.sh /usr/local/bin/tomcatup
+  #ln -s /opt/tomcat/apache-tomcat-9.0.31/bin/shutdown.sh /usr/local/bin/tomcatdown
+
+  ## To start tomcat as root anywhere in shell
+  #tomcatup
+  ## To stop tomcat
+  #tomcatdown
+
+  sudo ufw allow 9090
+  firefox localhost:9090 # By default tomcat server is 8080 
+  # We can change server in conf/server.xml - conncetor port
+  # After starting if there is some error then check log file
 #+END_SRC
+
+
 ** Change Port Number
 *** Tomcat File system
 #+BEGIN_SRC sh
@@ -1001,6 +1007,19 @@ cat server.xml
                redirectPort="8443" />
 
 #+END_SRC
+** Configure the Tomcat Web Management Interface
+
+Follow the command below to add a login to your Tomcat user and edit the tomcat-users.xml file:
+#+begin_src 
+sudo nano /opt/tomcat/conf/tomcat-users.xml
+#+end_src
+Now, define the user who can access the files and add username and passwords:
+#+begin_src xml
+<role rolename="manager-script"/>
+<role rolename="manager-gui"/>
+<user username="tomcat" password="tomcat" roles="manager-script,manager-gui" />
+#+end_src
+
 ** install using apt-get 
 https://www.youtube.com/watch?v=26ipmonPmRw
 #+BEGIN_SRC sh
@@ -1050,20 +1069,20 @@ fi
   - Create Job to Deploy Artifacts to Tomcat server or(Staging Env).
 *** Configure Jenkins with Tomcat for Auto Deployment of Artifacts.
 #+BEGIN_SRC sh
-cd /opt/tomcat/conf
-# update tomcat-users.xml file
-# roles : manger-script & manger-gui
-# Set password:tomcat
+  cd /opt/tomcat/conf
+  # update tomcat-users.xml file
+  # roles : manger-script & manger-gui
+  # Set password:tomcat
 
-#  <role rolename="manager-script"/>
-#  <role rolename="manager-gui"/>
-#  <user username="tomcat" password="tomcat" roles="manager-script,admin-gui" />
-#</tomcat-users>
+  #  <role rolename="manager-script"/>    # tomcat manage, jenkins
+  #  <role rolename="manager-gui"/>
+  #  <user username="tomcat" password="tomcat" roles="manager-script,admin-gui" />
+  #</tomcat-users>
 
 
-# Restart the tomcat server
-/opt/tomcat/bin/shutdown.sh
-/opt/tomcat/bin/startup.sh
+  # Restart the tomcat server
+  /opt/tomcat/bin/shutdown.sh
+  /opt/tomcat/bin/startup.sh
 
 #+END_SRC
 *** Create Job to Produce Tomcat Deployable Artifacts
@@ -1225,6 +1244,9 @@ vi /etc/default/jenkins
 
 #+END_SRC
 
+** Plugis update, install, advance
+Notee: only java 8 is able to link with jenkins not default-java or java 11....etc
+
 ** DONE [03rd march] Createing 1st job
 Create 1st   
 
@@ -1248,7 +1270,7 @@ Create 1st
 |-------------------+-------------------------------------|
 
 (menu)Jenkins > New Items > FreeStyles >  
-
+#+begin_quote
 - General 
   - Description
   - Discard odl builds : Remove  the old build
@@ -1302,8 +1324,8 @@ Create 1st
 
 Build a job
 Double Click Project > Build Now
-** DONE Plugis update, install, advance
 
+#+end_quote
 ** DONE [07 march]Integrating with gmail
 how to send an email to other ?
  - why should i share user and pwd to other client,middle-men, higher secured so we need to configure  and we send only log file to client,manager...etc

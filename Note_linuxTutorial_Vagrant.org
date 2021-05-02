@@ -231,3 +231,6 @@ passwd # set passwd for  dougstamper
 
 
 #+END_SRC
+
+
+** Install Vagrant 

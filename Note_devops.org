@@ -1247,6 +1247,43 @@ vi /etc/default/jenkins
 ** Plugis update, install, advance
 Notee: only java 8 is able to link with jenkins not default-java or java 11....etc
 
+** Plugis :
+Manage jenkins > manage plugis
+[update,avaiable,installed,customed]
+- Plugins
+  - If there is No execute powershell in build then install 
+    - Manage jenkins > manage plugins > avaiable > search powershell
+      - and install
+  - *Maven Integration* deep integration, Automatic trigger btw prj depending on SNAPSHOTS, automated config of Junit....etc
+         
+** 1st Jobs build periodically
+(menu)Jenkins > New Items > FreeStyles >
+
+- General
+  - Discard odl builds : Remove  the old build
+      - Days to keep builds    :__________
+      - max # of build to keep :__5________
+  - GitHub Project 
+      - give url for source code: ____give github http clone link___https://github.com/dankarthik25/my-app.git _  # Note should consist of pom file
+- Source Code management
+- Build Triggers
+   - Build Periodically 
+#+BEGIN_SRC sh
+# * * * * *  # build for every minite
+#+END_SRC  
+** Job Build Trigger remotely(from scripts, url)
+- Build is done using url or script
+
+htttp:localhost:8008/job/FirstJob/build?token=dkarthik25
+#+begin_quote
+- General
+- Source Code management
+- Build Triggers
+   - Trigger build remotely (eg., from scripts)
+     TOKEN_NAME: dkarthik25
+#+end_quote
+htttp:localhost:8008/job/FirstJob/build?token=dkarthik25
+
 ** DONE [03rd march] Createing 1st job
 Create 1st   
 
@@ -1333,19 +1370,24 @@ how to send an email to other ?
 step1: 
 manage jenkins - 
     configure system - 
-       Extended email notification:
+       Extended email notification: # New version is released need research
           SmTP server                  : smtp.gmail.com
           Default user E-mail suffix   : @gmail.com
           Use SmTP Authentication      : Check-Ok
           Username                     : sanjy@gmail.com
-          passwd                       : 
-
+          passwd                       :
           Use ssl                      : Check-Ok
           SmTP port                    : 456
 
        E-mail Notification:
-          Test Configuration by sending test e-mail : Check-Ok
-          Test e-mail recipient                     : omshiva003@gmail.com
+          SmTP server                  : smtp.gmail.com
+          Default user E-mail suffix   : @gmail.com
+          Use SmTP Authentication      : Check-Ok
+          Username                     : sanjy@gmail.com
+          passwd                       :
+          Use ssl                      : Check-Ok
+          SmTP port                    : 456
+          Test configuration by sending test e-mail: Check-ok
 
 step2: go to google account -> security-> on less security 
 test:
@@ -1364,14 +1406,63 @@ Build now
 
 #+END_SRC
 ** TODO [09 march]Permissions Add-Users Account (Role Based management) 
-Steps :
-- Install "Role-based Authorization Strategy"  Plugin
-- Enable "Role-based Authorization Strategy"
-- Create Users
-- Install matrix based authentication Plugin
-- Project based Plugin
+Steps 1 :
+- Install Plugins
+  Manage jenkins > manage plugis >avaiable
+   - "Role-based Authorization Strategy",
+   - "matrix based authentication"   default-installed
+   - "Project based Authentication"  default-installed 
+
+  Step 2: Create Users
+- Manage jenkins > Manage Users > Create Users
+  - Username : sanjay
+  - Password :
+  - Confirm password:
+  - Full name :
+  - E-mail address:
+  Create User
+
+*** Enable matrix based Security
+- Step : Enable matrix based Security 
+  - Manage jenkins - 
+    - Configure Global Security -
+      - Matrix-based security : enable
+        - add users {phani,sanjay...etc} to matrix
+          - Note : give all permission to root user
+
+|User/group        |  Over all      |  Credentials                                      |
++------------------+----------------+---------+--------+----------------+--------+------+
+|User/group        |Adminster| Read |  Create | Delete | mangae Domains | Update | View | 
++------------------+---------+------+---------+--------+----------------+--------+------|
+|Authenticated User|         |      |         |        |                |        |      |
++------------------+---------+------+---------+--------+----------------+--------+------|
+|admin             |         |      |         |        |                |        |      |
++------------------+---------+------+---------+--------+----------------+--------+------|
+|sanjay            |  check  |check |         |        |                |        | check|
++------------------+---------+------+---------+--------+----------------+--------+------|
+
+*** Project based
+- Step :
+  - Enable Project based Security :{Manage jenkins>Configure Global Security>Project based security : enable}
+  - Create Project with Project based Security Enable
+    - New item > Name: Phani-Project >  Free Style Based >General :Enable Project based Security
+    - add users {phani,sanjay...etc} to matrix
+      - Note : give all permission to root user
+
+|User/group        |  Over all      |  Credentials                                      |
++------------------+----------------+---------+--------+----------------+--------+------+
+|User/group        |Adminster| Read |  Create | Delete | mangae Domains | Update | View | 
++------------------+---------+------+---------+--------+----------------+--------+------|
+|Authenticated User|         |      |         |        |                |        |      |
++------------------+---------+------+---------+--------+----------------+--------+------|
+|admin             |         |      |         |        |                |        |      |
++------------------+---------+------+---------+--------+----------------+--------+------|
+|sanjay            |  check  |check |         |        |                |        | check|
++------------------+---------+------+---------+--------+----------------+--------+------|
+*** Role based Authentication
+- Step 1 : Enable Role based
 #+BEGIN_SRC sh
-  step 2: Enable Role-based Authorization Strategy
+Enable Role-based Authorization Strategy
 
   Manage jenkins - 
       Configure Global Security - 
@@ -1379,99 +1470,42 @@ Steps :
            Project based authentication: 
            Role-based Authorization Strategy : enable
 
-  Step 3: Create Users
-
-  Manage jenkins -
-        Manage Users 
-               Create Users
-                    Username : sanjay
-                    Password :
-                    Confirm password:
-                    Full name :
-                    E-mail address:
-              
-                Create User
-#+END_SRC
-
- Enable matrix based Security 
-#+BEGIN_SRC sh
-Step : Enable matrix based Security 
-  Manage jenkins - 
-      Configure Global Security -
-           Matrix-based security : enable
-                        |User/group        |  Over all      |  Credentials                                      |
-                        +------------------+----------------+---------+--------+----------------+--------+------+
-                        |User/group        |Adminster| Read |  Create | Delete | mangae Domains | Update | View | 
-                        +------------------+---------+------+---------+--------+----------------+--------+------|
-                        |Authenticated User|         |      |         |        |                |        |      |
-                        +------------------+---------+------+---------+--------+----------------+--------+------|
-                        |admin             |         |      |         |        |                |        |      |
-                        +------------------+---------+------+---------+--------+----------------+--------+------|
-                        |sanjay            |  check  |check |         |        |                |        | check|
-                        +------------------+---------+------+---------+--------+----------------+--------+------|
-
-                      Add user or group....
-   
-           Project-based Matrix Authorization Strategy : enable/disable
-
 
 #+END_SRC
-Project based
-#+BEGIN_SRC sh
-Step : Enable Project based Security 
-  Manage jenkins - 
-      Configure Global Security -
-           Project based security : enable
 
-New item > Name: Phani-Project >  Free Style Based
+- Step 2: Create and Assign Role
+  - Step 3: Create Role :
+    - Manage Jenkins >manage and assign roles >manage roles :
+      -create roles like manager (create,delete,build,developer(read,create),tester (read) )
 
-                General :
-                       Enable Project based Security :
-                        
-                      Add user or group: sanjay, phani
-#+END_SRC
-
-Role Based 
-#+BEGIN_QUOTE
-  Manage jenkins - 
-      Configure Global Security -
-           Role Based  : enable
-
-manage Jenkins 
-      manage and assign roles
-             manage roles :
-                             create roles like manager (create,delete,build,
-                                             , developer(read)
-                                               testsers(read,write)
-
-
-             assign roles :
-                        |   User\role  | admin | manager | dev | test|
-                        |   admin      |  Ok   |   X     |  X  |  X  |
-                        |   phani      |  Ok   |   X     |  X  |  X  | 
-                        |   sanjay     |  Ok   |   X     |  X  |  X  | 
-
-             role strategy macros:
-
-#+END_QUOTE
-
-| manage role | dev     |
-|-------------+---------|
-| full        | R       |
-| sanjay      | phani   |
-| venkat      | sathish |
-|             |         |
-
-
+|Role              |  Over all      |  Credentials                                      |
++------------------+----------------+---------+--------+----------------+--------+------+
+|User/group        |Adminster| Read |  Create | Delete | mangae Domains | Update | View | 
++------------------+---------+------+---------+--------+----------------+--------+------|
+|Authenticated User|         |      |         |        |                |        |      |
++------------------+---------+------+---------+--------+----------------+--------+------|
+|admin             |         |      |         |        |                |        |      |
++------------------+---------+------+---------+--------+----------------+--------+------|
+|dev               |         |check |Create   |        |                |check   | check|
++------------------+---------+------+---------+--------+----------------+--------+------|
+|test              |         |check |         |        |                |        | check|
++------------------+---------+------+---------+--------+----------------+--------+------|
+      - Assign Role:
+        - Manage Jenkins >manage and assign roles >assign roles :
+          - add users(sathish,sanjay,venkat,karthik) to roles
+| manage role | admin | dev   | manager | test  |
+|-------------+-------+-------+---------+-------|
+| admin       | check |       |         |       |
+| sathish     | check |       |         |       |
+| sanjay      |       | check |         |       |
+| venkat      |       |       | check   |       |
+| karthik     |       |       |         | check |
+|-------------+-------+-------+---------+-------|
 *** TODO Difference matrix-based Vs Project based Vs Role Based
-matrix-based :  
-project based: 
-*** TODO LDAP 
-manange role             dev
-full                    R
-sanjay                  phani
-venkat                  sathish
-
+*** TODO LDAP  and Active Directory
+Jenkins new users and there authentication is done in local linux using ldap and active directory 
+**** LDAP
+#+begin_src 
 yum isntall ldap
 
 devopers - 4851,2458,9563,245697,24566,25665,
@@ -1486,62 +1520,56 @@ tester= 4521,324522
 @devopers=r
 @manager=rw
 @tester=r
-*** TODO Active Directory
+#+end_src
+
+**** Active Directory
 Install Active Directory Plugin
-#+BEGIN_SRC sh
-Manage jenkins - 
-      Configure Global Security -
-           Active Directory
+- Manage jenkins - 
+  - Configure Global Security -
+    - Active Directory
+      - Add Domain :
 
-                 Add Domain :
-
-#+END_SRC 
 ** TODO [12 march]Upstream and Downstream
 There are diffrent job and jobs should be executive in order respectively
 - world job
 - india job
 - hyd  job 
 How do we auto-mate three jobs in order respectively
+*** Create Jobs and pipline the jobs
 For World job , {india,hyd} job are downstream and World in upstream
-#+BEGIN_QUOTE
-Create world,india,hyd job 
+- Create world,india,hyd job 
+- Pipeline Job :
+  - Job : india job 
+    -  Build Triggers :
+       - Build after project are build
+         - Projects to watch : _________world________
+           - Trigger only if build is stable
+  - Job : hyd job 
+    -  Build Triggers :
+       - Build after project are build
+         - Projects to watch : _________india________
+           - Trigger only if build is stable
+             
 
-Job : india job 
-     Build Triggers :
-         Build after project are build
-                        Projects to watch : world
 
-                              Trigger only if build is stable
+*** To View Pipeline
+- Step 1: Install "Build Pipline Plugin"
+  - manage jenkins > manage plugins > install Build Pipeline
+- Step 2 : Create a View Pipeline
+   - Create a View{Name:Earth} > Build Pipeline View: Ok
+   - Inside:localhost:8080/view/Earth/configure
+     - Pipeline Flow: 
+       - Select Initial Job: world
+     - Trigger Options
+       - Restrict trigger to most recent successful build : yes
+       - Always allow manual tigger on pipeline steps : yes
+ - Step 3: Save and apply changes          
 
-Job : hyd job 
-     Build Triggers :
-         Build after project are build
-                        Projects to watch : india
-
-                              Trigger only if build is stable
-
-#+END_QUOTE
-
-*** To View Pipeline or Upsteam or Downstream
-#+BEGIN_QUOTE
-manage jenkins
-           manage plugins 
-                   install Build Pipeline
-#+END_QUOTE
-
-View Pipeline
-Create a View > Build Pipeline View > View name : genaric
-                                      Ok
-                                      Pipeline Flow: 
-                                                  Select Initial Job: world
-Restrict trigger to most recent successful build : yes
-Always allow manual tigger on pipeline steps : yes   
-Ok
 
 *** Example
 git [trigger build by change in git-code]
 maven [build the code]
-deploy [copy the build]
+deploy [copy the build to tomcat/webapps]
 archive artifacts
 ** [12-13 march]master -slave :
 https://www.youtube.com/watch?v=8dZKT79DUfk
@@ -1566,10 +1594,10 @@ consider master in Window and slave is aws-ec2-linux(jenkins is not install)
 
 Aim : all master job should be done in slave (/opt/devops)
 
-Step 1 : in slave (get ip address, key)
-Step 2 : install (java, maven,git....etc) in slave
-Step 3 : Create New Node(In Jenkins Node means Salve-server ) and Connect to Node to Jenkins  
-
+Step 1 : Create AWS EC-2 as slave (get ip address, key) and install (java, maven,git) in slave
+Step 2 : Create New Node(In Jenkins Node means Salve-server ) and Connect to Node to Jenkins  
+** Step 1: Create AWS EC-2 as slave and install java,maven,git
+In genreal we use shell scripts to install java,git and maven in slave node but for lecture we are manually isntall app.
 *** INSTALL JAVA
 #+BEGIN_SRC sh
 # #####################################################
@@ -1628,75 +1656,70 @@ source ~/.profile
 mvn -version
 #+END_SRC
 
-*** Create and Connect Node(Slave-servet) to Jenkins(master- server)
-#+BEGIN_QUOTE
-manage Jenkins 
-     mange Node(Slave) 
-        New Node  
-             Node name : _<Slave-Server Name>_
-             Permanaent Agent : enable
-
-
-executors : 1
-remote root directory : _/opt/deploy/_  # dir in slave server
-label            : _orange_
-Launch method    : _Launch agents via SSH_
-   - Host Name   : _18.188.173.210_       
-   - Credentials : _Jenkins_
+** Step 2: Create and Connect Node(Slave-servet) to Jenkins(master- server)
+- Step 1: Create a Slave :
+  - Manage Jenkins > mange Node(Slave) 
+     - New Node  
+       - Node name : _<Slave-Server Name>_
+       - Permanaent Agent : enable
+       - OK
+- Step 2: Configure Slave
+  - executors : 1
+  - remote root directory : _/opt/deploy/_  # dir in slave server
+  - label            : _orange_
+  - Launch method    : _Launch agents via SSH_
+    - Host Name   : _18.188.173.210_ <AWS-Public Id>      
+    - Credentials : _Jenkins_
        - Kind    : _SSH Username with private key_
        - Usernaem: _ec2-user_
        - Private key : enable
        - key : _<copy the key>_
-Host Key Verification Strategy : _Non verification Strategy_
+    - Host Key Verification Strategy : _Non verification Strategy_
+  - Node Progeries :
+    - Toot Locations :
+      - Name : _Java_
+      - Home : _/opt/software/jdk1.8.0_131_
+      - Name : _maven_
+      - Home : _/opt/software/apache-maven-3.6.3/_
+- BUG : if java, maven are not present then
+  - Jenkins > mangae Jenkins > Global Tool Configuratoin > JDK (Add JDK) , maver(Add maven)
+  - manage jenkins > mange nodes
+- Step 3: Launch the Slave
+  - Go to Slave Node and Lanunch the Node
+** Step 3: Run job in Slave Node
+- New Job or Job > Config >
+  - General
+    - Description
+    - Discrad old build
+    - GitHub project
+    -
+    -
+    - Restrict where this project can be run
+      - Lable : __<Give Slave Node Lable>___  
 
 
-Node Progeries :
 
-Toot Locations :
-  - Name : _Java_
-  - Home : _/opt/software/jdk1.8.0_131_
-  - Name : _maven_
-  - Home : _/opt/software/apache-maven-3.6.3/_
 
-BUG : if java, maven are not present then 
-Jenkins > mangae Jenkins > Global Tool Configuratoin > JDK (Add JDK) , maver(Add maven)
-manage jenkins > mange nodes
-#+END_QUOTE
- 
-#+BEGIN_SRC sh
-# install powershell
-#+END_SRC
-
-run as admin
-start jenkins
-** TODO [14 march]Backup and Restoring point  
-#+BEGIN_QUOTE
-manage jenkins
-              manage plugins
-                         install Backup OR ThinBackup
-#+END_QUOTE
-
-*** Creating a backup
-
-#+BEGIN_QUOTE
-manage jenkins
-              manage plugins
-                            Backup manger
-
-Backup config files:
-Backup dirctory : D:/paytm
-Formate : zip/tar
-File name template : backup_@date@.@extension@
-
-Save
-#+END_QUOTE
-*** Restore a backup
-#+BEGIN_QUOTE
-manage jenkins
-           Backup manager
-                           Restore  Hudson config
-
-#+END_QUOTE
+** TODO [14 march]Backup and Restoring point
+- Step 1: Install "Backup or ThinBackup"
+  - manage jenkins > manage plugins > install Backup OR ThinBackup
+- Step 2: Configur  backup
+  - manage jenkins > Backup Manager or (ThinBackup) >
+    - Setup :
+      - Background Configuration:
+        - Backup dirctory : D:/paytm
+        - Formate : zip/tar
+        - File name template : backup_@date@.@extension@
+          
+- Step 3: Create a backup
+  - manage jenkins > Backup Manager or (ThinBackup) >
+    - Backup Hudson Configuration [ENABLE] # IT will CREATE BACKUP
+      
+- Step 4: Restore a backup
+  - manage jenkins > Backup Manager or (ThinBackup) >
+    - Resotre Hudson Configuration
+      - Choose backup_file for backup
+      
 ** install Jenkins  in  tomcat server (using war file)
 
 - Install tomcat using above section on  Tomcat
@@ -1718,39 +1741,36 @@ Ceate a script in path : /opt/softaware/scripts/test.sh
 echo "$1 is a good boy and $2 is a innocent guy"
 #+END_SRC
 *** Choices Parameter
-#+BEGIN_QUOTE
-new item > free style  name: parameterijenkns
+-Step 1: Create a New job:
+ - new item > free style  name: parameterijenkns
+   - Genral
+     - This project is parameterised :
+       - Add Parameters:
+         -      _Choice  Parameter_ : 
+                  -               Name: param
+                  -               Choices : mahesh 
+                  -                         pawan
+   - Build 
+      -  Execute shell
+          - command : sh /opt/softaware/scripts/test.sh $param
 
-Genral
-This project is parameterised :
-          Add Parameters:
-               _Choice  Parameter_ : 
-                                 Name: param
-                                 Choices : mahesh 
-                                           pawan
-  
-Build 
-        Execute shell
-             command : sh /opt/softaware/scripts/test.sh $param
-#+END_QUOTE
 
 *** String Parameter
-#+BEGIN_QUOTE
-Genral
-This project is parameterised :
-               String  Parameter : 
-                                 Name          : param1
-                                 Default Value : mahesh 
+-Step 1: Create a New job:
+ - new item > free style  name: parameterijenkns
+   - Genral
+     - This project is parameterised :
+              -  String  Parameter : 
+                 -                 Name          : param1
+                 -                 Default Value : mahesh 
                                            
-               String  Parameter : 
-                                 Name          : param2
-                                 Default Value : pawan 
-  
-Build 
-        Execute shell
-             command : sh /opt/softaware/scripts/test.sh $param1 @param2
+             -  String  Parameter : 
+                -                  Name          : param2
+                -                  Default Value : pawan 
+   - Build 
+     -   Execute shell
+         -    command : sh /opt/softaware/scripts/test.sh $param1 @param2
 
-#+END_QUOTE
 * TODO Ansible :
 *** [20 march] SSH-Key connection between master and all slave 
 **** Prerequirement-I : Create a common user with root privillage and ssh-key base authentication
@@ -3300,20 +3320,16 @@ RUN java -jar jenkins.war
 
 #+END_SRC
 * [7th April] Docker File [Cmd And Entripoint]
-Difference
-- Examin
-- Override
-- default
-
+- Difference
+ - Examin
+ - Override
+ - default
 - Cmd 
- -1   To execute a msg while running inside container
-      CmD 'echo hai'
-       or
-      CMD ["ECHO" "Hai"]
-
-      Ex:
-      RUN mkdir /opt/satish
-      CmD 'echo floder created'
+ - 1
+   - To execute a msg while running inside container
+     -  CmD 'echo hai' or CMD ["ECHO" "Hai"]
+     -  Ex: RUN mkdir /opt/satish
+     -      CmD 'echo floder created'
  -2 cmd can be OVERRIDE while entrpoint can't be override but appended
  -3 passs ${1} parameter to shell scripts inside docker-file 
 
@@ -3477,7 +3493,8 @@ docker ps -a    #by default the command is bash
 * [8th April] Link N Docker-Compose
 
 ** Link
-Link  : two or more contianers
+Link  : two or more contianers link or communicate each other
+
 
 #+BEGIN_SRC sh
 # To delete used image 

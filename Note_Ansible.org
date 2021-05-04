@@ -1,3 +1,4 @@
+* Ansible
 ** Why Ansible:
 For Sys Administator usually do lot of repetative task
 - Provisioning  : Sizing or Creating new host or VM 
@@ -5,11 +6,14 @@ For Sys Administator usually do lot of repetative task
 - Continous Delivery       :
 - Application Deployment   : Deploy build files(jar,war,ear) to sit,uat,preroduction,
 - Security Compliance :
-
+*** Advantages:
 Ansible provies
 - Simple
 - Powerful
 - Agentless
+- Lite Weight
+*** What is Ansible tool:
+Ansible is a configuration tool to depoly code and install in muiltiple servers at a time.
 
 ** SSH-Key connection between master and all slave 
 *** Prerequirement-I : Create a common user with root privillage and ssh-key base authentication

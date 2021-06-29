@@ -156,6 +156,38 @@ constitute the DevOps Life cycle [[img] [https://d1jnx9ba8s6j9r.cloudfront.net/b
 Tools Used: 
 *** Stage – 5: Contionous monitoring 
 * AWS EC2 installation
+- Different type of clouds service's
+  - AWS, Google Cloud Platform,Linode, Digital Ocean , ;Azure, Vm-ware, openstack,
+Inside AWS
+aws > services > EC2 > Lanch Instance
+Chose AMI > Choose Instance Types > Configure Instance > Add Storage > Add Tags > Congigure Security Group > Review
+
+- AMI(AMazon Image)
+  Linux,Red Hat Enterprise, Ubuntu , Windows
+- Instance Type
+  t2.nano   (1 , 0.5gb,ram)
+  t2.micro  (1 , 1gb,ram)
+  t2.small  (1, 2gb,ram)
+  t2.medius (2, 4gb)
+  t2.large()
+  t2.Xlarge () <Compancys>
+- Configur Instance
+  No.of Instance : ___________
+- Add Storgae
+  - Volume Type (SSD) , Size
+- Add Tag
+  key: name
+  Value : Devops
+- Security Group
+  - ssh : 22
+  - http :80
+  - tomcat:8080
+
+- Remote Access Cloud
+  #+begin_src sh
+ssh -i ec2.user@ip
+#+end_src
+
 * Linux and Shell
 Visit : Linux Tutorial for both Linux and Shell
 

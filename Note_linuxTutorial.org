@@ -163,8 +163,8 @@ Linux Tutorial
     # Find files/directory 
     # # ##########################################################
 
-    find <path> -type f -name <name> # For find file
-    find <path> -type d -name <name> # For find dir
+    find <path> -type f -name <file-name> # For find file
+    find <path> -type d -name <dir-name> # For find dir
 
     # Examples 
     touch phani kar sanjay sathish
@@ -219,7 +219,8 @@ Linux Tutorial
       # owner-group-user        owner  group
 
   # Who are owner group and users in change mode ?
-
+  # WHAT IS difference btw owner,group,user ?
+  # Who is owner,group,user 's ?     
 
   ## ##########################################################
   # change owner of file or dir : chown
@@ -462,6 +463,31 @@ Linux Tutorial
 
 
 #+END_SRC
+
+** combination of two cmds
+pip
+| : gives output of one cmd to next cmd
+redirect
+> created a file
+>> appendes a file
+
+#+begin_src sh
+  ls -latr | grep test.sh
+  ls -latr | grep test.sh | rm -rf
+
+  df -h # But need to see only size of Desktop
+# 4.0K	/home/dan/Desktop
+# 4.0K	/home/dan/Music
+# 7.1M	/home/dan/Documents/application
+# 84M	/home/dan/Documents
+
+  df -h | grep "Desktop" # But we want only  size of Destop 
+# 4.0K	/home/dan/Desktop
+
+  df -h | grep "Desktop" | awk  '{print $1}'
+
+
+#+end_src
 ** TODO Crontab
 For Crontab : Example visit https://crontab.guru/examples.html
 #+BEGIN_SRC sh

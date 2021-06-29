@@ -231,203 +231,6 @@ fi
 
 #+END_SRC
 
-** Argument in shell
-#+BEGIN_SRC sh
-  # passing prameter in shell 
-  # sh  tesh.sh 45 yes 25k shathish
-  #then $0 is test.sh
-  # ${0} is file name
-  # ${1} is 45
-  # ${2} is yes
-  # ${3} is 25k
-  # ${4} is shatish
-  # $#   is No.Of parameter in command line or ${#}
-  # $? : Exist Status of  previous cmd executed sucessfull : true / false(not exectued sucessfull)
-  # "${@} : all parameter starting from 1 or ${1}${2}${3}${4}"
-#+END_SRC
-*** Argument Examples
-#+BEGIN_SRC sh
-
-echo "You executeed in this command :${0}"
-
-echo "You used $(dirname ${0}) as the path to $(basename ${0}) script"
-# dirname /home/jayradhe
-## >>/home
-
-# basename /home/jayrade
-## >> jayradae
-
-
-NoOfParameter= "${#}"
-echo "You supplied ${NoOfParameters} arguments(s) on the command line."
-
-if [[ "${NoOfParameters}" -lt 1]]
-then 
-    echo "Usage : ${0} USER_NAmE [USER_NAmE]]"
-    exit 1
-fi
-
-# Generate and display a password for each parameter
-do
- PASSWORD=$(date +%s%N | sha256sum | head -c48)
-  echo "${USER_NAME}: ${PASSWORD}"
-done
-#+END_SRC
-
-** READ 
-read -p “ prompt_text”
-
-Here we read the data along with some hint text . The hint text helps the user in what he/she has to enter . -p here stands for the prompt . The hint text also called the prompt text.
-#+BEGIN_SRC sh
-#!/bin/bash
-
-# This script creates an account on the local system.
-# You will be prompted for the account name and password.
-
-# Ask for the user name.
-read -p 'Enter the username to create: ' USER_NAME 
-
-# Ask for the real name.
-read -p 'Enter the name of the person who this account is for: ' USER_DETAILS
-
-# Ask for the password.
-# read -p 'Enter the password to use for the account: ' PASSWORD
-
-read -s -p "Enter Password: " password
-echo $password
-
-# Create the user.
-useradd -c "${USER_DETAILS}" -m ${USER_NAME}
-
-# Set the password for the user.
-# NOTE: You can also use the following command:
-#    echo "${USER_NAME}:${PASSWORD}" | chpasswd
-echo ${PASSWORD} | passwd --stdin ${USER_NAME}
-
-# Force password change on first login.
-passwd -e ${USER_NAME}
-#+END_SRC
-** RANDOm 
-#+BEGIN_SRC sh
-#!/bin/bash
-
-# This script generates a list of random passwords.
-
-# A random number as a password.
-PASSWORD="${RANDOM}"
-echo "${PASSWORD}"
-
-# Three random numbers together.
-PASSWORD="${RANDOM}${RANDOM}${RANDOM}"
-echo "${PASSWORD}"
-
-# Use the current date/time as the basis for the password.
-PASSWORD=$(date +%s)
-echo "${PASSWORD}"
-
-# Use nanoseconds to act as randomization.
-PASSWORD=$(date +%s%N)
-echo "${PASSWORD}"
-
-# A better password.
-PASSWORD=$(date +%s%N | sha256sum | head -c32)
-echo "${PASSWORD}"
-
-# An even better password.
-PASSWORD=$(date +%s%N${RANDOM}${RANDOM} | sha256sum | head -c48)
-echo "${PASSWORD}"
-
-# Append a special character to the password.
-SPECIAL_CHARACTER=$(echo '!@#$%^&*()_-+=' | fold -w1 | shuf | head -c1)
-echo "${PASSWORD}${SPECIAL_CHARACTER}"
-
-# shuf 
-echo "karthik" | fold -w1                # print each character in order
-echo "karthik" | fold -w1| shuf          # print each character in random order
-echo "karthik" | fold -w1| shuf |head -c1 # print one character in random
- 
-#+END_SRC
-** RANDOm II
-#+BEGIN_SRC sh
-#!/bin/bash
-
-# This script generates a random password for each user specified on the comand line.
-
-# Display what the user typed on the command line.
-echo "You executed this command: ${0}"
-
-# Display the path and filename of the script.
-echo "You used $(dirname ${0}) as the path to the $(basename ${0}) script."
-
-# Tell them how many arguments they passed in.
-# (Inside the script they are parameters, outside they are arguments.)
-NUMBER_OF_PARAMETERS="${#}"
-echo "You supplied ${NUMBER_OF_PARAMETERS} argument(s) on the command line."
-
-# Make sure they at least supply one argument.
-if [[ "${NUMBER_OF_PARAMETERS}" -lt 1 ]]
-then
-  echo "Usage: ${0} USER_NAME [USER_NAME]..."
-  exit 1
-fi
-
-# Generate and display a password for each parameter.
-for USER_NAME in "${@}"
-do
-  PASSWORD=$(date "+%s %N" | sha256sum | head -c48)
-  echo "${USER_NAME}: ${PASSWORD}"
-done
-#+END_SRC
-
-** Example 
-deployment process:
-- step 1:
-   - check file is existing or not is /opt
-   - if yes :take back up to buackup folder
-   - if no 
-      - cp new war file to deployment folder /opt
-or
-#+BEGIN_SRC sh
-if [ -f /opt/Calender.war]
-then
-# if exist
-mv
-# create file copy
-else
-   #cp
-fi
-#+END_SRC
-** Example 
-deployment :
-To developers
-To System Integration and Testing
-To Preproduction
-To production 
-
-#+BEGIN_SRC sh
-#! /bin/sh
-#FILEName : deployment.sh
-env = $1
-if ['dev' = $env ] &&[/opt/Calender.war]
-then 
-cp /tem/*.war /opt/dev
-fi
-
-if ['sit' = $env ]
-then 
-cp /tem/*.war /opt/sit
-fi
-if ['preprod' = $env ]
-then 
-cp /tem/*.war /opt/preprod
-fi
-if ['prod' = $env ]
-then 
-cp /tem/*.war /opt/prod
-fi
-
-## sh deployment.sh sit
-#+END_SRC
 ** If Condition Statment
 #+BEGIN_SRC sh
 #!/bin/bash
@@ -573,7 +376,7 @@ esac
 
 
 #+END_SRC
-**  Switch Statment II
+** Switch Statment II
 #+BEGIN_SRC sh
 # Here is a compact version of the case statement.
 case "${1}" in
@@ -586,6 +389,35 @@ case "${1}" in
     ;;
 esac
 #+END_SRC
+** Switch 
+#+BEGIN_SRC sh  syntax
+env=moday
+case "$env" in 
+
+"monday") echo "monday";;
+"tuesday") echo "tuesday";;
+"*") echo "invalid opearation"
+esac
+#+END_SRC
+
+#+BEGIN_SRC sh 
+#! /bin/sh
+day= $1
+case $day in 
+"monday") 
+echo "this is monday"
+;;
+case $day in 
+"tue") 
+echo "this is tuesday"
+;;
+"*")
+echo "invalid"
+;;
+esac
+
+#+END_SRC
+
 ** for Loop
 The `for' loop executes a sequence of commands for each member in list of items.  
 If `in WORDS ...;' is not present, then `in "$@"' is assumed.  
@@ -676,33 +508,47 @@ done
 
 #+END_SRC
 
-** Switch 
-#+BEGIN_SRC sh  syntax
-env=moday
-case "$env" in 
-
-"monday") echo "monday";;
-"tuesday") echo "tuesday";;
-"*") echo "invalid opearation"
-esac
+** Argument in shell
+#+BEGIN_SRC sh
+  # passing prameter in shell 
+  # sh  tesh.sh 45 yes 25k shathish
+  #then $0 is test.sh
+  # ${0} is file name
+  # ${1} is 45
+  # ${2} is yes
+  # ${3} is 25k
+  # ${4} is shatish
+  # $#   is No.Of parameter in command line or ${#}
+  # $? : Exist Status of  previous cmd executed sucessfull : true / false(not exectued sucessfull)
+  # "${@} : all parameter starting from 1 or ${1}${2}${3}${4}"
 #+END_SRC
+*** Argument Examples
+#+BEGIN_SRC sh
 
-#+BEGIN_SRC sh 
-#! /bin/sh
-day= $1
-case $day in 
-"monday") 
-echo "this is monday"
-;;
-case $day in 
-"tue") 
-echo "this is tuesday"
-;;
-"*")
-echo "invalid"
-;;
-esac
+echo "You executeed in this command :${0}"
 
+echo "You used $(dirname ${0}) as the path to $(basename ${0}) script"
+# dirname /home/jayradhe
+## >>/home
+
+# basename /home/jayrade
+## >> jayradae
+
+
+NoOfParameter= "${#}"
+echo "You supplied ${NoOfParameters} arguments(s) on the command line."
+
+if [[ "${NoOfParameters}" -lt 1]]
+then 
+    echo "Usage : ${0} USER_NAmE [USER_NAmE]]"
+    exit 1
+fi
+
+# Generate and display a password for each parameter
+do
+ PASSWORD=$(date +%s%N | sha256sum | head -c48)
+  echo "${USER_NAME}: ${PASSWORD}"
+done
 #+END_SRC
 
 ** Function
@@ -1235,14 +1081,6 @@ sed -i.bak  's/assistant/assistant to the/' manager.txt
 
 
 #+END_SRC
-** Deletig and Disabling Linux
-type -a userdel    # not found
-which userdel      # no userdel in 
-3) options : userdel cmd is outside the path of shell 
-#+BEGIN_SRC sh
-
-
-#+END_SRC
 ** I/O redirection 
 
 #+BEGIN_SRC sh
@@ -1323,86 +1161,6 @@ rm ${FILE} ${ERR_FILE} &> /dev/null
 
 #+END_SRC
 
-** Parsing Command Line Option (getopts)
-#+BEGIN_SRC sh
-# getopts is builtin #type -a getopts
-# help getopts | less
-# Getopts is used by shell procedures to parse position parameters
-#!/bin/bash
-
-# This script generates a random password.
-# The user can set the password length with -l and add a special character with -s.
-
-# Verbose mode can be enabled with -v.
-
-usage() {
-  echo "Usage: ${0} [-vs] [-l LENGTH]" >&2
-  echo 'Generate a random password.' >&2
-  echo '  -l LENGTH  Specify the password length.' >&2
-  echo '  -s         Append a special character to the password.' >&2
-  echo '  -v         Increase verbosity.' >&2
-  exit 1
-}
-
-log() {
-  local MESSAGE="${@}"
-  if [[ "${VERBOSE}" = 'true' ]]
-  then
-    echo "${MESSAGE}"
-  fi
-}
-
-# Set a default password length.
-LENGTH=48
-
-while getopts vl:s OPTION
-do
-  case ${OPTION} in
-    v)
-      VERBOSE='true'
-      log 'Verbose mode on.'
-      ;;
-    l)
-      LENGTH="${OPTARG}"
-      ;;
-    s)
-      USE_SPECIAL_CHARACTER='true'
-      ;;
-    ?)
-      usage
-      ;;
-  esac
-done
-
-# Remove the options while leaving the remaining arguments.
-shift "$(( OPTIND - 1 ))"
-
-if [[ "${#}" -gt 0 ]]
-then
-  usage
-fi
-
-log 'Generating a password.'
-
-PASSWORD=$(date +%s%N${RANDOM}${RANDOM} | sha256sum | head -c${LENGTH})
-
-# Append a special character if requested to do so.
-if [[ "${USE_SPECIAL_CHARACTER}" = 'true' ]]
-then
-  log 'Selecting a random special character.'
-  SPECIAL_CHARACTER=$(echo '!@#$%^&*()_-+=' | fold -w1 | shuf | head -c1)
-  PASSWORD="${PASSWORD}${SPECIAL_CHARACTER}"
-fi
-
-log 'Done.'
-log 'Here is the password:'
-
-# Display the password.
-echo "${PASSWORD}"
-
-exit 0
-
-#+END_SRC
 ** Redirect a file 
 Every process three File Descriptors :
 - FD 0 STDIN  # Input
@@ -1740,4 +1498,246 @@ scp -i key.pem /path/to/myfile.txt ec2-user@IPAddressOfEC2:/
 ** bel
 #+BEGIN_SRC sh
 ( speaker-test -t sine -f 1000 )& pid=$! ; sleep 1s ; kill -9 $pid
+#+END_SRC
+** READ 
+read -p “ prompt_text”
+
+Here we read the data along with some hint text . The hint text helps the user in what he/she has to enter . -p here stands for the prompt . The hint text also called the prompt text.
+#+BEGIN_SRC sh
+#!/bin/bash
+
+# This script creates an account on the local system.
+# You will be prompted for the account name and password.
+
+# Ask for the user name.
+read -p 'Enter the username to create: ' USER_NAME 
+
+# Ask for the real name.
+read -p 'Enter the name of the person who this account is for: ' USER_DETAILS
+
+# Ask for the password.
+# read -p 'Enter the password to use for the account: ' PASSWORD
+
+read -s -p "Enter Password: " password
+echo $password
+
+# Create the user.
+useradd -c "${USER_DETAILS}" -m ${USER_NAME}
+
+# Set the password for the user.
+# NOTE: You can also use the following command:
+#    echo "${USER_NAME}:${PASSWORD}" | chpasswd
+echo ${PASSWORD} | passwd --stdin ${USER_NAME}
+
+# Force password change on first login.
+passwd -e ${USER_NAME}
+#+END_SRC
+** RANDOm 
+#+BEGIN_SRC sh
+#!/bin/bash
+
+# This script generates a list of random passwords.
+
+# A random number as a password.
+PASSWORD="${RANDOM}"
+echo "${PASSWORD}"
+
+# Three random numbers together.
+PASSWORD="${RANDOM}${RANDOM}${RANDOM}"
+echo "${PASSWORD}"
+
+# Use the current date/time as the basis for the password.
+PASSWORD=$(date +%s)
+echo "${PASSWORD}"
+
+# Use nanoseconds to act as randomization.
+PASSWORD=$(date +%s%N)
+echo "${PASSWORD}"
+
+# A better password.
+PASSWORD=$(date +%s%N | sha256sum | head -c32)
+echo "${PASSWORD}"
+
+# An even better password.
+PASSWORD=$(date +%s%N${RANDOM}${RANDOM} | sha256sum | head -c48)
+echo "${PASSWORD}"
+
+# Append a special character to the password.
+SPECIAL_CHARACTER=$(echo '!@#$%^&*()_-+=' | fold -w1 | shuf | head -c1)
+echo "${PASSWORD}${SPECIAL_CHARACTER}"
+
+# shuf 
+echo "karthik" | fold -w1                # print each character in order
+echo "karthik" | fold -w1| shuf          # print each character in random order
+echo "karthik" | fold -w1| shuf |head -c1 # print one character in random
+ 
+#+END_SRC
+** RANDOm II
+#+BEGIN_SRC sh
+#!/bin/bash
+
+# This script generates a random password for each user specified on the comand line.
+
+# Display what the user typed on the command line.
+echo "You executed this command: ${0}"
+
+# Display the path and filename of the script.
+echo "You used $(dirname ${0}) as the path to the $(basename ${0}) script."
+
+# Tell them how many arguments they passed in.
+# (Inside the script they are parameters, outside they are arguments.)
+NUMBER_OF_PARAMETERS="${#}"
+echo "You supplied ${NUMBER_OF_PARAMETERS} argument(s) on the command line."
+
+# Make sure they at least supply one argument.
+if [[ "${NUMBER_OF_PARAMETERS}" -lt 1 ]]
+then
+  echo "Usage: ${0} USER_NAME [USER_NAME]..."
+  exit 1
+fi
+
+# Generate and display a password for each parameter.
+for USER_NAME in "${@}"
+do
+  PASSWORD=$(date "+%s %N" | sha256sum | head -c48)
+  echo "${USER_NAME}: ${PASSWORD}"
+done
+#+END_SRC
+
+** Example 
+deployment process:
+- step 1:
+   - check file is existing or not is /opt
+   - if yes :take back up to buackup folder
+   - if no 
+      - cp new war file to deployment folder /opt
+or
+#+BEGIN_SRC sh
+if [ -f /opt/Calender.war]
+then
+# if exist
+mv
+# create file copy
+else
+   #cp
+fi
+#+END_SRC
+** Example 
+deployment :
+To developers
+To System Integration and Testing
+To Preproduction
+To production 
+
+#+BEGIN_SRC sh
+#! /bin/sh
+#FILEName : deployment.sh
+env = $1
+if ['dev' = $env ] &&[/opt/Calender.war]
+then 
+cp /tem/*.war /opt/dev
+fi
+
+if ['sit' = $env ]
+then 
+cp /tem/*.war /opt/sit
+fi
+if ['preprod' = $env ]
+then 
+cp /tem/*.war /opt/preprod
+fi
+if ['prod' = $env ]
+then 
+cp /tem/*.war /opt/prod
+fi
+
+## sh deployment.sh sit
+#+END_SRC
+** Deletig and Disabling Linux
+type -a userdel    # not found
+which userdel      # no userdel in 
+3) options : userdel cmd is outside the path of shell 
+#+BEGIN_SRC sh
+
+
+#+END_SRC
+** Parsing Command Line Option (getopts)
+#+BEGIN_SRC sh
+# getopts is builtin #type -a getopts
+# help getopts | less
+# Getopts is used by shell procedures to parse position parameters
+#!/bin/bash
+
+# This script generates a random password.
+# The user can set the password length with -l and add a special character with -s.
+
+# Verbose mode can be enabled with -v.
+
+usage() {
+  echo "Usage: ${0} [-vs] [-l LENGTH]" >&2
+  echo 'Generate a random password.' >&2
+  echo '  -l LENGTH  Specify the password length.' >&2
+  echo '  -s         Append a special character to the password.' >&2
+  echo '  -v         Increase verbosity.' >&2
+  exit 1
+}
+
+log() {
+  local MESSAGE="${@}"
+  if [[ "${VERBOSE}" = 'true' ]]
+  then
+    echo "${MESSAGE}"
+  fi
+}
+
+# Set a default password length.
+LENGTH=48
+
+while getopts vl:s OPTION
+do
+  case ${OPTION} in
+    v)
+      VERBOSE='true'
+      log 'Verbose mode on.'
+      ;;
+    l)
+      LENGTH="${OPTARG}"
+      ;;
+    s)
+      USE_SPECIAL_CHARACTER='true'
+      ;;
+    ?)
+      usage
+      ;;
+  esac
+done
+
+# Remove the options while leaving the remaining arguments.
+shift "$(( OPTIND - 1 ))"
+
+if [[ "${#}" -gt 0 ]]
+then
+  usage
+fi
+
+log 'Generating a password.'
+
+PASSWORD=$(date +%s%N${RANDOM}${RANDOM} | sha256sum | head -c${LENGTH})
+
+# Append a special character if requested to do so.
+if [[ "${USE_SPECIAL_CHARACTER}" = 'true' ]]
+then
+  log 'Selecting a random special character.'
+  SPECIAL_CHARACTER=$(echo '!@#$%^&*()_-+=' | fold -w1 | shuf | head -c1)
+  PASSWORD="${PASSWORD}${SPECIAL_CHARACTER}"
+fi
+
+log 'Done.'
+log 'Here is the password:'
+
+# Display the password.
+echo "${PASSWORD}"
+
+exit 0
+
 #+END_SRC

@@ -127,7 +127,7 @@ constitute the DevOps Life cycle [[img] [https://d1jnx9ba8s6j9r.cloudfront.net/b
 
 
 *** Stage – 1: Continuous Development [ Planning(Requirement Gathering & Analysis + Design) + Coding]
-- Tools Used: Git, SVN, Mercurial, CVS and JIRA
+- Tools Used: Git, SVN, Mercurial, CVS and JIRA(Atlassian Company(includes bitbucket,bamboo,Trello))
 - Process Flow: https://i.stack.imgur.com/UvZ0M.png
 - This is the phase that involves ‘planning‘ and ‘coding‘ of the software.
   You decide the project vision during the planning phase and the developers begin developing the code for the application.
@@ -155,55 +155,69 @@ constitute the DevOps Life cycle [[img] [https://d1jnx9ba8s6j9r.cloudfront.net/b
 
 Tools Used: 
 *** Stage – 5: Contionous monitoring 
-* AWS EC2 installation
-- Different type of clouds service's
-  - AWS, Google Cloud Platform,Linode, Digital Ocean , ;Azure, Vm-ware, openstack,
-Inside AWS
-aws > services > EC2 > Lanch Instance
-Chose AMI > Choose Instance Types > Configure Instance > Add Storage > Add Tags > Congigure Security Group > Review
+* Cloud Services
+** Intro
+- Different type of clouds service's available 
+  - AWS, Google Cloud Platform,Azure,Linode, Digital Ocean ,, Vm-ware, openstack,
+*** In MNC's which Cloud Service genrelly used      
+- Note: What is diff btw server,vm's,containers is explained in docker intro
+** Inside AWS
+- AWS Ec2 Installation
+- aws > services > EC2 > Lanch Instance
+- Lanch Instance
+  - Chose AMI > Choose Instance Types > Configure Instance > Add Storage > Add Tags > Congigure Security Group > Review
 
 - AMI(AMazon Image)
-  Linux,Red Hat Enterprise, Ubuntu , Windows
+   - Linux,Red Hat Enterprise, Ubuntu , Windows
 - Instance Type
-  t2.nano   (1 , 0.5gb,ram)
-  t2.micro  (1 , 1gb,ram)
-  t2.small  (1, 2gb,ram)
-  t2.medius (2, 4gb)
-  t2.large()
-  t2.Xlarge () <Compancys>
+  - t2.nano   (1 , 0.5gb,ram)
+  - t2.micro  (1 , 1gb,ram)
+  - t2.small  (1, 2gb,ram)
+  - t2.medius (2, 4gb)
+  - t2.large()
+  - t2.Xlarge () <Compancys>
 - Configur Instance
-  No.of Instance : ___________
+  - No.of Instance : ___________
 - Add Storgae
   - Volume Type (SSD) , Size
 - Add Tag
-  key: name
-  Value : Devops
+  - key: name
+  - Value : Devops
 - Security Group
   - ssh : 22
   - http :80
   - tomcat:8080
-
-- Remote Access Cloud
-  #+begin_src sh
+- Review Instance Launch
+  - Create key-pair (new-keyPair.pem key) > Download keyPair
+  - Key pair must not be publicly viewable for SSH
+    - chmod 400 newdevops.pem
+  - Public DNS
+    - ec2-18-220-93-246.us-east-2.computer.amazonaws.com
+  - SSH
+    - using Public DNS
+      - ssh -i "new-keyPair.pem" Public_DNS
+    - using ip
+      - ssh -i ec2.user@ip # ssh -i ec2.user@18.220.93.246 
+             
+#+begin_src sh
 ssh -i ec2.user@ip
 #+end_src
 
 * Linux and Shell
 Visit : Linux Tutorial for both Linux and Shell
-
 What is different btw normal user and root user
 
 #+BEGIN_SRC sh
- sudo su -
- ls -latr
- 
+sudo su -
+ls -latr
 #+END_SRC
 
 * Vi Editor Tutorial
 Visit : vim tutorial
 * git
 ** What is git
-- git is free and opensouce VCS (Version Control System) created by linux torvaldss in 2005. Version Control System  mean which is used to track all change in project
+- git is free and opensouce VCS (Version Control System) created by linux torvaldss in 2005.
+  - Version Control System  mean which is used to track all change in project
 - Using git
   -  No data is lost and undo previous data using his
   -  all users can access and share the project
@@ -213,41 +227,45 @@ Visit : vim tutorial
 *** TODO Q) git Vs SVN (Subversion)
 SVN is centralised VCS , Git is distributed VCS
 SVN is still used because of its performance with large files won't be satisfied with Git.
+*** In Companys (MNC's) which vcs is used
+- general we use bitbucket(atlassian compancy),git,mecury
+  
 ** short tutorial
 - Creating a version control of local repository
   - We need to Create a version contol file (=.git=) it create by =git init=
     
 #+BEGIN_SRC sh
-     git init                                  # Inicialize or Create a version control 
-     git status                                # View the Stagging Area
-     git add <file>                            # Add files to stagging Area
-     git add -A
-     git rim --cached <file>                   # Remove files in Stagging Area
-     touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
-     git commit -m "fist commit"               # Save-Commit  to Local Repo
-     git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
-     git push origin master                    # Upload Local Repo to Remote Repo
-     git pull                                  # Update Local Repo
-     git clone https://github.com/..git        # clone to current dir   # Clone
-     git diff  <commit id> <commit id>         # diff : View changes in fiels
+git init                                  # Inicialize or Create a version control 
+git status                                # View the Stagging Area
+git add <file>                            # Add files to stagging Area
+git add -A
+git rim --cached <file>                   # Remove files in Stagging Area
+touch .gitignore                          #  list all files  that are need to ignore                    # Ignore files in Stagging Area
+git commit -m "fist commit"               # Save-Commit  to Local Repo
+git remote add orgin https://github.com/....                      # Connect Local Repo to Remote Repo
+git push origin master                    # Upload Local Repo to Remote Repo
+git pull                                  # Update Local Repo
+git clone https://github.com/..git        # clone to current dir   # Clone
+git diff  <commit id> <commit id>         # diff : View changes in fiels
 
-     ## Creat Branch ,push, delete:
-     git branch <branch-name>       # create a new branch
-     git chechout -b <branchname>    # to create and moveing to the   
-     git branch                      # list of branch
-     git branch --list               # list of branch
-     git checkout UncleDaveEmacs     # Switch one branch to other
-     git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
-     git branch -D UncleDaveEmacs  # delete a branch
-     git push orign <branch-name>     # push branch to remote repo
-     git branch -D devop     # git delete a branch in local repository
-     git push origin --delete <branch name>     # delete branch at remote repositort
-     git push origin --delete UncleDaveEmacs # delete a branch in remote repository
+## Creat Branch ,push, delete:
+git branch <branch-name>       # create a new branch
+git chechout -b <branchname>    # to create and moveing to the   
+git branch                      # list of branch
+git branch --list               # list of branch
+git checkout UncleDaveEmacs     # Switch one branch to other
+git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
+git branch -D UncleDaveEmacs  # delete a branch
+git push orign <branch-name>     # push branch to remote repo
+git branch -D devop     # git delete a branch in local repository
+git push origin --delete <branch name>     # delete branch at remote repositort
+git push origin --delete UncleDaveEmacs # delete a branch in remote repository
 
-     # Merge
-     git chekout master # to go to destination (master)
-     git merge <branch-name>     # merge brach to master git
+# Merge
+git chekout master # to go to destination (master)
+git merge <branch-name>     # merge brach to master git
 #+END_SRC
+
 ** Installation and Configuration Cmd
 #+BEGIN_SRC  sh
   git --version   # >> git version 2.3.2

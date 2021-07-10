@@ -229,8 +229,7 @@ SVN is centralised VCS , Git is distributed VCS
 SVN is still used because of its performance with large files won't be satisfied with Git.
 *** In Companys (MNC's) which vcs is used
 - general we use bitbucket(atlassian compancy),git,mecury
-- We can host github using gitlab
-    
+  
 ** short tutorial
 - Creating a version control of local repository
   - We need to Create a version contol file (=.git=) it create by =git init=
@@ -1190,45 +1189,7 @@ Post-build Action
 #+end_quote    
 * Jenkins 
 - Jenkins 
-  - installation [using executable, java -jar, tomcat -war, inside VM Vagrant, inside containers Docker]
-  - New Job configurations :
-    - Genenral,
-      - Description
-      - Discard odl builds : Remove  the old build
-         - Days to keep builds    :__________
-         - max # of build to keep :__________
-      - GitHub Project 
-         - give url for source code:________
-         - TODO :Build requires lockable resource
-
-      - Project is parametrized :
-          : Project require agruments to be passed 
-      - Throttle builds   # No.of Concurrent(parallel) build
-    - Source Code management
-       Git : url_________ 
-       Subversion:
-    - Build Triggers
-        - Trigger Build remotely: using url or (Authentication Token)
-        - Build after other project are build :
-        - Build Periodically
-          _* * * * *_  # chrontab jobs
-        - Github hook for GIT_SCm Polling
-        - Poll SCm
-    - Build Environment
-       - Delete Workspace before build starts (discard old build result and start fresh build)
-       - Use secret text or file
-          - password protection
-       - Abort build if it's stuck
-       - Inspect build log for published Gradle build scans
-    - Build
-       - Execute shell
-       - Execute Powershell
-    - Post-build Actions
-      - E-mail Notification
-      - Editable Notification
-      - Git Publisher
-      - Set Github commit status
-      - Delete workspace when build is done
+  - installation
   - how to create jobs
   - checkout git
   - goal package
@@ -1244,7 +1205,7 @@ Post-build Action
   - Countious Integration (CI)
   - Countious Development
   - backup
-
+  - build triggers (poll SCm)
     
 ** TODO [02nd march]-installation
 - Jenkins can be install in 3 ways
@@ -1334,7 +1295,7 @@ vi /etc/default/jenkins
 #+END_SRC
 
 ** Plugis update, install, advance
-Note: only java 8 is able to link with jenkins not default-java or java 11....etc
+Notee: only java 8 is able to link with jenkins not default-java or java 11....etc
 
 ** Plugis :
 Manage jenkins > manage plugis
@@ -1859,7 +1820,7 @@ echo "$1 is a good boy and $2 is a innocent guy"
    - Build 
      -   Execute shell
          -    command : sh /opt/softaware/scripts/test.sh $param1 @param2
-           
+
 * TODO Ansible :
 *** [20 march] SSH-Key connection between master and all slave 
 **** Prerequirement-I : Create a common user with root privillage and ssh-key base authentication

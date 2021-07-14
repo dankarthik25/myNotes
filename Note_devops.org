@@ -4171,7 +4171,8 @@ Supports languages: Java, C/C++, Objective-C, C#, PHP, Flex, Groovy, JavaScript,
    - Vulnerability	
      - A security-related issue which represents a backdoor for attackers. See also Security-related rules.
 
-** Installation
+** Installation 
+linux installation https://devopscube.com/setup-and-configure-sonarqube-on-linux/
 #+begin_src sh
 
 sudo yum update -y # Step 1: Update the server.
@@ -4337,6 +4338,8 @@ Q) What you do in sonar ?
 Setup sonarq
 sonar-scanner: 
     sonar.conf: to to add user.., 
+** TODO git java prj which need to quality anallysis  
+https://www.youtube.com/watch?v=31igoWxauEQ
 * 26th maven Q-Ans session
 - how to ignore test cases
   - mvn install -DskipTests

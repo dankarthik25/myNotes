@@ -1,0 +1,329 @@
+* All cmds
+#+begin_src 
+docker images           # list of images in your docker
+docker image ls         # list of images in your docker
+docker search centos    # check if image is present in local repo (host OS)
+docker pull centos      # download image to local repo
+docker rmi centos:7       # remove centos:7 from local repo
+
+##########
+# Push image to Docker hub
+############
+#docker login --username=<your_docker_user_name> # login docker hub
+#docker push <docker-user>/<image-name> # push image to docker hub
+#docker push dankarthik/testing-node
+#docker commit <container-id/name> <user>/<image>
+
+################
+Container Status
+#################
+docker container top <c-id/name>
+docker container status <c-id/name>
+docker container status # performance status all containers
+docker container inspect mysql | grep "VOLUME"        # give volume dir 
+
+
+#######
+# container cmds
+######
+docker ps                      # docker container ls                                #
+docker ps -a                   # docker container ls -a                             #
+docker stop <c-id/name>        # docker container stop <c-id/name>                  #
+docker kill <c-id/name>        # docker container kill <c-id/name>                  #
+docker rm <c-id/name>          # docker container rm   <c-id/name>                  #
+docker run <c-name> <i-name>   # docker container run <c-name> <i-name>             #
+docker exec <c-name> <i-name>   # docker container exec <c-name> <i-name>           #
+                                # docker container logs <c-id/name>                 #
+                                # docker container port <c-id/name>                 # give port No  
+docker system prune -a         ## remove  unused images,container                   #
+
+#######
+# run shell inside container
+######
+docker run -itd --name sathish-centos centos # 
+docker exec -it d2bf3ff05b9b /bin/bash   # Enter inside the container
+#######
+# PORT FORWORDING
+#########
+docker run -itd --name tomcat-dev -p 8081:8080 tomcat:9 # run localhost:8001
+
+###############
+# Docker Volume: Data volume and bindmount
+###########
+# Docker Volumes: make special location outside of container File System
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+
+docker container inspect mysql | grep "Volume"        # give volume dir
+docker container inspect mysql | grep "Mounts"        # give volume dir
+docker volume ls  #
+
+#Note : Volume are not rm (removed) when container is removed. They need to remove manually
+docker volume rm <vol-ids>
+
+docker volume ls
+docker volume rm <vol-id>
+docker volume create --help
+
+
+###################3333
+# Bind monts: Maps container dir  to host dir
+  - Basically just two locations pointing to same files
+  - Con't use in Dockerfile, must be at  container runtime
+  - Syntax :
+     - ....run -v /Users/bret/stuff:/path/container (mac/linux)
+     - ....run -v //C/Users/breff:path/container (window)
+
+#################3
+docker conatainer run -d --name psql -v psql:/var/lib/postgresql/data postgres:9.6.1
+ 
+
+########
+# import/export docker-image
+########
+docker export --output="zip-name.tar" <container-id/name>
+docker import <path>
+
+
+#+end_src
+** Example
+#+begin_src
+#########
+# create and run a container
+##########
+#docker run -itd --name <container-name> <image-name>
+#        i : interative , t: terminal , d: dettached (background)
+
+docker run -itd --name sathish-centos centos # 
+docker run -it --name sathish-centos centos # open terminal
+
+#
+# to show the running container
+#
+docker ps #or docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# d2bf3ff05b9b        nginx               "nginx -g 'daemon of…"   19 seconds ago       Up 17 seconds       80/tcp                 my_nginX
+
+# docker ps -a # to show the running and stoped containers
+
+# Enter inside container
+docker exec -it d2bf3ff05b9b /bin/bash   # Enter inside the container
+
+docker stop d2bf3ff05b9b # stop container
+docker kill d2bf3ff05b9b # forclly stop 
+docker rm d2bf3ff05b9b # to remove the container (destroy)
+
+
+
+#+end_src
+
+** Compose
+Use to build and run  mulit containers which are inter-linked to each other   
+#+begin_src
+# cd <path> where docker-compose.yml is present
+docker compose build
+docker compose up 
+docker-compose up -d
+#+end_src
+
+** Swarm
+#+begin_src
+# $Inside Docker-Manager Host
+
+# create swarm cluster
+docker swarm init --advertise-addr 18.220.116.100  # generate TOKEN
+###############################################################33
+# docker swarm join --token SWMTKN-1-51n0oal47mvwoyh8l3d2bn8naogqp8xs62wyvh2x6od6f89e8p-efi7qazxaie80f2mepov21d34 18.220.116.100:2377
+#####################################################################
+
+docker swarm leave # leave the swam cluster
+# Note : for manger it ask for force leave
+#+end_src
+ 
+** Services
+use to control any existing Docker services like (Container,Compose,Swarm,)
+
+#+begin_src
+docker service ls                 # Inside node (list of container) are show 
+docker service ps                 # 
+docker service scale <c-id/name>
+docker service stop <c-id/name>
+docker service logs <c-id/name>
+docker service rm <name>
+docker service create <c-name> <img-name>
+#+end_src
+
+** Node
+#+begin_src
+docker node ls # all node & manger
+docker node ps # all container running inside node not cluster
+docker rm <node-id> # remove node form cluster
+# to remove manger from cluster if above not work then use below
+docker swarm leave --force
+#+end_src
+
+** Networking
+#+begin_src sh
+docker network ls  # show network
+# NETWORK ID          NAME                DRIVER              SCOPE
+# e4412c25e3f8        bridge              bridge              local
+# fc3fb3bc492f        dude                bridge              local
+# bde494d3eca8        my_app_net          bridge              local
+# b5c2bb5208eb        none                null                local
+# 85464f22d4d4        host                host                local  # host network is special network,it gain performance by skipping virtual networks but sacrifices security of container model
+
+
+docker network inspect [network-name]           # docker network inspect bridge
+docker network inspect bridge | grep 'Containers' # List of containers in bridge
+docker network create --drive  [network-id]     #  create a network
+docker network connect  [network-id]            # attach a network to container
+docker network disconnect  [network-id]         # detach a network from network
+docker network create --help              
+# To see the containers attached to networks
+docker network inspect bridge
+#+end_src
+*** Example
+#+begin_src 
+docker network create --driver overlay mydrupal
+docekr network ls
+docker service create --name psql --network mydrupal -e POSTGRESS_PASSWORD=mypass postgres
+docker service ls
+psql replicated ps psql
+docker container ls
+
+
+docker service create --name drupal --network mydrupal -p 80:80 drupal
+docker service ls
+
+watch docker ls # linux re-run 
+docker service ps drupal # see -where drupal service is running : let be node2
+
+docker network create my_app_net
+docker container run -itd --name new_nginx --network my_app_net nginx
+docker container run -itd --name my_nginX --network my_app_net nginx
+docker network inspect my_app_network
+
+docker container ls
+# CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                  NAMES
+# 498f7bfea262        nginx               "nginx -g 'daemon of…"   15 seconds ago       Up 12 seconds       80/tcp                 my_engineX
+# 3928fe27faa0        httpd               "httpd-foreground"       About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp   webserver
+docker network connect 498f7bf 3928fe27
+docker network inspect 
+docker network disconnect 498f7bf 3928fe27
+
+#+end_src
+* Introduction
+** what is docker :
+- tool designed to make easy (create and deploy) app using container
+- light weight alternative to VM (no Hypervisor and Guest OS required)
+- No pre-allocation of ram
+
+** What are   Container :
+They aren't VM, they are *just process* (Limited what resource they can access) exit when stop which run on Host OS.They don't have kernel 
+Virtual machine rarelly use all resource  (cpus,ram) which are fixed and cann't be changed.
+Container are isolation in sofware level(not depenendt on OS).Where as VM are isolation in hardware level(isolated from host operating system)
+
+
+*** *Advantages Container*:
+The host OS kernel run various apps separatly in containers where each container runs isolated tasks.
+A app *cannot harm the host* OS or  *conflict with other apps* running in separate containers.
+*** *Disadvanges of Containers*:
+Containers still *do not offer same security* and *stability* that VMs can. Since they share the host’s kernel, they cannot be as isolated as a virtual machine. Consequently, containers are process-level isolated, and one container can affect others by compromising the stability of the kernel.
+* Docker Installation
+* what is docker-hub :
+Docker-Hub : Online public/private repo mainted by docker where docker-images are pull/pushed consisting of standard images(linux,ubuntu,winodws) or customsied image(using Docker file)
+
+** Create image using Docker file
+
+*** Edit/Write Docker file
+
+#+BEGIN_SRC sh
+# FROM # which image should be take
+FROM ubuntu # centos:7 # debian:jessie # 
+
+MAINTAINER "sathish-devops" # How created this image 
+LABEL CEO ="apple"
+
+# RUN # run linux cmd
+RUN apt-get update
+RUN apt-get install git -y
+#RUN yum install java-1.8.0-openjdk -y
+# COPY # copy from  local to container
+COPY /opt/sofware/jenkins.war /tmp
+
+ADD https://updates.jenkins-ci.org/download/war/2.229/jenkins.war /tmp
+# ADD  
+   #1.To copy local to container, and 
+   #2.copy from remote( internet url) to container
+
+EXPOSE 8080 # port should be enabled
+WORKDIR /opt/dev # change dirctory
+
+# cmd :
+  # 1. msg will be executed while container is executed
+  # 2. To over-ride the cmd
+  # 3. To over-ride msg: 
+    # eg: docker run -it sat-dev echo "hi sathish"
+
+CMD ["git", "version"]    # show result run container in non-detached  mode
+# docker run -it <image-name>
+CMD ["data"] # Over-ride the  last cmd and execute last cmd
+
+
+ENTRYPOINT
+#+END_SRC
+** Build Docker file
+- create image repo
+#+begin_src sh 
+# docker build -t <enter-image-name> <path>
+# docker build -t <enter image name>  .  # '.' search Docker file in current dir
+docker build -t sat-dev .
+docker build -t myown .
+#+end_src
+** Push image 
+- push/share image repo
+- pull/download image repo
+Create Custome image using Docker file and push to docker-hub
+-create image using docker file
+- check image is created (docker images)
+- Build file to image
+- push image to docker hub(login to docker hub)
+
+* Docker file
+Port Forwording, Data Volume & Bund mounts
+
+* Docker cmds
+
+* Docker Compose :
+- Overview
+- Docker Link
+- Compose yaml file
+- build and run(up)
+- cmds
+  
+* Docker Swarm
+- overview
+- swarm cmd
+
+* Docker Stack
+- Docker Compose in cluster
+- Create yml file and build and create cluster
+- cmd
+* Docker Network
+- Overview
+  - Intro
+  - Container Network Model
+  - Container Network Model Object
+  - Docker Network Drives
+ - Types of Networks
+   - Bridge Network
+   - Host Network
+   - None
+   - Overlay Network
+   - Maclan Network   
+           
+        
+* Docker DNS
+- DNS RoundRobin Test
+* Links
+
+Edureka :https://www.youtube.com/watch?v=RSIstPUiEjY

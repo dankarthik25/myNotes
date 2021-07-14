@@ -386,23 +386,6 @@ git merge # it merges local repository to current repository
 git pull origin <branch-name> # git fetch and git merge
 #+END_SRC
 
-** Creating a Branch (git branch <branch-name>)
-source : https://nvie.com/posts/a-successful-git-branching-model/ 
-#+BEGIN_SRC sh
-    ## Creat Branch ,push, delete:
-    git branch <branch-name>                  # create a new branch
-    git branch UncleDaveEmacs       # Create a branch
-    git branch                      # list of branch
-    git branch --list               # list of branch
-    git checkout UncleDaveEmacs     # Switch one branch to other
-    git chechout -b <branchname>    # to create and moveing to the <branch-name>
-    git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
-    git branch -D UncleDaveEmacs  # delete a branch
-    git push orign <branch-name>     # push branch to remote repo
-    git branch -D devop     # git delete a branch in local repository
-    git push origin --delete <branch name>     # delete branch at remote repositort
-    git push origin --delete UncleDaveEmacs # delete a branch in remote repository
-#+END_SRC
 ** log
 Consist of < commit id, Author, Date, Comment on commit > 
  mode on your branch
@@ -439,6 +422,78 @@ git log --oneline
 # 370fca2 my Notes on Prog
 
 #+END_SRC
+** Creating a Branch (git branch <branch-name>)
+source : https://nvie.com/posts/a-successful-git-branching-model/ 
+#+BEGIN_SRC sh
+    ## Creat Branch ,push, delete:
+    git branch <branch-name>                  # create a new branch
+    git branch UncleDaveEmacs       # Create a branch
+    git branch                      # list of branch
+    git branch --list               # list of branch
+    git checkout UncleDaveEmacs     # Switch one branch to other
+    git chechout -b <branchname>    # to create and moveing to the <branch-name>
+    git push -u origin UncleDavesEmacs  # push branch from local repo to remote repo
+    git branch -D UncleDaveEmacs  # delete a branch
+    git push orign <branch-name>     # push branch to remote repo
+    git branch -D devop     # git delete a branch in local repository
+    git push origin --delete <branch name>     # delete branch at remote repositort
+    git push origin --delete UncleDaveEmacs # delete a branch in remote repository
+#+END_SRC
+** Git branching Modeling
+ If your team is doing continuous delivery then it is suggested to follow Git branch model. Here is a simple version of it
+https://nvie.com/posts/a-successful-git-branching-model/
+
+At the core, the development model is greatly inspired by existing models out there. The central repo holds two main branches(master(origin) , developer)
+with an *infinite lifetime*:
+- master :
+  We consider origin/master to be the main branch 
+- develop:
+  When the source code in the develop branch reaches a stable point and is ready to be released, all of the changes should be merged back into master somehow and then tagged with a release number.
+
+  Therefore, each time when changes are merged back into master, this is a new production release by definition. We tend to be very strict at this, so that theoretically, we could use a Git hook script to automatically build and roll-out our software to our production servers everytime there was a commit on master
+
+  Any feature branch from develop Must merge back into develop. feature branches are limited time branch which will eventually merged back to develop branch
+   
+- Supporting branches:
+  Development model uses a variety of supporting branches to aid
+  - parallel development between team members,
+  - ease tracking of features,
+  - prepare for production releases and to
+  - assist in quickly (bug)fixing live production problems.
+    
+  Unlike the main branches, these branches always have a *limited life time*, since they will be removed eventually.
+
+The different types of branches we may use are:
+  - feature
+    Any feature branch from develop Must merge back into develop. feature branches are limited time branch which will eventually merged back to develop branch 
+
+    naming convention:anything except master, develop, release-*, or hotfix-*
+     
+    Feature branches (topic branches) are used to develop new features for the upcoming or a distant future release.
+    When starting development of a feature, the target release in which this feature will be incorporated may well be unknown at that point. The essence of a feature branch is that it exists as long as the feature is in development, but will eventually be merged back into develop (to definitely add the new feature to the upcoming release) or discarded (in case of a disappointing experiment).
+    
+  - release branch
+    Any Release branches from develop and Must merge back into develop and master. naming convention(release-*)
+    - Release branches support preparation of a new production release.
+    - Allow for minor bug fixes and
+    - preparing meta-data for a release (version number, build dates, etc.).
+      
+    By doing all of this work on a release branch, the develop branch is cleared to receive features for the next big release.
+
+    The key moment off a new release branch when
+    - atleast all features that are targeted for the release-to-be-built must be merged in to develop at this point in time.
+    - All features targeted at future releases may not—they must wait until after the release branch is branched off.
+      
+  - hotfix(BUG-fix)
+    Any hotfix branch from master Must merge back into develop and master
+    naming convention:hotfix-* 
+
+    They arise from the necessity to
+     - act immediately upon an undesired state of a live production version.
+     - When a critical bug in a production version must be resolved immediately, a hotfix branch may be branched off from the corresponding tag on the master branch that marks the production version.
+
+     The essence is that team members (on the develop branch) can continue, while another person is preparing a quick production fix.
+     
 ** revert :
 when code is pushed to remote but you want changes back from remote > local 
 #+BEGIN_SRC sh
@@ -516,61 +571,6 @@ Instead, it is better to use git revert, which undoes the changes made by a prev
   git revert 1c08f78
   git push origin master
 #+END_SRC
-** Git branching Modeling
- If your team is doing continuous delivery then it is suggested to follow Git branch model. Here is a simple version of it
-https://nvie.com/posts/a-successful-git-branching-model/
-
-At the core, the development model is greatly inspired by existing models out there. The central repo holds two main branches(master(origin) , developer)
-with an *infinite lifetime*:
-- master :
-  We consider origin/master to be the main branch 
-- develop:
-  When the source code in the develop branch reaches a stable point and is ready to be released, all of the changes should be merged back into master somehow and then tagged with a release number.
-
-  Therefore, each time when changes are merged back into master, this is a new production release by definition. We tend to be very strict at this, so that theoretically, we could use a Git hook script to automatically build and roll-out our software to our production servers everytime there was a commit on master
-
-  Any feature branch from develop Must merge back into develop. feature branches are limited time branch which will eventually merged back to develop branch
-   
-- Supporting branches:
-  Development model uses a variety of supporting branches to aid
-  - parallel development between team members,
-  - ease tracking of features,
-  - prepare for production releases and to
-  - assist in quickly (bug)fixing live production problems.
-    
-  Unlike the main branches, these branches always have a *limited life time*, since they will be removed eventually.
-
-The different types of branches we may use are:
-  - feature
-    Any feature branch from develop Must merge back into develop. feature branches are limited time branch which will eventually merged back to develop branch 
-
-    naming convention:anything except master, develop, release-*, or hotfix-*
-     
-    Feature branches (topic branches) are used to develop new features for the upcoming or a distant future release.
-    When starting development of a feature, the target release in which this feature will be incorporated may well be unknown at that point. The essence of a feature branch is that it exists as long as the feature is in development, but will eventually be merged back into develop (to definitely add the new feature to the upcoming release) or discarded (in case of a disappointing experiment).
-    
-  - release branch
-    Any Release branches from develop and Must merge back into develop and master. naming convention(release-*)
-    - Release branches support preparation of a new production release.
-    - Allow for minor bug fixes and
-    - preparing meta-data for a release (version number, build dates, etc.).
-      
-    By doing all of this work on a release branch, the develop branch is cleared to receive features for the next big release.
-
-    The key moment off a new release branch when
-    - atleast all features that are targeted for the release-to-be-built must be merged in to develop at this point in time.
-    - All features targeted at future releases may not—they must wait until after the release branch is branched off.
-      
-  - hotfix(BUG-fix)
-    Any hotfix branch from master Must merge back into develop and master
-    naming convention:hotfix-* 
-
-    They arise from the necessity to
-     - act immediately upon an undesired state of a live production version.
-     - When a critical bug in a production version must be resolved immediately, a hotfix branch may be branched off from the corresponding tag on the master branch that marks the production version.
-
-     The essence is that team members (on the develop branch) can continue, while another person is preparing a quick production fix.
-     
 ** merge
 #+BEGIN_SRC sh
 git checkout master # to git <branch-name>
@@ -1188,27 +1188,8 @@ Post-build Action
              Password : tomcat (For configuration we set)
     Tomcat Url : Same page url.
 #+end_quote    
-* Jenkins 
-- Jenkins 
-  - installation
-  - how to create jobs
-  - checkout git
-  - goal package
-  - send a mail
-  - archive powershell scripts
-  - execute powershell scripts
-  - permission 
-  - upstream and downstream - 
-  - pipeline(build)
-  - master-slave 
-  - dependencies
-  - distribution
-  - Countious Integration (CI)
-  - Countious Development
-  - backup
-  - build triggers (poll SCm)
-    
-** TODO [02nd march]-installation
+* Jenkins    
+** [02nd march]-installation
 - Jenkins can be install in 3 ways
   - 1. using executal file (unzip and install)
   - 2. using java    (java -jar jenkins.war)
@@ -1269,16 +1250,6 @@ create user : dankarthik
 passwrod : dankarthik
  
 #+END_SRC
-*** Install jenkins in tomcat
-#+BEGIN_SRC sh
-cd /opt/softwares/apache-tomcat-9.0.31/webapps
- 
-wget https://updates.jenkins-ci.org/download/war/2.204/jenkins.war
-
-tomcatdown
-tomcatup
-
-#+END_SRC
 *** Install using java
 #+BEGIN_SRC sh
 java -jar jenkins.war
@@ -1295,9 +1266,39 @@ vi /etc/default/jenkins
 
 #+END_SRC
 
-** Plugis update, install, advance
-Notee: only java 8 is able to link with jenkins not default-java or java 11....etc
+*** Install jenkins in tomcat
+#+BEGIN_SRC sh
+cd /opt/softwares/apache-tomcat-9.0.31/webapps
+ 
+wget https://updates.jenkins-ci.org/download/war/2.204/jenkins.war
 
+tomcatdown
+tomcatup
+
+#+END_SRC
+*** install Jenkins  in  tomcat server (using war file)
+
+- Install tomcat using above section on  Tomcat
+- Download Jenkins war file on any version above 2
+- Save war file in tomcat/webapp directory
+- restart tomcat and load : local:8080/jenkins
+
+├── bin  # executable file : start up and shutdown
+├── conf # server.xml : change config 
+|     └──server.xml # like port by default port is  :8080
+├── log    
+└── webapps 
+      └── sbi.war
+*** Install Jenkins inside docker with volume bind
+#+begin_src 
+# https://github.com/jenkinsci/docker/blob/master/README.md
+
+#volume tutorial
+https://www.youtube.com/watch?v=VOK06Q4QqvE
+
+How to run Jenkins on Docker container | How to create Jenkins Volumes on Docker
+# https://www.youtube.com/watch?v=VOK06Q4QqvE
+#+end_src
 ** Plugis :
 Manage jenkins > manage plugis
 [update,avaiable,installed,customed]
@@ -1307,6 +1308,147 @@ Manage jenkins > manage plugis
       - and install
   - *Maven Integration* deep integration, Automatic trigger btw prj depending on SNAPSHOTS, automated config of Junit....etc
          
+** [03rd march] SideBar Overview
+
+|-------------------+-------------------------------------|
+| New Item          | Create a job or project             |
+|-------------------+-------------------------------------|
+| People            | User which are connected to Jenkins |
+|-------------------+-------------------------------------|
+| Build             | Build                               |
+|-------------------+-------------------------------------|
+| manage Jenkins    | manage                              |
+|-------------------+-------------------------------------|
+| my views          |                                     |
+|-------------------+-------------------------------------|
+| lockable resource |                                     |
+|-------------------+-------------------------------------|
+| credentials       | Create Credentials                  |
+|-------------------+-------------------------------------|
+| new view          |                                     |
+|-------------------+-------------------------------------|
+** Freestyle Overview
+
+- *General* :
+  - *Description*:   ___GENERAL DESCRIPTION OF Project for other understanding_
+  - *Discard Old Builds* :
+    - Determines if  build records for this project should be discarded.
+    - Build records include the console output, archived artifacts, and any other metadata related to a particular build.
+    - less disk space will be used in the Build Record Root Directory
+    - Jenkins offers two options for determining when builds should be discarded:
+      - *Build age*: discard builds when they reach a certain age; for example, seven days old.
+      - *Build count*: discard the oldest build when a certain number of builds already exist.
+  - *GitHub Project*
+    - *Project url* :
+  - *Project is parameterised* :
+    - explain : https://www.youtube.com/watch?v=xmZ3CEW7nH8&list=PL6XT0grm_Tfi21F8O0TvHmb78P2uEmhDq&index=20
+    we can add parameter to project while building project.There are different kinds of parameters like
+    - =String, Choice,File parameter, Choice Parameter,Boolean Parameter=
+  - *Throttle Build* :
+    - explain : https://www.youtube.com/watch?v=QKPhg-_my98
+    - Enforces a minimum *time period*: _<>_ between builds based on the desired maximum rate (*Number of Build*).
+      - *No.of Build* : _<1,2,3>_
+      - *Time Period* : _<Seconds>_
+  - *Execute concurrent build it necessary*
+    - Explain :https://www.youtube.com/watch?v=uQqzmRGrBXA&list=PL6XT0grm_Tfi21F8O0TvHmb78P2uEmhDq&index=26      
+               
+- *Source Code Management* :
+  Maintaining Code by using Version Control tools is know ad Source Code Management.
+  - *Git* : __<https://github/......prj.git>_____
+- *Build Triggers* :
+  In general build is not manually run. It is automated :remotely, periodically,after other build(pipelined),github hook trigger,Poll SCM
+  - *Trigger build remotely* : we generate url using token and run it remotely
+  - *Build after other project is build* :# it used for pipeline the Jenkins Jobs where sucessfull build of other prj  will trigger this project
+  - *Build Periodically* : Crontab based trigger, where it build this project periodically with respective crontab
+    - MINUTE	Minutes within the hour (0–59)
+    - HOUR	The hour of the day (0–23)
+    - DOM	The day of the month (1–31)
+    - MONTH	The month (1–12)
+    - DOW	The day of the week (0–7) where 0 and 7 are Sunday.
+  - *GitHub hook trigger for GITScm Polling* : github is config with hook to trigger jenkins using <url>
+- *Poll SCM* :
+  Check github periodically if any new push and automate the build
+- *Build Environment*
+  - *Delete Workspace before build starts*
+     - Explain : https://www.youtube.com/watch?v=XqYWQbpeQ18&list=PL6XT0grm_Tfi21F8O0TvHmb78P2uEmhDq&index=11
+     - (discard old build and files  result and start fresh build)
+       
+  - Use secret text or file
+    - password protection
+  - *Abort build if it's stuck* (Timeout)
+    - explain : https://www.youtube.com/watch?v=hlS3LvtjvFA&list=PL6XT0grm_Tfi21F8O0TvHmb78P2uEmhDq&index=24
+  - *Add timestamp to the Console Output*:
+    - explain : https://www.youtube.com/watch?v=uA8xb-B5brM    
+- *Build* :
+  - either build prj using <manven,ant,gradel> or run shell,powershell scripts like <Copy Artifacts from Another Prj> 
+  - *Execute shell* :
+    Runs a shell script (defaults to sh, but this is configurable) for building the project. The script will be run with the workspace as the current directory.
+  - *Execute Powershell* :
+    Runs a Windows batch script for building the project. The script will be run with the workspace as the current directory. The text you enter in the text box will be executed as a batch file.
+  - *Invoke top-level Maven targents*
+    For projects that use Maven as the build system. This causes Jenkins to invoke Maven with the given goals and options. A non-zero exit code from Maven makes Jenkins mark the build as a failure. Some Maven versions have a bug where it doesn't return the exit code correctly.  
+- *Post-build Actions*
+  - *E-mail Notification*
+  - *Build other Projects*  
+  - Editable Notification
+  - Git Publisher
+  - Set Github commit status
+  - Delete workspace when build is done
+
+
+(menu)Jenkins > New Items > FreeStyles >
+
+#+begin_quote
+- General 
+  - Description        :
+  - Discard old builds : # Remove  the old build for N(No.of) days or Max(No.of) builds
+      - Days to keep builds    :__________
+      - max # of build to keep :__________
+  - GitHub Project 
+      - give url for source code:________
+  - TODO :Build requires lockable resource
+
+  - Project is parametrized :
+         : Project require agruments to be passed 
+  - Throttle builds   # No.of Concurrent(parallel) build
+
+      
+- *Source Code management*      # Check source-code from VCS(version control system) which is need to build later trigger is automated.
+   Git : _______url_________  # github prj <http:github......prj.git> for private account <acc name, acc password> are required 
+   Subversion:
+
+
+- *Build Triggers*            # In general build is not manually run. It is automated :remotely, periodically,after other build(pipelined),
+   - Trigger Build remotely: _using url or (Authentication Token)_
+   - Build after other project are build : ______<existing project-name>____
+   - Build Periodically  _* * * * *_  # Crontab <mm hh dd m w> 
+   - Github hook for GIT_SCM Polling        # https://www.youtube.com/watch?v=9b-K9aG06ow&t=460s
+                                            # If code in pushed to github and github hook(url) is enabled then it will automate build.   
+   - Poll SCM                               # Check github periodically if any new push and automate the build
+     
+- Build Environment
+  - Delete Workspace before build starts (discard old build result and start fresh build)
+  - Use secret text or file
+         - password protection
+    - Abort build if it's stuck
+    - Inspect build log for published Gradle build scans
+- Build
+   - Execute shell
+   - Execute Powershell
+     
+- Post-build Actions
+  - E-mail Notification
+  - Editable Notification
+  - Git Publisher
+  - Set Github commit status
+  - Delete workspace when build is done
+
+
+
+Build a job
+Double Click Project > Build Now
+
+#+end_quote
 ** 1st Jobs build periodically
 (menu)Jenkins > New Items > FreeStyles >
 
@@ -1335,86 +1477,7 @@ htttp:localhost:8008/job/FirstJob/build?token=dkarthik25
 #+end_quote
 htttp:localhost:8008/job/FirstJob/build?token=dkarthik25
 
-** DONE [03rd march] Createing 1st job
-Create 1st   
-
-
-|-------------------+-------------------------------------|
-| New Item          | Create a job or project             |
-|-------------------+-------------------------------------|
-| People            | User which are connected to Jenkins |
-|-------------------+-------------------------------------|
-| Build             | Build                               |
-|-------------------+-------------------------------------|
-| manage Jenkins    | manage                              |
-|-------------------+-------------------------------------|
-| my views          |                                     |
-|-------------------+-------------------------------------|
-| lockable resource |                                     |
-|-------------------+-------------------------------------|
-| credentials       | Create Credentials                  |
-|-------------------+-------------------------------------|
-| new view          |                                     |
-|-------------------+-------------------------------------|
-
-(menu)Jenkins > New Items > FreeStyles >  
-#+begin_quote
-- General 
-  - Description
-  - Discard odl builds : Remove  the old build
-      - Days to keep builds    :__________
-      - max # of build to keep :__________
-  - GitHub Project 
-      - give url for source code:________
-  - TODO :Build requires lockable resource
-
-  - Project is parametrized :
-         : Project require agruments to be passed 
-  - Throttle builds   # No.of Concurrent(parallel) build
-
-      
-- Source Code management
-   Git : url_________ 
-   Subversion:
-
-
-- Build Triggers
-   - Trigger Build remotely: using url or (Authentication Token)
-
-   - Build after other project are build :
-
-   - Build Periodically 
-#+BEGIN_SRC sh
-# * * * * * 
-#+END_SRC  
-    - Github hook for GIT_SCm Polling
-    - Poll SCm
-     
-- Build Environment
-  - Delete Workspace before build starts (discard old build result and start fresh build)
-  - Use secret text or file
-         - password protection
-    - Abort build if it's stuck
-    - Inspect build log for published Gradle build scans
-- Build
-   - Execute shell
-   - Execute Powershell
-   - 
-
-- Post-build Actions
-  - E-mail Notification
-  - Editable Notification
-  - Git Publisher
-  - Set Github commit status
-  - Delete workspace when build is done
-
-
-
-Build a job
-Double Click Project > Build Now
-
-#+end_quote
-** DONE [07 march]Integrating with gmail
+** [07 march]Integrating with gmail
 how to send an email to other ?
  - why should i share user and pwd to other client,middle-men, higher secured so we need to configure  and we send only log file to client,manager...etc
 #+BEGIN_SRC
@@ -1456,7 +1519,7 @@ Save
 Build now 
 
 #+END_SRC
-** TODO [09 march]Permissions Add-Users Account (Role Based management) 
+** [09 march]Permissions Add-Users Account (Role Based management) 
 Steps 1 :
 - Install Plugins
   Manage jenkins > manage plugis >avaiable
@@ -1580,7 +1643,153 @@ Install Active Directory Plugin
     - Active Directory
       - Add Domain :
 
-** TODO [12 march]Upstream and Downstream
+** [12-13 march]master -slave :
+https://www.youtube.com/watch?v=8dZKT79DUfk
+copy D:\jenkins\worksape\sample\target\*.war D:\tomcat\webapps
+
+Find tomcat installation folder
+delete hello-world (Note : tomacat server is shutdown then delete)
+
+AIm : directly paste helloworld.war or all war file using jenkins in windows(install powershell plugin )
+
+
+
+
+install java,git, maven in linux aws- server
+
+What is master -slave concepts ?
+master ? where your cloud install jenkins
+workspace : eg :/roor/.jenkins
+            eg :D:/Workspace/jenkins/
+
+consider master in Window and slave is aws-ec2-linux(jenkins is not install)
+
+Aim : all master job should be done in slave (/opt/devops)
+
+Step 1 : Create AWS EC-2 as slave (get ip address, key) and install (java, maven,git) in slave
+Step 2 : Create New Node(In Jenkins Node means Salve-server ) and Connect to Node to Jenkins  
+*** Step 1: Create AWS EC-2 as slave and install java,maven,git
+In genreal we use shell scripts to install java,git and maven in slave node but for lecture we are manually isntall app.
+**** INSTALL JAVA
+#+BEGIN_SRC sh
+# #####################################################
+#   Java(1.8_0191,1.8_0131) installation in Linux# ####################################################
+# dir to install software
+
+sudo su-
+mkdir sofwares
+
+cd /opt/softwares
+
+
+# install java- 8 (does not support higher version)
+# updated for jdk 8u191
+#wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3a%2F%2Fwww.oracle.com%2Ftechnetwork%2Fjava%2Fjavase%2Fdownloads%2Fjdk8-downloads-2133151.html; oraclelicense=accept-securebackup-cookie;" "https://download.oracle.com/otn-pub/java/jdk/8u191-b12/2787e4a523244c269598db4e85c51e0c/jdk-8u191-linux-x64.tar.gz"
+
+# updated for jdk 8u131
+wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz"
+
+# extract tar file
+tar -xvzf jdk-8u131-linux-x64.tar.gz
+rm -rf jdk-8u131-linux-x64.tar.gz
+
+ # install java file # /software/jdk1.8.0_131
+ vi ~/.bash_profile
+
+# insert below text
+# JAVA ENVIRONmENT VARIABLES
+export JAVA_HOME=/opt/softwares/jdk1.8.0_131
+export PATH=$PATH:/opt/softwares/jdk1.8.0_131/bin
+
+# run bash
+source ~/.bash_profile
+java -version
+#+END_SRC
+
+**** INSTALL GIT AND maven
+#+BEGIN_SRC sh
+yum install git -y
+#+END_SRC
+
+**** INSTALL maven
+#+BEGIN_SRC sh
+cd /opt/softwares/
+
+wget https://www-us.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+vi ~/.bash_profile
+#insert 
+export M2_HOME=/opt/softwares/apache-maven-3.6.3
+export PATH=$PATH:/opt/softwares/apache-maven-3.6.3/bin
+
+# run bash_profile
+source ~/.profile
+
+mvn -version
+#+END_SRC
+
+*** Step 2: Create and Connect Node(Slave-servet) to Jenkins(master- server)
+- Step 1: Create a Slave :
+  - Manage Jenkins > mange Node(Slave) 
+     - New Node  
+       - Node name : _<Slave-Server Name>_
+       - Permanaent Agent : enable
+       - OK
+- Step 2: Configure Slave
+  - executors : 1
+  - remote root directory : _/opt/deploy/_  # dir in slave server
+  - label            : _orange_
+  - Launch method    : _Launch agents via SSH_
+    - Host Name   : _18.188.173.210_ <AWS-Public Id>      
+    - Credentials : _Jenkins_
+       - Kind    : _SSH Username with private key_
+       - Usernaem: _ec2-user_
+       - Private key : enable
+       - key : _<copy the key>_
+    - Host Key Verification Strategy : _Non verification Strategy_
+  - Node Progeries :
+    - Toot Locations :
+      - Name : _Java_
+      - Home : _/opt/software/jdk1.8.0_131_
+      - Name : _maven_
+      - Home : _/opt/software/apache-maven-3.6.3/_
+- BUG : if java, maven are not present then
+  - Jenkins > mangae Jenkins > Global Tool Configuratoin > JDK (Add JDK) , maver(Add maven)
+  - manage jenkins > mange nodes
+- Step 3: Launch the Slave
+  - Go to Slave Node and Lanunch the Node
+*** Step 3: Run job in Slave Node
+- New Job or Job > Config >
+  - General
+    - Description
+    - Discrad old build
+    - GitHub project
+    -
+    -
+    - Restrict where this project can be run
+      - Lable : __<Give Slave Node Lable>___
+** [14 march]Backup and Restoring point
+- Step 1: Install "Backup or ThinBackup"
+  - manage jenkins > manage plugins > install Backup OR ThinBackup
+- Step 2: Configur  backup
+  - manage jenkins > Backup Manager or (ThinBackup) >
+    - Setup :
+      - Background Configuration:
+        - Backup dirctory : D:/paytm
+        - Formate : zip/tar
+        - File name template : backup_@date@.@extension@
+          
+- Step 3: Create a backup
+  - manage jenkins > Backup Manager or (ThinBackup) >
+    - Backup Hudson Configuration [ENABLE] # IT will CREATE BACKUP
+      
+- Step 4: Restore a backup
+  - manage jenkins > Backup Manager or (ThinBackup) >
+    - Resotre Hudson Configuration
+      - Choose backup_file for backup
+
+        
+** [12 march]Upstream and Downstream
 There are diffrent job and jobs should be executive in order respectively
 - world job
 - india job
@@ -1622,175 +1831,33 @@ git [trigger build by change in git-code]
 maven [build the code]
 deploy [copy the build to tomcat/webapps]
 archive artifacts
-** [12-13 march]master -slave :
-https://www.youtube.com/watch?v=8dZKT79DUfk
-copy D:\jenkins\worksape\sample\target\*.war D:\tomcat\webapps
-
-Find tomcat installation folder
-delete hello-world (Note : tomacat server is shutdown then delete)
-
-AIm : directly paste helloworld.war or all war file using jenkins in windows(install powershell plugin )
-
-
-
-
-install java,git, maven in linux aws- server
-
-What is master -slave concepts ?
-master ? where your cloud install jenkins
-workspace : eg :/roor/.jenkins
-            eg :D:/Workspace/jenkins/
-
-consider master in Window and slave is aws-ec2-linux(jenkins is not install)
-
-Aim : all master job should be done in slave (/opt/devops)
-
-Step 1 : Create AWS EC-2 as slave (get ip address, key) and install (java, maven,git) in slave
-Step 2 : Create New Node(In Jenkins Node means Salve-server ) and Connect to Node to Jenkins  
-** Step 1: Create AWS EC-2 as slave and install java,maven,git
-In genreal we use shell scripts to install java,git and maven in slave node but for lecture we are manually isntall app.
-*** INSTALL JAVA
-#+BEGIN_SRC sh
-# #####################################################
-#   Java(1.8_0191,1.8_0131) installation in Linux# ####################################################
-# dir to install software
-
-sudo su-
-mkdir sofwares
-
-cd /opt/softwares
-
-
-# install java- 8 (does not support higher version)
-# updated for jdk 8u191
-#wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3a%2F%2Fwww.oracle.com%2Ftechnetwork%2Fjava%2Fjavase%2Fdownloads%2Fjdk8-downloads-2133151.html; oraclelicense=accept-securebackup-cookie;" "https://download.oracle.com/otn-pub/java/jdk/8u191-b12/2787e4a523244c269598db4e85c51e0c/jdk-8u191-linux-x64.tar.gz"
-
-# updated for jdk 8u131
-wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz"
-
-# extract tar file
-tar -xvzf jdk-8u131-linux-x64.tar.gz
-rm -rf jdk-8u131-linux-x64.tar.gz
-
- # install java file # /software/jdk1.8.0_131
- vi ~/.bash_profile
-
-# insert below text
-# JAVA ENVIRONmENT VARIABLES
-export JAVA_HOME=/opt/softwares/jdk1.8.0_131
-export PATH=$PATH:/opt/softwares/jdk1.8.0_131/bin
-
-# run bash
-source ~/.bash_profile
-java -version
-#+END_SRC
-
-*** INSTALL GIT AND maven
-#+BEGIN_SRC sh
-yum install git -y
-#+END_SRC
-
-*** INSTALL maven
-#+BEGIN_SRC sh
-cd /opt/softwares/
-
-wget https://www-us.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
-
-vi ~/.bash_profile
-#insert 
-export M2_HOME=/opt/softwares/apache-maven-3.6.3
-export PATH=$PATH:/opt/softwares/apache-maven-3.6.3/bin
-
-# run bash_profile
-source ~/.profile
-
-mvn -version
-#+END_SRC
-
-** Step 2: Create and Connect Node(Slave-servet) to Jenkins(master- server)
-- Step 1: Create a Slave :
-  - Manage Jenkins > mange Node(Slave) 
-     - New Node  
-       - Node name : _<Slave-Server Name>_
-       - Permanaent Agent : enable
-       - OK
-- Step 2: Configure Slave
-  - executors : 1
-  - remote root directory : _/opt/deploy/_  # dir in slave server
-  - label            : _orange_
-  - Launch method    : _Launch agents via SSH_
-    - Host Name   : _18.188.173.210_ <AWS-Public Id>      
-    - Credentials : _Jenkins_
-       - Kind    : _SSH Username with private key_
-       - Usernaem: _ec2-user_
-       - Private key : enable
-       - key : _<copy the key>_
-    - Host Key Verification Strategy : _Non verification Strategy_
-  - Node Progeries :
-    - Toot Locations :
-      - Name : _Java_
-      - Home : _/opt/software/jdk1.8.0_131_
-      - Name : _maven_
-      - Home : _/opt/software/apache-maven-3.6.3/_
-- BUG : if java, maven are not present then
-  - Jenkins > mangae Jenkins > Global Tool Configuratoin > JDK (Add JDK) , maver(Add maven)
-  - manage jenkins > mange nodes
-- Step 3: Launch the Slave
-  - Go to Slave Node and Lanunch the Node
-** Step 3: Run job in Slave Node
-- New Job or Job > Config >
-  - General
-    - Description
-    - Discrad old build
-    - GitHub project
-    -
-    -
-    - Restrict where this project can be run
-      - Lable : __<Give Slave Node Lable>___  
-
-
-
-
-** TODO [14 march]Backup and Restoring point
-- Step 1: Install "Backup or ThinBackup"
-  - manage jenkins > manage plugins > install Backup OR ThinBackup
-- Step 2: Configur  backup
-  - manage jenkins > Backup Manager or (ThinBackup) >
-    - Setup :
-      - Background Configuration:
-        - Backup dirctory : D:/paytm
-        - Formate : zip/tar
-        - File name template : backup_@date@.@extension@
-          
-- Step 3: Create a backup
-  - manage jenkins > Backup Manager or (ThinBackup) >
-    - Backup Hudson Configuration [ENABLE] # IT will CREATE BACKUP
-      
-- Step 4: Restore a backup
-  - manage jenkins > Backup Manager or (ThinBackup) >
-    - Resotre Hudson Configuration
-      - Choose backup_file for backup
-      
-** install Jenkins  in  tomcat server (using war file)
-
-- Install tomcat using above section on  Tomcat
-- Download Jenkins war file on any version above 2
-- Save war file in tomcat/webapp directory
-- restart tomcat and load : local:8080/jenkins
-
-├── bin  # executable file : start up and shutdown
-├── conf # server.xml : change config 
-|     └──server.xml # like port by default port is  :8080
-├── log    
-└── webapps 
-      └── sbi.war  
-
 ** [19- march] Pass parameters in Jenkins
 Ceate a script in path : /opt/softaware/scripts/test.sh
 #+BEGIN_SRC sh
 #!/bin/sh
 echo "$1 is a good boy and $2 is a innocent guy"
 #+END_SRC
+*** String Parameter
+-Step 1: Create a New job:
+ - new item > free style  name: parameterijenkns
+   - Genral
+     - This project is parameterised :
+       - String  Parameter : 
+         - Name          : param1
+         - Default Value : mahesh 
+                                           
+     - String  Parameter : 
+       - Name          : param2
+       - Default Value : pawan 
+   - Build 
+     - Execute shell
+       - command : echo "1st Paramenter is ${param1}"
+       - command : echo "2nd Parameter is ${param2}"  
+       - command : sh /opt/softaware/scripts/test.sh $param1 @param2
+- *Build with Parameter*
+   - In UI : name : __"${param1}"___
+   - *Build*            
+
 *** Choices Parameter
 -Step 1: Create a New job:
  - new item > free style  name: parameterijenkns
@@ -1798,30 +1865,36 @@ echo "$1 is a good boy and $2 is a innocent guy"
      - This project is parameterised :
        - Add Parameters:
          -      _Choice  Parameter_ : 
-                  -               Name: param
-                  -               Choices : mahesh 
-                  -                         pawan
+                  - Name    : param
+                  - Choices : mahesh 
+                      -     : pawan
+                      -     : shastri                        
    - Build 
       -  Execute shell
-          - command : sh /opt/softaware/scripts/test.sh $param
+          - command : sh /opt/softaware/scripts/test.sh $param # only one is select in before execution
 
+- *Build with Parameter*
+   - In UI :
+     - myboolpara : enable/disable
+   - *Build*
 
-*** String Parameter
+*** Boolean  Parameter
 -Step 1: Create a New job:
  - new item > free style  name: parameterijenkns
    - Genral
      - This project is parameterised :
-              -  String  Parameter : 
-                 -                 Name          : param1
-                 -                 Default Value : mahesh 
-                                           
-             -  String  Parameter : 
-                -                  Name          : param2
-                -                  Default Value : pawan 
-   - Build 
-     -   Execute shell
-         -    command : sh /opt/softaware/scripts/test.sh $param1 @param2
+       - Boolean  Parameter : 
+         - Name          : myboolpara
 
+   - Build 
+     - Execute shell
+       - command : echo "Boolean Paramenter is ${myboolpara}"
+
+- *Build with Parameter*
+   - In UI :
+     - myboolpara : enable/disable
+   - *Build*
+     
 * TODO Ansible :
 *** [20 march] SSH-Key connection between master and all slave 
 **** Prerequirement-I : Create a common user with root privillage and ssh-key base authentication
@@ -3098,7 +3171,7 @@ docker exec -it d2bf3ff05b9b /bin/bash   # Enter inside the container
  
 docker stop d2bf3ff05b9b # stop container
 docker rm d2bf3ff05b9b # to remove the container
-#+END_SRC    
+#+END_SRC     
 
 Port Forwording ,Volumes....etc
 

@@ -292,10 +292,11 @@ git merge <branch-name>     # merge brach to master git
 ** TODO Q)three main states in git 
 - Git has three main states that your files can reside in:
   - Working-Dir, Stagging Area, Local repo, Remote repo 
-  - =Working-Dir=      File but have not have =Version Control= (committed)
-  - =Stagging Area=    Marked a modified file  which are to be commit
-  - =Committed=      Current files are commented/safed in local Repository =.git directory=.
-  - =Remote Repository=
+  - =Working-Dir=       File System (dir/files)which is  not  =Version Control= (Not committed/Not Safe)
+  - =Stagging Area=     Marked as modified which need Version Control (Need to Commit/Need to Safed)
+  - =Local Repository=  File System (dir/files) which is Version Control (commented/safed) 
+  - =Remote Repository= Local Reposiotory is backup/updating central-Reposiotory 
+    in local Repository =.git directory=.
 *** How to Commit files ? 
 **** initialize  the file or local-repository  (git init):()
 Create a version control folder or =initialize= or track (changes or versions) we have to initialize the folder 

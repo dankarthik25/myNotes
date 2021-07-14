@@ -4115,7 +4115,8 @@ kubectl get nodes
 * 25th Sonarqube -quality tool 
 https://www.swtestacademy.com/sonarqube-tutorial/ 
 
-ISO/IEC 9126 defines a quality model 
+** Intro 
+ISO/IEC 9126 defines a quality model
 - External & Internal Quality :
   - Functionl  
     - [Suitablity, Accuracy,Interoperability,Security Functionality Conmpliance]
@@ -4129,10 +4130,6 @@ ISO/IEC 9126 defines a quality model
     - Analysability, Changeability, Stability, Testability, Maintainability Compilance 
   - Portability 
     - Adaptability, Installability, Co-Existence, Replaceability, Portability Compilance
- 
-
-
-
 ** What is SonarQube?
 
 Sonar is an *open-source software quality platform* . *showcases* them in a rich *web-based dashboard* by *various static & dynamic code analysis tools*. 
@@ -4170,34 +4167,115 @@ Supports languages: Java, C/C++, Objective-C, C#, PHP, Flex, Groovy, JavaScript,
     - An issue that represents something wrong in the code. If this has not broken yet, it will, and probably at the worst possible moment. This needs to be fixed. Yesterday.
   - Code Smell
     - A maintainability-related issue in the code. Leaving it as-is means that at best maintainers will have a harder time than they should making changes to the code. At worst, they'll be so confused by the state of the code that they'll introduce additional errors as they make changes.
-  - Cost
-	- See Remediation Cost
-  - Debt
-    - See Technical Debt
-  - Issue
-    - When a piece of code does not comply with a rule, an issue is logged on the snapshot. An issue can be logged on a source file or a unit test file. There are 3 types of issue: Bugs, Code Smells and Vulnerabilities
-  - Measure	
-    - The value of a metric for a given file or project at a given time. For example, 125 lines of code on class MyClass or density of duplicated lines of 30.5% on project myProject
-  - Metric	
-    - A type of measurement. Metrics can have varying values, or measures, over time. Examples: number of lines of code, complexity, etc. A metric may be either qualitative (gives a quality indication on the component, E.G. density of duplicated lines, line coverage by tests, etc.) or quantitative (does not give a quality indication on the component, E.G. number of lines of code, complexity, etc.)
-  - New Code definition	
-    - A changeset or period that you're keeping a close watch on for the introduction of new problems in the code. Ideally this is since the previous_version, but if you don't use a Maven-like versioning scheme you may need to set a time period such as 21 days, since a specific analysis, or use a reference branch.
-  - Quality Profile	
-    - A set of rules. Each snapshot is based on a single Quality Profile. See also Quality Profiles
-  - Rule	
-    - A coding standard or practice which should be followed. Not complying with coding rules leads to Bugs, Vulnerabilities, Security Hotspots, and Code Smells. Rules can check quality on code files or unit tests.
-  - Remediation Cost	
-    - The estimated time required to fix Vulnerability and Reliability Issues.
-  - Snapshot	
-    - A set of measures and issues on a given project at a given time. A snapshot is generated for each analysis.
-   - Security Hotspot	
-     - Security-sensitive pieces of code that need to be manually reviewed. Upon review, you'll either find that there is no threat or that there is vulnerable code that needs to be fixed.
-   - Technical Debt	
-     - The estimated time required to fix all Maintainability Issues / code smells
+  
    - Vulnerability	
      - A security-related issue which represents a backdoor for attackers. See also Security-related rules.
 
-https://224926-685269-raikfcquaxqncofqfm.stackpathdns.com/wp-content/uploads/2015/10/sonar_CI_2016-01-26_21-33-42.png
+** Installation
+#+begin_src sh
+
+sudo yum update -y # Step 1: Update the server.
+sudo yum install wget unzip -y # Step 2: Install wget & unzip
+sudo yum install java-11-openjdk-devel -y # Step 3: Install java 11
+sysctl vm.max_map_count # Step 4: Login as root and execute the following commands.
+sysctl fs.file-max
+ulimit -n
+ulimit -u
+
+# Setup PostgreSQL 10 Database For SonarQube
+sudo yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm -y # Step 1: Install PostgreSQL 10 repo.
+sudo yum install postgresql10-server postgresql10-contrib -y # Step 2: Install PostgreSQL 10
+sudo /usr/pgsql-10/bin/postgresql-10-setup initdb # Step 3: Initialize the database.
+sudo vi /var/lib/pgsql/10/data/pg_hba.conf # Step 4: Open /var/lib/pgsql/data/pg_hba.conf file to change the authentication to md5.
+# Find the following lines at the bottom of the file and change peer to trust and idnet to md5
+#
+# Step 5: Start and enable PostgreSQL.
+sudo systemctl start postgresql-10 
+sudo systemctl enable postgresql-10
+# Step 6: You can verify the installation using the following version select query.
+sudo -u postgres /usr/pgsql-10/bin/psql -c "SELECT version();"
+
+# Configur Sonar User and Database
+# Change the default password
+sudo passwd postgres
+# change passwd
+# Login postres user with new password
+su -postgres
+psql
+
+# EXECUTE FOLLOWING CMD IN PSQL
+  create database sonarqubedb;
+  # Create the sonarqube DB user with a strongly encrypted password. Replace your-strong-password with a strong password.
+  create user sonarqube with encrypted password 'your-strong-password';
+
+  # Next, grant all privileges to sonrqube user on sonarqubedb.
+  grant all privileges on database sonarqubedb to sonarqube
+
+  #Exit the psql prompt using the following command.
+  \q
+# Exit sudo user
+exit
+
+
+
+#+end_src
+Setup Sonarqube Web Server
+#+begin_src sh
+# Step 1: Download,unzip,install in /opt 
+cd /opt 
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.6.zip
+sudo unzip sonarqube-7.6.zip
+sudo mv sonarqube-7.6 sonarqube
+
+# Connect Sonarqube to database 
+
+sudo vi /opt/sonarqube/conf/sonar.properties #  You will find jdbc parameter under PostgreSQL section.
+  #sonar.jdbc.username=sonar                                                                                                                     
+  #sonar.jdbc.password=sonar-db-password
+  #sonar.jdbc.url=jdbc:postgresql://localhost/sonar
+  #sonar.web.host=0.0.0.0
+  #sonar.web.port=80  # default sonar run on 9000
+  #sonar.web.context=/sonar #If you want to access sonarqube some path like http://url:/sonar, change the following parameter.
+
+# Add Sonar User and Privileges
+sudo useradd sonar
+sudo chown -R sonar:sonar /opt/sonarqube
+
+####################################33
+# Start sonarserver
+sudo su - sonar
+cd /opt/sonarqube/bin/linux-x86-64 
+./sonar.sh start # start sonarserver
+sudo ./sonar.sh status # check status
+
+# Setting up Sonarqube as a service
+sudo vi /etc/systemd/system/sonarqube.service #copy paste below lines
+############################################################3
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=sonarqube
+Group=sonarqube
+PermissionsStartOnly=true
+ExecStart=/bin/nohup java -Xms32m -Xmx32m -Djava.net.preferIPv4Stack=true -jar /opt/sonarqube/lib/sonar-application-7.6.jar
+StandardOutput=syslog
+LimitNOFILE=65536
+LimitNPROC=8192
+TimeoutStartSec=5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+#############################################
+
+# Start and enable sonarqube
+sudo systemctl start sonarqube
+sudo systemctl enable sonarqube
+sudo systemctl status  sonarqube # check status 
+#+end_src
 
  Install
 

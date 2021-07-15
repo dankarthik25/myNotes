@@ -1,5 +1,6 @@
 * All cmds
-#+begin_src 
+** Basic Cmds
+#+begin_src sh
 docker images           # list of images in your docker
 docker image ls         # list of images in your docker
 docker search centos    # check if image is present in local repo (host OS)
@@ -34,8 +35,9 @@ docker rm <c-id/name>          # docker container rm   <c-id/name>              
 docker run <c-name> <i-name>   # docker container run <c-name> <i-name>             #
 docker exec <c-name> <i-name>   # docker container exec <c-name> <i-name>           #
                                 # docker container logs <c-id/name>                 #
-                                # docker container port <c-id/name>                 # give port No  
-docker system prune -a         ## remove  unused images,container                   #
+                                # docker container port <c-id/name>                 # give port No
+## remove  unused images,container
+docker system prune -a                           #
 
 #######
 # run shell inside container
@@ -61,17 +63,19 @@ docker volume ls  #
 docker volume rm <vol-ids>
 
 docker volume ls
-docker volume rm <vol-id>
 docker volume create --help
-
+docker volume inspect <vol-id/name>
+docker volume rm <vol-id>         # remove given vol-id  
+docker volume prune               # remove all unsued volumes
+ 
 
 ###################3333
 # Bind monts: Maps container dir  to host dir
-  - Basically just two locations pointing to same files
-  - Con't use in Dockerfile, must be at  container runtime
-  - Syntax :
-     - ....run -v /Users/bret/stuff:/path/container (mac/linux)
-     - ....run -v //C/Users/breff:path/container (window)
+#  - Basically just two locations pointing to same files
+#  - Con't use in Dockerfile, must be at  container runtime
+#  - Syntax :
+#     - ....run -v /Users/bret/stuff:/path/container (mac/linux)
+#     - ....run -v //C/Users/breff:path/container (window)
 
 #################3
 docker conatainer run -d --name psql -v psql:/var/lib/postgresql/data postgres:9.6.1
@@ -116,7 +120,7 @@ docker rm d2bf3ff05b9b # to remove the container (destroy)
 
 #+end_src
 
-** Compose
+** Compose cmds
 Use to build and run  mulit containers which are inter-linked to each other   
 #+begin_src
 # cd <path> where docker-compose.yml is present
@@ -125,7 +129,7 @@ docker compose up
 docker-compose up -d
 #+end_src
 
-** Swarm
+** Swarm cmds
 #+begin_src
 # $Inside Docker-Manager Host
 
@@ -139,12 +143,12 @@ docker swarm leave # leave the swam cluster
 # Note : for manger it ask for force leave
 #+end_src
  
-** Services
+*** Services cmds
 use to control any existing Docker services like (Container,Compose,Swarm,)
 
-#+begin_src
+#+begin_src sh
 docker service ls                 # Inside node (list of container) are show 
-docker service ps                 # 
+docker service ps                 # TODO
 docker service scale <c-id/name>
 docker service stop <c-id/name>
 docker service logs <c-id/name>
@@ -152,8 +156,8 @@ docker service rm <name>
 docker service create <c-name> <img-name>
 #+end_src
 
-** Node
-#+begin_src
+*** Node
+#+begin_src sh
 docker node ls # all node & manger
 docker node ps # all container running inside node not cluster
 docker rm <node-id> # remove node form cluster
@@ -170,14 +174,15 @@ docker network ls  # show network
 # bde494d3eca8        my_app_net          bridge              local
 # b5c2bb5208eb        none                null                local
 # 85464f22d4d4        host                host                local  # host network is special network,it gain performance by skipping virtual networks but sacrifices security of container model
+# driver : 4 types bridge,host,null,overlay,maclan
 
 
-docker network inspect [network-name]           # docker network inspect bridge
+docker network create --drive  [network-name]     #  create a network
+docker network inspect [network-id/name]           # docker network inspect bridge
 docker network inspect bridge | grep 'Containers' # List of containers in bridge
-docker network create --drive  [network-id]     #  create a network
-docker network connect  [network-id]            # attach a network to container
-docker network disconnect  [network-id]         # detach a network from network
-docker network create --help              
+docker network connect  [container-id]            # attach a network to container
+docker network disconnect  [containter-id]         # detach a network from network
+docker network create --help
 # To see the containers attached to networks
 docker network inspect bridge
 #+end_src
@@ -189,12 +194,10 @@ docker service create --name psql --network mydrupal -e POSTGRESS_PASSWORD=mypas
 docker service ls
 psql replicated ps psql
 docker container ls
-
-
 docker service create --name drupal --network mydrupal -p 80:80 drupal
 docker service ls
 
-watch docker ls # linux re-run 
+docker ls # linux re-run 
 docker service ps drupal # see -where drupal service is running : let be node2
 
 docker network create my_app_net
@@ -211,6 +214,10 @@ docker network inspect
 docker network disconnect 498f7bf 3928fe27
 
 #+end_src
+
+** TODO Docker File
+** TODO Compose yml file 
+** TODO Docker Stack
 * Introduction
 ** what is docker :
 - tool designed to make easy (create and deploy) app using container
@@ -228,8 +235,8 @@ The host OS kernel run various apps separatly in containers where each container
 A app *cannot harm the host* OS or  *conflict with other apps* running in separate containers.
 *** *Disadvanges of Containers*:
 Containers still *do not offer same security* and *stability* that VMs can. Since they share the host’s kernel, they cannot be as isolated as a virtual machine. Consequently, containers are process-level isolated, and one container can affect others by compromising the stability of the kernel.
-* Docker Installation
-* what is docker-hub :
+* TODO Docker Installation
+* TODO what is docker-hub :
 Docker-Hub : Online public/private repo mainted by docker where docker-images are pull/pushed consisting of standard images(linux,ubuntu,winodws) or customsied image(using Docker file)
 
 ** Create image using Docker file
@@ -279,7 +286,7 @@ ENTRYPOINT
 docker build -t sat-dev .
 docker build -t myown .
 #+end_src
-** Push image 
+** TODO Push image 
 - push/share image repo
 - pull/download image repo
 Create Custome image using Docker file and push to docker-hub
@@ -288,23 +295,22 @@ Create Custome image using Docker file and push to docker-hub
 - Build file to image
 - push image to docker hub(login to docker hub)
 
-* Docker file
+* TODO Docker file
 Port Forwording, Data Volume & Bund mounts
 
-* Docker cmds
-
-* Docker Compose :
+* TODO Docker cmds (TODO: merge dockerfile,compose,stack,network cmds)
+* TODO Docker Compose :
 - Overview
 - Docker Link
 - Compose yaml file
 - build and run(up)
 - cmds
   
-* Docker Swarm
+* TODO Docker Swarm
 - overview
 - swarm cmd
 
-* Docker Stack
+* TODO Docker Stack
 - Docker Compose in cluster
 - Create yml file and build and create cluster
 - cmd
@@ -320,7 +326,8 @@ Port Forwording, Data Volume & Bund mounts
    - None
    - Overlay Network
    - Maclan Network   
-           
+ - CMD (Bridge,Host,Overlay)
+   - How bridge network host is connected using overlay Newtork (docker cmd)          
         
 * Docker DNS
 - DNS RoundRobin Test
